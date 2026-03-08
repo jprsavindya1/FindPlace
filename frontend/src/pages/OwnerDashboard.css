@@ -1,0 +1,281 @@
+/* ================= OWNER DASHBOARD (LUNA THEME) =================
+   Palette:
+   #A7EBF2 | #54ACBF | #26658C | #023859 | #011C40
+================================================================= */
+
+/* ================= PAGE ================= */
+
+.owner-page {
+  max-width: 1200px;
+  margin: auto;
+  padding: 28px 20px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #023859;
+}
+
+/* ================= HEADINGS ================= */
+
+.owner-page h2 {
+  text-align: center;
+  margin-bottom: 18px;
+  color: #011c40;
+  font-weight: 900;
+  font-size: 30px;
+}
+
+.owner-page h3 {
+  margin-top: 34px;
+  margin-bottom: 14px;
+  color: #011c40;
+  border-left: 5px solid #54acbf;
+  padding-left: 12px;
+  width: 100%;
+  max-width: 960px;
+  font-weight: 900;
+  font-size: 20px;
+}
+
+/* =========================================================
+   OWNER FORM (COMPACT 2-COLUMN)
+========================================================= */
+
+.owner-form {
+  width: 100%;
+  max-width: 760px;
+  margin: 12px auto 30px auto;
+
+  background: #ffffff;
+  padding: 22px 22px;
+  border-radius: 18px;
+
+  border: 1px solid rgba(2, 56, 89, 0.12);
+  box-shadow: 0 14px 28px rgba(1, 28, 64, 0.08);
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+/* Inputs */
+.owner-form input,
+.owner-form select {
+  height: 42px;
+  padding: 0 14px;
+
+  border-radius: 12px;
+  border: 1px solid rgba(2, 56, 89, 0.22);
+  background: rgba(167, 235, 242, 0.10);
+
+  font-size: 14px;
+  font-weight: 650;
+  color: #023859;
+
+  outline: none;
+  transition: 0.2s ease;
+}
+
+.owner-form input::placeholder {
+  color: rgba(2, 56, 89, 0.55);
+  font-weight: 600;
+}
+
+/* Focus */
+.owner-form input:focus,
+.owner-form select:focus {
+  border-color: rgba(84, 172, 191, 0.95);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(167, 235, 242, 0.6);
+  transform: translateY(-1px);
+}
+
+/* Keywords full width */
+.owner-form input[name="keywords"] {
+  grid-column: 1 / -1;
+}
+
+/* Buttons */
+.owner-form button {
+  height: 42px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 850;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+/* Submit */
+.owner-form button[type="submit"] {
+  background: linear-gradient(135deg, #54acbf, #26658c);
+  color: #ffffff;
+  box-shadow: 0 12px 18px rgba(1, 28, 64, 0.16);
+}
+
+.owner-form button[type="submit"]:hover {
+  transform: translateY(-2px);
+}
+
+/* Cancel */
+.owner-form .cancel-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #ffffff;
+  box-shadow: 0 12px 18px rgba(0, 0, 0, 0.12);
+}
+
+.owner-form .cancel-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Responsive form */
+@media (max-width: 768px) {
+  .owner-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   MY PLACES GRID (COMPACT + NEAT)
+========================================================= */
+
+.owner-places-grid {
+  width: 100%;
+  max-width: 960px;
+
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 16px;
+}
+
+/* ================= PLACE CARD (COMPACT) ================= */
+
+.owner-place-card {
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(2, 56, 89, 0.12);
+  background: #ffffff;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  box-shadow: 0 12px 22px rgba(1, 28, 64, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.owner-place-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 30px rgba(1, 28, 64, 0.12);
+}
+
+.owner-place-card h4 {
+  margin: 0;
+  color: #011c40;
+  font-weight: 900;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.owner-place-card p {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(2, 56, 89, 0.82);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+/* ================= IMAGE ================= */
+
+.place-img {
+  width: 100%;
+  height: 120px; /* ✅ smaller */
+  object-fit: cover;
+  border-radius: 12px;
+  margin: 8px 0 6px;
+
+  border: 1px solid rgba(2, 56, 89, 0.10);
+}
+
+/* ================= FILE INPUT (COMPACT) ================= */
+
+.owner-place-card input[type="file"] {
+  font-size: 12px;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid rgba(2, 56, 89, 0.18);
+  background: rgba(167, 235, 242, 0.08);
+}
+
+/* ================= BUTTONS (COMPACT) ================= */
+
+.owner-place-card button {
+  padding: 9px 10px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: 850;
+  font-size: 13px;
+  transition: 0.18s ease;
+}
+
+/* Primary buttons */
+.owner-place-card button:not(.delete-btn) {
+  background: linear-gradient(135deg, #54acbf, #26658c);
+  color: #ffffff;
+  box-shadow: 0 10px 16px rgba(1, 28, 64, 0.14);
+}
+
+.owner-place-card button:not(.delete-btn):hover {
+  transform: translateY(-2px);
+}
+
+/* Delete */
+.delete-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+  color: #ffffff;
+  box-shadow: 0 10px 16px rgba(0, 0, 0, 0.12);
+}
+
+.delete-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* ✅ Buttons row (make Edit/Delete sit side-by-side when possible) */
+.owner-place-card .btn-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* ================= STATUS BADGES ================= */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #ffffff;
+  font-weight: 850;
+  font-size: 12px;
+  text-transform: capitalize;
+  width: fit-content;
+}
+
+.status-badge.approved {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.status-badge.rejected {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+/* ================= BOOKINGS SEPARATOR ================= */
+
+hr {
+  margin: 44px 0 26px;
+  width: 100%;
+  max-width: 960px;
+  border: none;
+  border-top: 2px dashed rgba(2, 56, 89, 0.22);
+}

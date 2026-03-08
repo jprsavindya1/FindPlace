@@ -1,0 +1,154 @@
+/* ================= OWNER BOOKINGS (LUNA THEME) =================
+   Palette:
+   #A7EBF2 | #54ACBF | #26658C | #023859 | #011C40
+============================================================== */
+
+.bookings-section {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+
+  color: #023859;
+}
+
+.bookings-section h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #011c40;
+}
+
+/* ================= BOOKINGS TABLE ================= */
+
+.bookings-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 14px;
+
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+
+  border: 1px solid rgba(2, 56, 89, 0.12);
+  box-shadow: 0 14px 28px rgba(1, 28, 64, 0.08);
+
+  color: #023859;
+}
+
+.bookings-table th,
+.bookings-table td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(2, 56, 89, 0.10);
+}
+
+/* header row */
+.bookings-table th {
+  background: rgba(167, 235, 242, 0.22);
+  color: #011c40;
+  font-weight: 800;
+}
+
+/* row hover */
+.bookings-table tbody tr:hover {
+  background: rgba(167, 235, 242, 0.10);
+}
+
+/* ================= STATUS BADGES ================= */
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  color: #ffffff;
+  font-weight: 800;
+  text-transform: capitalize;
+  font-size: 12px;
+  letter-spacing: 0.2px;
+  display: inline-block;
+}
+
+/* LUNA-style status colors (still intuitive) */
+.status-badge.pending {
+  background: linear-gradient(135deg, #54acbf, #26658c);
+}
+
+.status-badge.approved {
+  background: linear-gradient(135deg, #26658c, #023859);
+}
+
+.status-badge.rejected {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+/* ================= ACTION BUTTONS ================= */
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.approve-btn,
+.reject-btn {
+  padding: 7px 12px;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  font-size: 13px;
+}
+
+/* Approve button (LUNA) */
+.approve-btn {
+  background: linear-gradient(135deg, #54acbf, #26658c);
+  box-shadow: 0 10px 18px rgba(1, 28, 64, 0.16);
+}
+
+.approve-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 22px rgba(1, 28, 64, 0.20);
+  opacity: 0.98;
+}
+
+/* Reject button (keep red as clear action) */
+.reject-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.14);
+}
+
+.reject-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 22px rgba(0, 0, 0, 0.18);
+  opacity: 0.98;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+  .bookings-table th,
+  .bookings-table td {
+    font-size: 12px;
+    padding: 8px 6px;
+  }
+
+  .approve-btn,
+  .reject-btn {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .action-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .approve-btn,
+  .reject-btn {
+    width: 100%;
+  }
+}

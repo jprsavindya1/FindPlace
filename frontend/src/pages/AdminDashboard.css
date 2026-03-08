@@ -1,0 +1,215 @@
+/* =========================================================
+   ADMIN DASHBOARD – LUNA PALETTE
+   #A7EBF2 | #54ACBF | #26658C | #023859 | #011C40
+========================================================= */
+
+/* ================= GLOBAL ================= */
+.admin-page {
+  padding: 30px;
+  background: linear-gradient(
+    180deg,
+    rgba(167, 235, 242, 0.22),
+    rgba(255, 255, 255, 1) 45%
+  );
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #023859;
+}
+
+.admin-page h2 {
+  font-size: 28px;
+  margin-bottom: 6px;
+  color: #011c40;
+  letter-spacing: 0.2px;
+}
+
+.admin-page .subtitle {
+  color: rgba(2, 56, 89, 0.72);
+  margin-bottom: 25px;
+}
+
+/* ================= SECTION HEADERS ================= */
+.admin-page h3 {
+  margin-top: 40px;
+  margin-bottom: 15px;
+  color: #011c40;
+  border-left: 6px solid #54acbf;
+  padding-left: 12px;
+}
+
+/* ================= TABLE (COMMON) ================= */
+.user-table,
+.place-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(2, 56, 89, 0.12);
+  box-shadow: 0 12px 28px rgba(1, 28, 64, 0.12);
+}
+
+.user-table th,
+.user-table td,
+.place-table th,
+.place-table td {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 14px;
+}
+
+/* ================= USER TABLE ================= */
+.user-table thead {
+  background: linear-gradient(135deg, #26658c, #023859);
+  color: #ffffff;
+}
+
+.user-table tr:nth-child(even) {
+  background: rgba(167, 235, 242, 0.12);
+}
+
+.user-table tr:hover {
+  background: rgba(84, 172, 191, 0.18);
+}
+
+/* ================= BUTTONS (BASE) ================= */
+.btn {
+  padding: 7px 14px;
+  border-radius: 10px;
+  border: none;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+/* User role buttons */
+.btn.owner {
+  background: linear-gradient(135deg, #54acbf, #26658c);
+  color: #ffffff;
+  box-shadow: 0 8px 14px rgba(1, 28, 64, 0.18);
+}
+
+.btn.customer {
+  background: linear-gradient(135deg, #a7ebf2, #54acbf);
+  color: #011c40;
+  box-shadow: 0 8px 14px rgba(1, 28, 64, 0.14);
+}
+
+/* Approve buttons */
+.btn.approve {
+  background: linear-gradient(135deg, #54acbf, #26658c);
+  color: #ffffff;
+  box-shadow: 0 8px 14px rgba(1, 28, 64, 0.18);
+}
+
+.btn.approve:hover {
+  opacity: 0.96;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 22px rgba(1, 28, 64, 0.22);
+}
+
+/* Danger buttons (red) */
+.btn.danger {
+  background: #dc2626;
+  color: #ffffff;
+  box-shadow: 0 8px 14px rgba(220, 38, 38, 0.18);
+}
+
+.btn.danger:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 22px rgba(220, 38, 38, 0.22);
+}
+
+.btn:hover {
+  opacity: 0.98;
+}
+
+/* ================= PLACE MANAGEMENT TABLE ================= */
+.place-table {
+  margin-top: 15px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.place-table thead {
+  background: linear-gradient(135deg, #011c40, #023859);
+  color: #ffffff;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.place-table tbody tr:nth-child(even) {
+  background: rgba(167, 235, 242, 0.10);
+}
+
+.place-table tbody tr:hover {
+  background: rgba(84, 172, 191, 0.18);
+}
+
+/* Column alignment */
+.place-table th:nth-child(1),
+.place-table td:nth-child(1) {
+  width: 60px;
+  text-align: center;
+}
+
+.place-table th:nth-child(4),
+.place-table td:nth-child(4) {
+  width: 140px;
+  text-align: center;
+}
+
+.place-table th:nth-child(5),
+.place-table td:nth-child(5) {
+  width: 180px;
+  text-align: center;
+}
+
+/* Actions column */
+.place-table td:last-child {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ================= STATUS BADGES ================= */
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.status.approved {
+  background: rgba(167, 235, 242, 0.45);
+  color: #023859;
+  border: 1px solid rgba(84, 172, 191, 0.35);
+}
+
+.status.pending {
+  background: rgba(84, 172, 191, 0.18);
+  color: #023859;
+  border: 1px solid rgba(84, 172, 191, 0.35);
+}
+
+.status.rejected {
+  background: rgba(220, 38, 38, 0.14);
+  color: #991b1b;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .user-table,
+  .place-table {
+    font-size: 13px;
+  }
+
+  .btn {
+    margin-bottom: 6px;
+  }
+}

@@ -1,0 +1,176 @@
+/* =========================================================
+   PREMIUM LUNA NAVBAR (FINAL)
+   Palette:
+   #A7EBF2 | #54ACBF | #26658C | #023859 | #011C40
+========================================================= */
+
+.navbar {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 72px;
+  z-index: 1000;
+
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  border-bottom: 1px solid rgba(2, 56, 89, 0.08);
+  box-shadow: 0 10px 30px rgba(1, 28, 64, 0.08);
+}
+
+/* ===== INNER CONTAINER ===== */
+.navbar-container {
+  max-width: 1250px;
+  margin: auto;
+  padding: 0 32px;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* =========================================================
+   LOGO
+========================================================= */
+.navbar-logo {
+  font-size: 24px;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+
+  color: #023859;
+  text-decoration: none;
+}
+
+/* =========================================================
+   LINKS WRAPPER
+========================================================= */
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+/* =========================================================
+   NAV TEXT LINKS (Dashboard / My Bookings / Owner / Admin)
+   ✅ Works with: className="nav-link" and "nav-link active"
+========================================================= */
+.nav-link {
+  text-decoration: none; /* remove underline */
+  color: #26658c;
+
+  font-weight: 700;
+  font-size: 15px;
+
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+/* hover underline animation */
+.nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+
+  width: 0%;
+  height: 2px;
+
+  background: linear-gradient(135deg, #54acbf, #26658c);
+  transition: width 0.25s ease;
+}
+
+.nav-link:hover {
+  color: #023859;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Active route highlight */
+.nav-link.active {
+  color: #023859;
+}
+
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* =========================================================
+   BUTTONS (Login / Register + Logout base)
+========================================================= */
+.nav-btn {
+  padding: 9px 20px;
+  border-radius: 999px;
+  border: none;
+
+  background: linear-gradient(135deg, #54acbf, #26658c);
+  color: #ffffff;
+
+  font-weight: 800;
+  font-size: 14px;
+
+  cursor: pointer;
+  text-decoration: none; /* NavLink button text */
+
+  box-shadow: 0 8px 18px rgba(1, 28, 64, 0.18);
+  transition: all 0.25s ease;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.nav-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 26px rgba(1, 28, 64, 0.24);
+}
+
+/* Active button glow (Login/Register) */
+.active-btn {
+  box-shadow: 0 0 0 3px rgba(84, 172, 191, 0.35), 0 14px 26px rgba(1, 28, 64, 0.24);
+}
+
+/* =========================================================
+   🔴 LOGOUT BUTTON (KEEP RED)
+========================================================= */
+.logout-btn {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.logout-btn:hover {
+  box-shadow: 0 12px 22px rgba(220, 38, 38, 0.35);
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+@media (max-width: 768px) {
+  .navbar {
+    height: 64px;
+  }
+
+  .navbar-container {
+    padding: 0 18px;
+  }
+
+  .navbar-links {
+    gap: 12px;
+  }
+
+  .nav-btn {
+    padding: 7px 14px;
+    font-size: 13px;
+  }
+
+  .navbar-logo {
+    font-size: 20px;
+  }
+
+  .nav-link {
+    font-size: 14px;
+  }
+}

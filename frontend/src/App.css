@@ -1,0 +1,64 @@
+/* =====================================================
+   GLOBAL RESET + BASE (LUNA THEME)
+   Palette:
+   #A7EBF2 | #54ACBF | #26658C | #023859 | #011C40
+===================================================== */
+
+/* ===== GLOBAL RESET ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ===== ROOT & BODY ===== */
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  font-family: "Poppins", Arial, Helvetica, sans-serif;
+}
+
+/* Base page look */
+body {
+  background: linear-gradient(135deg, rgba(167, 235, 242, 0.18), rgba(84, 172, 191, 0.06));
+  color: #023859;
+}
+
+/* ===== DASHBOARD COMMON ===== */
+.dashboard {
+  max-width: 900px;
+  margin: 40px auto;
+
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+
+  border: 1px solid rgba(2, 56, 89, 0.12);
+  box-shadow: 0 14px 28px rgba(1, 28, 64, 0.10);
+}
+
+.dashboard h1 {
+  margin-bottom: 10px;
+  color: #011c40;
+  font-weight: 900;
+}
+
+.dashboard p {
+  margin-bottom: 15px;
+  color: rgba(2, 56, 89, 0.75);
+  font-weight: 600;
+}
+
+/* ===== UNAUTHORIZED ===== */
+.unauthorized {
+  text-align: center;
+  margin-top: 80px;
+}
+
+.unauthorized h1 {
+  color: #dc2626; /* ✅ keep red for warning/error */
+  font-weight: 900;
+}
