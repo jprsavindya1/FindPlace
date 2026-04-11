@@ -47,7 +47,7 @@ function CustomerDashboard() {
       heading: "Find Your Perfect Room",
       btnText: "Book a Stay",
       image: "/explore/stays_hero.png",
-      target: "/search?category=Hotel"
+      target: "/search"
     },
     {
       id: "dining",
