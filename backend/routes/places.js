@@ -462,6 +462,23 @@ router.post("/owner/places", verifyToken, upload.fields([{ name: 'image', maxCou
       });
     }
 
+    // ⭐ INTEGRATED: Initial Menu Items
+    const preOrderItemsRaw = req.body.pre_order_items;
+    if (preOrderItemsRaw) {
+      try {
+        const preOrderItems = JSON.parse(preOrderItemsRaw);
+        if (preOrderItems.length > 0) {
+          const menuSql = "INSERT INTO menu (place_id, name, price, category) VALUES ?";
+          const menuValues = preOrderItems.map(item => [placeId, item.name, item.price, item.category]);
+          db.query(menuSql, [menuValues], (err) => {
+            if (err) console.error("Initial menu insert error:", err);
+          });
+        }
+      } catch (e) {
+        console.error("Failed to parse pre_order_items JSON", e);
+      }
+    }
+
     res.json({ message: "Place created successfully (Pending approval)" });
 
   });
@@ -622,6 +639,23 @@ router.put("/owner/places/:id", verifyToken, (req, res) => {
 
     if (result.affectedRows === 0) {
       return res.status(403).json({ message: "Not allowed to update this place" });
+    }
+
+    // ⭐ INTEGRATED: Initial Menu Items (Update Mode)
+    const preOrderItemsRaw = req.body.pre_order_items;
+    if (preOrderItemsRaw) {
+      try {
+        const preOrderItems = JSON.parse(preOrderItemsRaw);
+        if (preOrderItems.length > 0) {
+          const menuSql = "INSERT INTO menu (place_id, name, price, category) VALUES ?";
+          const menuValues = preOrderItems.map(item => [placeId, item.name, item.price, item.category]);
+          db.query(menuSql, [menuValues], (err) => {
+            if (err) console.error("Initial menu insert (update mode) error:", err);
+          });
+        }
+      } catch (e) {
+        console.error("Failed to parse pre_order_items JSON in update mode", e);
+      }
     }
 
     // Update amenities

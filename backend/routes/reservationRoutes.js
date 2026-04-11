@@ -84,13 +84,26 @@ router.post("/", verifyToken, async (req, res) => {
           }
         }
 
-        // 2. Insert the reservation
+        // 2. Calculate total_price from food_order_items if present
+        let total_price = 0;
+        if (food_order_items) {
+          try {
+            const items = JSON.parse(food_order_items);
+            if (Array.isArray(items)) {
+              total_price = items.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+            }
+          } catch (e) {
+            console.error("Failed to parse food_order_items:", e);
+          }
+        }
+
+        // 3. Insert the reservation
         const insertSql = `
           INSERT INTO reservations 
-          (place_id, user_id, customer_name, customer_email, res_date, res_time, people_count, table_id, status, food_order_items)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', ?)
+          (place_id, user_id, customer_name, customer_email, res_date, res_time, people_count, table_id, status, food_order_items, total_price)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', ?, ?)
         `;
-        const values = [place_id, userId, customer_name, customer_email, res_date, res_time, people_count, final_table_id, food_order_items || null];
+        const values = [place_id, userId, customer_name, customer_email, res_date, res_time, people_count, final_table_id, food_order_items || null, total_price];
 
         connection.query(insertSql, values, (err, result) => {
           if (err) {
@@ -135,7 +148,8 @@ router.get("/owner/all", verifyToken, (req, res) => {
 
   let sql = `
     SELECT r.*, rt.table_no, p.name as place_name,
-           CONCAT('FP-DINE-', LPAD(r.id, 4, '0')) as order_id
+           CONCAT('FP-DINE-', LPAD(r.id, 4, '0')) as order_id,
+           r.total_price as total_price
     FROM reservations r
     LEFT JOIN restaurant_tables rt ON r.table_id = rt.id
     JOIN places p ON r.place_id = p.id

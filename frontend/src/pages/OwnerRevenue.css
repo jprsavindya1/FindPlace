@@ -2,100 +2,190 @@
   animation: fadeIn 0.4s ease-out;
 }
 
+/* KPI CARDS SECTION */
 .revenue-kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 
 .kpi-card {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  padding: 32px 24px;
   border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
   display: flex;
   align-items: center;
-  gap: 16px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  gap: 20px;
+  transition: all 0.3s ease;
 }
 
 .kpi-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
 .kpi-icon {
   width: 56px;
   height: 56px;
-  background: var(--primary-gradient);
-  border-radius: 16px;
+  background: #f8fafc;
+  border-radius: 14px;
   display: grid;
   place-items: center;
+  color: #64748b;
+  flex-shrink: 0;
+}
+
+/* Successful Bookings Color (Emerald) */
+.kpi-card.successful .kpi-icon {
+  background: #10b981;
+  color: white;
+}
+
+/* Top Earning Place Color (Orange) */
+.kpi-card.top-place .kpi-icon {
+  background: #f59e0b;
   color: white;
 }
 
 .kpi-info h4 {
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  margin: 0 0 4px 0;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0 0 8px 0;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
+  font-weight: 700;
 }
 
 .kpi-info p {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 800;
-  color: var(--text-dark);
+  color: #0f172a;
   margin: 0;
 }
 
+.kpi-info .place-name {
+  font-size: 1.25rem;
+}
+
 .kpi-info .subtitle {
-  font-size: 0.85rem;
-  color: var(--primary-color);
-  font-weight: 600;
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
   margin-top: 4px;
 }
 
+/* CHARTS SECTION */
 .charts-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 24px;
-  margin-bottom: 32px;
+  gap: 32px;
+  margin-bottom: 40px;
+  align-items: start;
 }
 
-@media (max-width: 1024px) {
+.charts-grid.dining-layout {
+  grid-template-columns: 1fr;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 1100px) {
   .charts-grid {
     grid-template-columns: 1fr;
   }
 }
 
 .chart-card {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  padding: 24px;
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  padding: 32px;
+  border-radius: 24px;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.02);
 }
 
 .chart-card h3 {
-  font-size: 1.2rem;
-  color: var(--text-dark);
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #0f172a;
   margin-top: 0;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
-/* Recent Bookings Table tweaks specific to Revenue page */
+/* DONUT CHART SIDEBAR - STATUS ITEMS */
+.status-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-radius: 16px;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.status-text h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.status-text p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.status-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+/* Item Status Theme: Upcoming (Green) */
+.status-item.upcoming {
+  background: #f0fdf4;
+  border-color: #dcfce7;
+}
+
+.status-item.upcoming .status-text h4 { color: #166534; }
+.status-item.upcoming .status-value { color: #10b981; }
+
+/* Item Status Theme: Ongoing (Blue) */
+.status-item.ongoing {
+  background: #eff6ff;
+  border-color: #dbeafe;
+}
+
+.status-item.ongoing .status-text h4 { color: #1e40af; }
+.status-item.ongoing .status-value { color: #3b82f6; }
+
+/* Item Status Theme: Completed (Red) */
+.status-item.completed {
+  background: #fef2f2;
+  border-color: #fee2e2;
+}
+
+.status-item.completed .status-text h4 { color: #991b1b; }
+.status-item.completed .status-value { color: #ef4444; }
+
+/* TABLE SECTION */
 .revenue-table-container {
   overflow-x: auto;
-  border-radius: 12px;
-  border: 1px solid rgba(0,0,0,0.05);
+  border: 1px solid #f1f5f9;
+  border-radius: 16px;
 }
 
 .revenue-table {
@@ -106,18 +196,23 @@
 }
 
 .revenue-table th {
-  padding: 16px;
-  font-size: 0.85rem;
+  padding: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-muted);
+  letter-spacing: 1px;
+  color: #64748b;
   background: #f8fafc;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .revenue-table td {
-  padding: 16px;
-  font-size: 0.95rem;
-  color: var(--text-dark);
-  border-bottom: 1px solid #e2e8f0;
+  padding: 18px 20px;
+  font-size: 0.9rem;
+  color: #334155;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.revenue-table tr:last-child td {
+  border-bottom: none;
 }

@@ -45,6 +45,7 @@ function DiningPage() {
   const [activeAmbience, setActiveAmbience] = useState("All");
   const [viewMode, setViewMode] = useState('list');
   const [sortBy, setSortBy] = useState('our-picks');
+  const [totalRecords, setTotalRecords] = useState(0);
 
   // Filters State (Synced with URL)
   const [filters, setFilters] = useState({
@@ -105,7 +106,8 @@ function DiningPage() {
       if (!res.ok) throw new Error('Failed to fetch restaurants');
       
       const data = await res.json();
-      setRestaurants(Array.isArray(data) ? data : []);
+      setRestaurants(data.results || []);
+      setTotalRecords(data.totalRecords || 0);
     } catch (err) {
       console.error("Fetch restaurants error:", err);
       setError("Something went wrong. Please try again.");
@@ -149,7 +151,7 @@ function DiningPage() {
     const cuisine = queryParams.get('cuisine');
     const locationName = area || district || "Sri Lanka";
     const cuisineText = cuisine ? `${cuisine} ` : "";
-    return `${locationName}: ${restaurants.length} ${cuisineText}restaurants found`;
+    return `${locationName}: ${totalRecords} ${cuisineText}restaurants found`;
   };
 
   const containerVariants = {

@@ -46,7 +46,7 @@ function CustomerDashboard() {
       title: "STAYS",
       heading: "Find Your Perfect Room",
       btnText: "Book a Stay",
-      image: "/explore/stays_hero.png",
+      image: "/explore/stays_hero.png?v=4",
       target: "/search"
     },
     {
@@ -54,7 +54,7 @@ function CustomerDashboard() {
       title: "DINING",
       heading: "Explore Culinary Wonders",
       btnText: "Book a Table",
-      image: "/explore/dining_hero.png",
+      image: "/explore/dining_hero.png?v=4",
       target: "/dine"
     }
   ];
@@ -266,14 +266,14 @@ function CustomerDashboard() {
       />
 
       {/* ================= HERO SECTION ================= */}
-      <section className="customer-hero">
+      <section className="customer-hero" style={{ backgroundImage: "url('/explore/blended_hero.png?v=4')" }}>
         <motion.div 
-          className="hero-content"
+          className="hero-text-container"
           variants={heroContainerVariants}
           initial="hidden"
           animate="visible"
         >
-          <motion.span variants={heroItemVariants} className="hero-badge badge-pill">
+          <motion.span variants={heroItemVariants} className="hero-badge">
             Curated Stays. Premium Experience.
           </motion.span>
           
@@ -294,7 +294,6 @@ function CustomerDashboard() {
               : "Discover extraordinary places for your next escape."}
           </motion.p>
         </motion.div>
-
       </section>
 
       {/* ================= FEATURE CARDS SECTION ================= */}

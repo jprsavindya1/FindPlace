@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from "framer-motion";
 import { 
   MapPin, Star, Check, FileText, Users, Heart, Clock, User, 
-  MessageCircle 
+  MessageCircle, Plus, Minus, ChevronRight, Share2, Edit3
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import DatePicker from "react-datepicker";
@@ -15,10 +15,98 @@ const PlaceDetailsDining = ({
   handleDinnerBookingSubmit, isBooking, reviews, toggleFavorite, isFavorite, isLiking,
   proofModal, setCurrentProof,
   handleAddReview, myRating, setMyRating, myComment, setMyComment, reviewMsg, isPostingReview, gallery,
-  fullName, setFullName, email, setEmail, phone, setPhone
+  fullName, setFullName, email, setEmail, phone, setPhone, avgRating, totalReviews
 }) => {
+  const tabsRef = React.useRef(null);
+  const [showAllReviews, setShowAllReviews] = React.useState(false);
+
+  const handleShare = async () => {
+    const shareData = {
+      title: place.name,
+      text: `Check out ${place.name} on Find Place!`,
+      url: window.location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        alert("Link copied to clipboard! 📋");
+      }
+    } catch (err) { console.log(err); }
+  };
+  
+  // EAT APP INSPIRED TIME SLOT GENERATION
+  const timeSlots = React.useMemo(() => {
+    const slots = [];
+    const now = new Date();
+    const isToday = resDate && (
+      resDate.getDate() === now.getDate() &&
+      resDate.getMonth() === now.getMonth() &&
+      resDate.getFullYear() === now.getFullYear()
+    );
+
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    // Parse business hours (format: "HH:mm")
+    const startH = parseInt((place.opening_hours || "09:00").split(':')[0]);
+    const endH = parseInt((place.closing_hours || "22:00").split(':')[0]);
+    const endM = parseInt((place.closing_hours || "22:00").split(':')[1] || "0");
+
+    // From opening hour to closing hour
+    for (let h = startH; h <= endH; h++) {
+      for (let m = 0; m < 60; m += 30) {
+        // Break if we hit or exceed the closing time
+        if (h === endH && m >= endM) break;
+        
+        // Final sanity check for late night closing (e.g. 11 PM or 11:30 PM)
+        if (h === 23 && m > 30) break;
+
+        // Filter out past slots if today
+        if (isToday) {
+          if (h < currentHour) continue;
+          if (h === currentHour && m <= currentMinute) continue;
+        }
+
+        const hour12 = h % 12 || 12;
+        const ampm = h >= 12 ? 'PM' : 'AM';
+        const label = `${hour12}:${String(m).padStart(2, '0')} ${ampm}`;
+        const value = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        
+        let category = "Dinner";
+        if (h < 11) category = "Breakfast";
+        else if (h < 16) category = "Lunch";
+        
+        slots.push({ label, value, category });
+      }
+    }
+    return slots;
+  }, [resDate, place.opening_hours, place.closing_hours]);
+
+  const groupedSlots = React.useMemo(() => {
+    const breakfast = timeSlots.filter(s => s.category === "Breakfast");
+    const lunch = timeSlots.filter(s => s.category === "Lunch");
+    const dinner = timeSlots.filter(s => s.category === "Dinner");
+    
+    const result = {};
+    if (breakfast.length > 0) result["Breakfast"] = breakfast;
+    if (lunch.length > 0) result["Lunch"] = lunch;
+    if (dinner.length > 0) result["Dinner"] = dinner;
+    
+    return result;
+  }, [timeSlots]);
 
   const placeholderImg = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80"; // Reliable restaurant placeholder
+  
+  const totalPreOrderPrice = Object.entries(preOrderQuantities).reduce((sum, [itemId, qty]) => {
+    const item = menuItems.find(i => String(i.id) === String(itemId));
+    return sum + (item ? item.price * qty : 0);
+  }, 0);
+
+  const availableCategories = [...new Set(menuItems.map(item => item.category))].filter(Boolean);
+  // Ensure the current activeCategory is valid or default to first one if possible
+  const currentTab = activeCategory || (availableCategories.includes("Main Course") ? "Main Course" : availableCategories[0]);
   
   const galleryItems = [
     place.image ? `${API_BASE_URL}/uploads/places/${place.image}` : placeholderImg,
@@ -27,6 +115,12 @@ const PlaceDetailsDining = ({
     gallery?.[2] ? `${API_BASE_URL}/uploads/places/${gallery[2].image_path}` : placeholderImg,
     gallery?.[3] ? `${API_BASE_URL}/uploads/places/${gallery[3].image_path}` : placeholderImg
   ];
+
+  const scrollTabs = () => {
+    if (tabsRef.current) {
+      tabsRef.current.scrollBy({ left: 150, behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="place-details-wrapper dining-wrapper">
@@ -41,26 +135,61 @@ const PlaceDetailsDining = ({
             </div>
             
             <div className="res-info-card-cell">
-              <div className="res-title-info">
-                <h1>{place.name}</h1>
-                <div className="res-title-ratings">
-                  {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="#f59e0b" color="#f59e0b" />)}
-                  <span>4.8</span>
-                  <span style={{ color: '#9ca3af', fontWeight: 'normal' }}>(212)</span>
+              <div className="res-info-top-group">
+                <h1 className="pd-main-title">{place.name}</h1>
+                
+                <div className="pd-meta-row">
+                  <div className="pd-meta-item">
+                    <div className="res-rating-pill">
+                      <Star size={14} fill="#f59e0b" color="#f59e0b" />
+                      <span>{avgRating ? avgRating.toFixed(1) : "4.8"}</span>
+                      <span className="res-review-count">({totalReviews || 212})</span>
+                    </div>
+                  </div>
+                  
+                  <div className="pd-meta-divider"></div>
+                  
+                  <div className="pd-meta-item">
+                     <MapPin size={14} className="pd-meta-icon" />
+                     <span>{place.location || "Sri Lanka"}</span>
+                  </div>
                 </div>
-                <div className="res-location-row">
-                   <MapPin size={12} color="#6b7280" />
-                   <span>{place.location || "Sri Lanka"}</span>
-                </div>
-                <div className="res-cuisine-row">
-                   <FileText size={12} color="#6b7280" />
-                   <span>{place.cuisine_type || "Modern Sri Lankan Fusion"}</span>
+
+                <div className="pd-cuisine-review-row">
+                   <div className="pd-meta-item">
+                      <FileText size={14} className="pd-meta-icon" />
+                      <span className="pd-cuisine-badge">{place.cuisine_type || "Modern Fusion"}</span>
+                   </div>
+                   <button className="btn-write-review-minimal" onClick={() => document.getElementById('review-form-section')?.scrollIntoView({ behavior: 'smooth' })}>
+                      <Edit3 size={14} />
+                      <span>Write Review</span>
+                   </button>
                 </div>
               </div>
-              <button onClick={toggleFavorite} className="btn-save-minimal">
-                <Heart size={14} fill={isFavorite ? "#ef4444" : "none"} color={isFavorite ? "#ef4444" : "#111827"} />
-                <span>Save</span>
-              </button>
+
+              <div className="res-action-group">
+                <button onClick={toggleFavorite} className="btn-save-premium">
+                  <Heart size={18} fill={isFavorite ? "#ef4444" : "none"} color={isFavorite ? "#ef4444" : "#1e293b"} />
+                  <span>{isFavorite ? "Saved" : "Save"}</span>
+                </button>
+
+                {place.whatsapp && (
+                  <a 
+                    href={`https://wa.me/${place.whatsapp.replace(/\D/g, '')}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="btn-whatsapp-premium"
+                  >
+                    <FaWhatsapp size={18} />
+                    <span>WhatsApp</span>
+                  </a>
+                )}
+
+                <button className="btn-share-premium" title="Share Place" onClick={handleShare}>
+                  <Share2 size={18} />
+                  <span>Share</span>
+                </button>
+              </div>
             </div>
 
             <div className="gallery-sub bot-mid">
@@ -102,12 +231,21 @@ const PlaceDetailsDining = ({
                       </a>
                     )}
                   </div>
-                  <div className="pd-menu-tabs">
-                    {["Main Course", "Desserts"].map((cat) => (
-                      <div key={cat} className={`pd-menu-tab ${activeCategory === cat || (cat === 'Main Course' && !activeCategory) ? 'active' : ''}`} onClick={() => setActiveCategory(cat)}>
-                        {cat}
+                  <div className="pd-menu-tabs-container">
+                    <div className="pd-menu-tabs-scroll-wrapper" ref={tabsRef}>
+                      <div className="pd-menu-tabs">
+                        {availableCategories.map((cat) => (
+                          <div key={cat} className={`pd-menu-tab ${currentTab === cat ? 'active' : ''}`} onClick={() => setActiveCategory(cat)}>
+                            {cat}
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </div>
+                    {availableCategories.length > 2 && (
+                      <div className="pd-menu-scroll-indicator" onClick={scrollTabs}>
+                         <ChevronRight size={16} />
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -143,7 +281,7 @@ const PlaceDetailsDining = ({
               </div>
 
               {/* SHARE EXPERIENCE FORM */}
-              <div className="pd-section" style={{ marginTop: '40px', borderTop: '1px solid #e2e8f0', paddingTop: '40px' }}>
+              <div id="review-form-section" className="pd-section" style={{ marginTop: '40px', borderTop: '1px solid #e2e8f0', paddingTop: '40px' }}>
                 <h2 className="pd-section-title" style={{ marginBottom: '24px', fontSize: '1.6rem' }}>Share Your Experience</h2>
                 {token ? (
                   <form onSubmit={handleAddReview} className="pd-form" style={{ background: 'rgba(255,255,255,0.4)', padding: '24px', borderRadius: '24px', border: '1px solid rgba(0, 53, 128, 0.1)', backdropFilter: 'blur(10px)', maxWidth: '100%' }}>
@@ -186,6 +324,56 @@ const PlaceDetailsDining = ({
                     </button>
                   </div>
                 )}
+
+                {/* RELOCATED & REDESIGNED GUEST FEEDBACK */}
+                <div className="pd-section" style={{ marginTop: '48px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                    <h2 className="pd-section-title" style={{ margin: 0, fontSize: '1.6rem' }}>Guest Feedback</h2>
+                    {reviews.length > 1 && (
+                      <button 
+                        onClick={() => setShowAllReviews(!showAllReviews)}
+                        style={{ background: 'none', border: 'none', color: '#003580', fontWeight: 700, cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+                      >
+                        {showAllReviews ? "Show Less" : `See More (${reviews.length - 1} more)`}
+                        <ChevronRight size={16} style={{ transform: showAllReviews ? 'rotate(-90deg)' : 'rotate(90deg)', transition: 'transform 0.3s' }} />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="reviews-horizontal-container">
+                    {reviews.length > 0 ? (
+                      (showAllReviews ? reviews : reviews.slice(0, 1)).map((r, i) => (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                          key={i} 
+                          style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #e2e8f0', marginBottom: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}
+                        >
+                          <div style={{ display: 'flex', gap: '16px', marginBottom: '12px', alignItems: 'flex-start' }}>
+                            <div style={{ width: 44, height: 44, borderRadius: 14, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <User size={20} color="#003580" />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                                <h4 style={{ margin: 0, color: '#1e293b', fontWeight: 800, fontSize: '1rem' }}>{r.user_name || "Guest"}</h4>
+                                <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{new Date(r.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                              </div>
+                              <div style={{ display: 'flex', gap: 2, marginBottom: '12px' }}>
+                                {[1, 2, 3, 4, 5].map(star => (
+                                  <Star key={star} size={14} fill={star <= r.rating ? "#FFD700" : "none"} color="#FFD700" />
+                                ))}
+                              </div>
+                              <p style={{ color: '#475569', lineHeight: 1.6, margin: 0, fontSize: '0.95rem' }}>{r.comment}</p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))
+                    ) : (
+                      <div style={{ textAlign: 'center', padding: '40px', background: '#f8fafc', borderRadius: '24px', border: '1px dashed #e2e8f0' }}>
+                         <p style={{ color: '#94a3b8', margin: 0 }}>No reviews yet. Be the first to share your thoughts!</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -255,16 +443,43 @@ const PlaceDetailsDining = ({
                   </div>
 
                   <div className="res-form-grid-lite">
-                    <div className="pd-input-group">
-                      <label className="pd-label">Time</label>
-                      <div className="pd-input-wrapper">
-                        <Clock size={16} className="pd-icon" />
-                        <select className="pd-input" value={resTime} onChange={e => setResTime(e.target.value)} required>
-                          <option value="">Time</option>
-                          {["11:00", "12:00", "13:00", "14:00", "15:00", "18:00", "19:00", "20:00", "21:00", "22:00"].map(t => <option key={t} value={t}>{t}</option>)}
-                        </select>
-                      </div>
+                   <div className="pd-input-group" style={{ marginBottom: '24px' }}>
+                    <label className="pd-label" style={{ marginBottom: '12px' }}>Select a time</label>
+                    
+                    <div className="res-time-slots-wrapper" style={{ maxHeight: '350px', overflowY: 'auto', paddingRight: '4px' }}>
+                      {Object.entries(groupedSlots).map(([cat, slots]) => (
+                        <div key={cat} style={{ marginBottom: '20px' }}>
+                          <h4 style={{ fontSize: '0.9rem', fontWeight: '800', color: '#64748b', marginBottom: '12px', paddingLeft: '4px' }}>{cat}</h4>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(90px, 1fr))', gap: '8px' }}>
+                            {slots.map(slot => {
+                              const isActive = resTime === slot.value;
+                              return (
+                                <button
+                                  key={slot.value}
+                                  type="button"
+                                  onClick={() => setResTime(slot.value)}
+                                  style={{
+                                    padding: '10px 4px',
+                                    borderRadius: '12px',
+                                    border: isActive ? '2px solid #003580' : '1px solid #e2e8f0',
+                                    background: isActive ? '#00358010' : 'white',
+                                    color: isActive ? '#003580' : '#1e293b',
+                                    fontSize: '0.85rem',
+                                    fontWeight: isActive ? '800' : '500',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s ease',
+                                    textAlign: 'center'
+                                  }}
+                                >
+                                  {slot.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
                     </div>
+                  </div>
                     <div className="pd-input-group">
                       <label className="pd-label">Guests</label>
                       <div className="pd-input-wrapper">
@@ -294,16 +509,42 @@ const PlaceDetailsDining = ({
                     </div>
                     {wantsPreOrder && (
                       <div className="preorder-list">
-                         {menuItems.slice(0, 3).map(item => (
-                           <div key={item.id} className="preorder-item-lite">
-                             <span>{item.name}</span>
-                             <div className="qty-controls">
-                               <button type="button" onClick={() => updatePreOrderQty(item.id, -1)}>-</button>
-                               <span>{preOrderQuantities[item.id] || 0}</span>
-                               <button type="button" onClick={() => updatePreOrderQty(item.id, 1)}>+</button>
+                         {availableCategories.map(cat => {
+                           const itemsInCat = menuItems.filter(item => item.category === cat);
+                           if (itemsInCat.length === 0) return null;
+                           return (
+                             <div key={cat} className="preorder-cat-group" style={{ marginBottom: '16px' }}>
+                               <h5 style={{ fontSize: '0.75rem', fontWeight: '800', color: '#003580', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px', paddingLeft: '4px', borderLeft: '3px solid #003580' }}>
+                                 {cat}
+                               </h5>
+                               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                 {itemsInCat.map(item => (
+                                   <div key={item.id} className="preorder-item-lite">
+                                     <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                       <span>{item.name}</span>
+                                       <span style={{ fontSize: '0.75rem', color: '#64748b' }}>LKR {item.price.toLocaleString()}</span>
+                                     </div>
+                                     <div className="qty-controls">
+                                        <button type="button" className="qty-btn" onClick={() => updatePreOrderQty(item.id, -1)}>
+                                          <Minus size={14} />
+                                        </button>
+                                        <span className="qty-val">{preOrderQuantities[item.id] || 0}</span>
+                                        <button type="button" className="qty-btn" onClick={() => updatePreOrderQty(item.id, 1)}>
+                                          <Plus size={14} />
+                                        </button>
+                                      </div>
+                                   </div>
+                                 ))}
+                               </div>
                              </div>
-                           </div>
-                         ))}
+                           );
+                         })}
+                      </div>
+                    )}
+                    {wantsPreOrder && totalPreOrderPrice > 0 && (
+                      <div style={{ padding: '16px 20px', borderTop: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8fafc' }}>
+                        <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#64748b' }}>Pre-order Total:</span>
+                        <span style={{ fontWeight: 800, fontSize: '1.1rem', color: '#003580' }}>LKR {totalPreOrderPrice.toLocaleString()}</span>
                       </div>
                     )}
                   </div>
@@ -314,7 +555,6 @@ const PlaceDetailsDining = ({
                 </form>
               </div>
 
-              {/* SIDEBAR MAP */}
               <div className="pd-sidebar-map" style={{ marginTop: '24px' }}>
                 <div className="res-map-container">
                   <iframe 
@@ -325,36 +565,6 @@ const PlaceDetailsDining = ({
                   <button className="res-btn-directions" onClick={() => window.open(`https://maps.google.com/?q=${encodeURIComponent(place.location)}`, '_blank')}>
                     Get Directions
                   </button>
-                </div>
-              </div>
-
-              {/* SIDEBAR FEEDBACK */}
-              <div className="res-reviews-sidebar" style={{ background: '#f8fafc', padding: '24px', borderRadius: '24px', border: '1px solid #e2e8f0', marginTop: '24px' }}>
-                <h2 className="pd-section-title" style={{ marginBottom: '24px', fontSize: '1.4rem' }}>Guest Feedback</h2>
-                <div className="reviews-list-compact" style={{ maxHeight: '400px', overflowY: 'auto', paddingRight: '10px' }}>
-                  {reviews.length > 0 ? reviews.map((r, i) => (
-                    <div key={i} style={{ background: 'white', padding: '16px', borderRadius: '16px', border: '1px solid #f1f5f9', marginBottom: '12px' }}>
-                      <div className="review-header" style={{ display: 'flex', gap: '10px', marginBottom: '8px', alignItems: 'center' }}>
-                        <div className="review-avatar" style={{ width: 32, height: 32, borderRadius: 10, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                          <User size={14} color="#003580" />
-                        </div>
-                        <div className="review-meta">
-                          <h4 style={{ margin: 0, color: '#1e293b', fontWeight: 800, fontSize: '0.85rem' }}>{r.user_name || "Guest"}</h4>
-                          <div style={{ display: 'flex', gap: 1 }}>
-                            {[1, 2, 3, 4, 5].map(star => (
-                              <Star key={star} size={8} fill={star <= r.rating ? "#FFD700" : "none"} color="#FFD700" />
-                            ))}
-                          </div>
-                        </div>
-                        <span style={{ marginLeft: 'auto', fontSize: '0.75rem', color: '#94a3b8' }}>{new Date(r.created_at).toLocaleDateString()}</span>
-                      </div>
-                      <p style={{ color: '#475569', lineHeight: 1.5, margin: 0, fontSize: '0.85rem' }}>{r.comment}</p>
-                    </div>
-                  )) : (
-                    <div className="res-menu-empty">
-                       <p>No reviews yet.</p>
-                    </div>
-                  )}
                 </div>
               </div>
             </aside>

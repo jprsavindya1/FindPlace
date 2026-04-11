@@ -49,6 +49,7 @@ function PlaceDetails() {
   const [checkOut, setCheckOut] = useState(null);
   const [adults, setAdults] = useState(1);
   const [children, setChildren] = useState(0);
+  const [numRooms, setNumRooms] = useState(1);
   const [selectedRoom, setSelectedRoom] = useState("");
   const [bookedDates, setBookedDates] = useState([]);
   const [occupancy, setOccupancy] = useState({});
@@ -68,8 +69,17 @@ function PlaceDetails() {
   const [currentProof, setCurrentProof] = useState(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [pendingBookingData, setPendingBookingData] = useState(null);
-  const [activeCategory, setActiveCategory] = useState("Breakfast");
   const [showAllMenu, setShowAllMenu] = useState(false);
+  const [activeCategory, setActiveCategory] = useState("Breakfast");
+
+  // Helper to format date without timezone shift
+  const formatDate = (date) => {
+    if (!date) return null;
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
 
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
@@ -77,9 +87,16 @@ function PlaceDetails() {
   // Initial Fetching
   useEffect(() => {
     setLoading(true);
-    fetch(`${API_BASE_URL}/api/places/${id}`)
-      .then(res => res.json())
-      .then(data => { setPlace(data); setLoading(false); })
+    fetch(`${API_BASE_URL}/api/places/${id}`).then(res => res.json()).then(data => {
+      setPlace(data); 
+      setLoading(false);
+      // Set default category based on place type
+      if (data.type === 'dine') {
+        setActiveCategory("Main Course");
+      } else {
+        setActiveCategory("Breakfast");
+      }
+ })
       .catch(() => { setLoading(false); });
 
     axios.get(`${API_BASE_URL}/api/places/${id}/amenities`).then(res => setAmenities(res.data)).catch(console.error);
@@ -164,7 +181,7 @@ function PlaceDetails() {
     if (!token) return navigate("/login", { state: { from: location.pathname } });
     setIsBooking(true);
     try {
-      const formattedDate = resDate.toISOString().split('T')[0];
+      const formattedDate = formatDate(resDate);
       const res = await axios.post(`${API_BASE_URL}/api/reservations`, {
         place_id: place.id, customer_name: fullName, customer_email: email, customer_phone: phone,
         res_date: formattedDate, res_time: resTime, people_count: resGuests,
@@ -187,14 +204,15 @@ function PlaceDetails() {
     const bookingData = { 
       place_id: Number(id), 
       room_id: Number(selectedRoom), 
-      check_in: checkIn.toISOString().split('T')[0], 
-      check_out: checkOut.toISOString().split('T')[0], 
+      check_in: formatDate(checkIn), 
+      check_out: formatDate(checkOut), 
       full_name: fullName, 
       email, 
       phone, 
       identity, 
       adults: Number(adults),
       children: Number(children),
+      num_rooms: Number(numRooms),
       total_price: finalPrice, 
       payment_method: paymentMethod 
     };
@@ -271,6 +289,7 @@ function PlaceDetails() {
           })}
           handleDinnerBookingSubmit={handleDinnerBookingSubmit} isBooking={isBooking}
           fullName={fullName} setFullName={setFullName} email={email} setEmail={setEmail} phone={phone} setPhone={setPhone}
+          avgRating={avgRating} totalReviews={totalReviews}
         />
       ) : (
         <PlaceDetailsStay 
@@ -281,8 +300,9 @@ function PlaceDetails() {
           phone={phone} setPhone={setPhone} identity={identity} setIdentity={setIdentity}
           isBooking={isBooking} handleBookingSubmit={handleBookingSubmit} addDays={addDays}
           setIs360ModalOpen={setIs360ModalOpen} setSelected360Image={setSelected360Image} setSelectedRoomLabel={setSelectedRoomLabel}
+          numRooms={numRooms} setNumRooms={setNumRooms} adults={adults} setAdults={setAdults} children={children} setChildren={setChildren}
           nights={differenceInDays(checkOut || new Date(), checkIn || new Date())}
-          totalPrice={differenceInDays(checkOut || new Date(), checkIn || new Date()) * (rooms.find(r => String(r.id) === String(selectedRoom))?.price || 0)}
+          totalPrice={differenceInDays(checkOut || new Date(), checkIn || new Date()) * (rooms.find(r => String(r.id) === String(selectedRoom))?.price || 0) * numRooms}
         />
       )}
 

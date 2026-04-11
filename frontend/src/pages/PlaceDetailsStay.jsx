@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { 
   MapPin, Star, Check, Users, Bed, Calendar, Phone, FileText, 
   Heart, Clock, PawPrint, Ban, Info, CheckCircle, Eye, User,
-  MessageCircle
+  MessageCircle, PlusCircle, Share2, Edit3
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import DatePicker from "react-datepicker";
@@ -18,12 +18,29 @@ const PlaceDetailsStay = ({
   bookingStatus, setBookingStatus, bookingMsg, setBookingMsg,
   isPaymentModalOpen, setIsPaymentModalOpen, pendingBookingData, setPendingBookingData,
   confirmPaidBooking, is360ModalOpen, setIs360ModalOpen, selected360Image, setSelected360Image, selectedRoomLabel, setSelectedRoomLabel,
+  numRooms, setNumRooms,
   reviews, avgRating, totalReviews, toggleFavorite, isFavorite, isLiking,
   proofModal, setCurrentProof,
   handleAddReview, myRating, setMyRating, myComment, setMyComment, reviewMsg, isPostingReview,
   activeCategory, setActiveCategory, showAllMenu, setShowAllMenu, menuItems, filteredMenu,
   handleBookingSubmit, addDays, gallery
 }) => {
+
+  const handleShare = async () => {
+    const shareData = {
+      title: place.name,
+      text: `Check out ${place.name} on Find Place!`,
+      url: window.location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        alert("Link copied to clipboard! 📋");
+      }
+    } catch (err) { console.log(err); }
+  };
 
   const placeholderImg = "https://images.unsplash.com/photo-1582719478250-c89cae4df85b?auto=format&fit=crop&q=80"; // A reliable default
   
@@ -54,33 +71,58 @@ const PlaceDetailsStay = ({
               </div>
               
               <div className="res-info-card-cell">
-                <div className="res-title-info">
-                  <h1>{place.name}</h1>
-                  <div className="res-title-ratings">
-                    {[...Array(5)].map((_, i) => <Star key={i} size={14} fill={i < Math.floor(avgRating || 4.8) ? "#f59e0b" : "none"} color="#f59e0b" />)}
-                    <span>{avgRating ? avgRating.toFixed(1) : "4.8"}</span>
-                    <span style={{ color: '#9ca3af', fontWeight: 'normal' }}>({totalReviews || 124} reviews)</span>
+                <div className="res-info-top-group">
+                  <h1 className="pd-main-title">{place.name}</h1>
+                  
+                  <div className="pd-meta-row">
+                    <div className="pd-meta-item">
+                      <div className="res-rating-pill">
+                        <Star size={14} fill="#f59e0b" color="#f59e0b" />
+                        <span>{avgRating ? avgRating.toFixed(1) : "4.8"}</span>
+                        <span className="res-review-count">({totalReviews || 124})</span>
+                      </div>
+                    </div>
+                    
+                    <div className="pd-meta-divider"></div>
+                    
+                    <div className="pd-meta-item">
+                       <MapPin size={14} className="pd-meta-icon" />
+                       <span>{place.location || "Sri Lanka"}</span>
+                    </div>
                   </div>
-                  <div className="res-location-row">
-                     <MapPin size={12} color="#6b7280" />
-                     <span>{place.location || "Sri Lanka"}</span>
-                  </div>
-                  <div className="res-cuisine-row">
-                     <Bed size={12} color="#6b7280" />
-                     <span>{place.category || "Luxury Stay"}</span>
+
+                  <div className="pd-cuisine-review-row">
+                     <div className="pd-meta-item">
+                        <Bed size={14} className="pd-meta-icon" />
+                        <span className="pd-cuisine-badge">{place.category || "Luxury Stay"}</span>
+                     </div>
+                     <button className="btn-write-review-minimal" onClick={() => document.getElementById('review-form-section')?.scrollIntoView({ behavior: 'smooth' })}>
+                        <Edit3 size={14} />
+                        <span>Write Review</span>
+                     </button>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
-                    <button onClick={toggleFavorite} className="btn-save-minimal" style={{ position: 'static' }}>
-                        <Heart size={14} fill={isFavorite ? "#ef4444" : "none"} color={isFavorite ? "#ef4444" : "#111827"} />
+                <div className="res-action-group">
+                    <button onClick={toggleFavorite} className="btn-save-premium">
+                        <Heart size={18} fill={isFavorite ? "#ef4444" : "none"} color={isFavorite ? "#ef4444" : "#1e293b"} />
                         <span>{isFavorite ? "Saved" : "Save"}</span>
                     </button>
                     {place.whatsapp && (
-                        <a href={`https://wa.me/${place.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer" className="btn-save-minimal" style={{ position: 'static', border: '1px solid #25D366' }}>
-                           <FaWhatsapp size={14} color="#25D366" />
+                        <a 
+                          href={`https://wa.me/${place.whatsapp.replace(/\D/g, '')}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="btn-whatsapp-premium"
+                        >
+                           <FaWhatsapp size={18} />
+                           <span>WhatsApp</span>
                         </a>
                     )}
+                    <button className="btn-share-premium" title="Share Place" onClick={handleShare}>
+                        <Share2 size={18} />
+                        <span>Share</span>
+                    </button>
                 </div>
               </div>
 
@@ -195,7 +237,14 @@ const PlaceDetailsStay = ({
                 {menuItems && menuItems.length > 0 && (
                   <div className="pd-section" style={{ marginTop: '40px' }}>
                     <div className="pd-menu-tabs-row">
-                      <h2 className="pd-section-title" style={{ margin: 0 }}>Dining Options</h2>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <h2 className="pd-section-title" style={{ margin: 0 }}>Dining Options</h2>
+                        {place.menu_pdf && (
+                          <a href={`${API_BASE_URL}/uploads/pdfs/${place.menu_pdf}`} target="_blank" rel="noopener noreferrer" className="btn-pdf-menu">
+                            <FileText size={14} /> View Full PDF Menu
+                          </a>
+                        )}
+                      </div>
                       <div className="pd-lux-menu-tabs">
                         {["Breakfast", "Lunch", "Dinner", "Drinks", "Desserts"].map((cat) => {
                           const hasItems = menuItems.some(item => item.category === cat);
@@ -298,11 +347,27 @@ const PlaceDetailsStay = ({
                       <div className="pd-input-group">
                         <label className="pd-label">Room Type</label>
                         <div className="pd-input-wrapper">
-                          <Bed size={18} className="pd-icon" />
                           <select className="pd-input" value={selectedRoom} onChange={(e) => setSelectedRoom(e.target.value)} required>
                             <option value="">Select a room...</option>
                             {rooms.map(rt => <option key={rt.id} value={rt.id}>{rt.name} - Rs. {Number(rt.price).toLocaleString()}</option>)}
                           </select>
+                        </div>
+                      </div>
+
+                      {/* Number of Rooms */}
+                      <div className="pd-input-group">
+                        <label className="pd-label">Number of Rooms</label>
+                        <div className="pd-input-wrapper">
+                          <PlusCircle size={18} className="pd-icon" />
+                          <input 
+                            type="number" 
+                            className="pd-input" 
+                            min="1" 
+                            max="10"
+                            value={numRooms} 
+                            onChange={(e) => setNumRooms(Math.max(1, parseInt(e.target.value) || 1))} 
+                            required 
+                          />
                         </div>
                       </div>
 
@@ -339,6 +404,37 @@ const PlaceDetailsStay = ({
                             disabled={!checkIn} 
                             required 
                           />
+                        </div>
+                      </div>
+
+                      {/* Occupancy: Adults & Children */}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                        <div className="pd-input-group">
+                          <label className="pd-label">Adults</label>
+                          <div className="pd-input-wrapper">
+                            <Users size={18} className="pd-icon" />
+                            <input 
+                              type="number" 
+                              className="pd-input" 
+                              min="1" 
+                              value={adults} 
+                              onChange={(e) => setAdults(Math.max(1, parseInt(e.target.value) || 1))} 
+                              required 
+                            />
+                          </div>
+                        </div>
+                        <div className="pd-input-group">
+                          <label className="pd-label">Children</label>
+                          <div className="pd-input-wrapper">
+                            <Users size={18} className="pd-icon" />
+                            <input 
+                              type="number" 
+                              className="pd-input" 
+                              min="0" 
+                              value={children} 
+                              onChange={(e) => setChildren(Math.max(0, parseInt(e.target.value) || 0))} 
+                            />
+                          </div>
                         </div>
                       </div>
 
@@ -407,9 +503,14 @@ const PlaceDetailsStay = ({
                       
                       {nights > 0 && totalPrice > 0 && (
                         <div className="pricing-summary" style={{ background: 'rgba(0, 53, 128, 0.05)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(0, 53, 128, 0.1)', marginTop: '8px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', color: '#555555', fontSize: '0.9rem' }}>
-                            <span>Nights: {nights}</span>
-                            <span style={{ fontWeight: 800, color: '#003580' }}>Rs. {totalPrice.toLocaleString()}</span>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', color: '#555555', fontSize: '0.9rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                              <span>{nights} Nights × {numRooms} {numRooms > 1 ? 'Rooms' : 'Room'}</span>
+                              <span style={{ fontWeight: 800, color: '#003580' }}>Rs. {totalPrice.toLocaleString()}</span>
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                              Guests: {adults} Adults, {children} Children
+                            </div>
                           </div>
                         </div>
                       )}
@@ -466,7 +567,7 @@ const PlaceDetailsStay = ({
                 </div>
 
                 {/* SIDEBAR REVIEW FORM (STAY) - Moved from main content */}
-                <div className="res-booking-widget" style={{ marginTop: '24px', padding: '24px' }}>
+                <div id="review-form-section" className="res-booking-widget" style={{ marginTop: '24px', padding: '24px' }}>
                   <h2 className="pd-section-title" style={{ marginBottom: '20px', fontSize: '1.4rem' }}>Share Your Experience</h2>
                   {token ? (
                     <form onSubmit={handleAddReview} className="pd-form" style={{ background: 'rgba(0,0,0,0.03)', padding: '20px', borderRadius: '20px', border: '1px solid rgba(0, 53, 128, 0.05)' }}>

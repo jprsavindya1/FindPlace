@@ -12,7 +12,7 @@ console.log("✅ NEW booking.js (UPGRADED) LOADED");
    ================================================= */
 router.post("/", verifyToken, (req, res) => {
   const { 
-    place_id, room_id, adults, children, check_in, check_out, 
+    place_id, room_id, adults, children, num_rooms, check_in, check_out, 
     full_name, email, phone, identity, 
     payment_status, payment_method, transaction_id 
   } = req.body;
@@ -80,7 +80,7 @@ router.post("/", verifyToken, (req, res) => {
         }
 
         const { owner_id, price } = placeResult[0];
-        const total_price = nights * parseFloat(price);
+        const total_price = nights * parseFloat(price) * (num_rooms || 1);
 
         // Check overlapping bookings for same room
         const conflictSql = `
@@ -105,11 +105,11 @@ router.post("/", verifyToken, (req, res) => {
           // Conflict -> auto reject
           if (conflicts.length > 0) {
             const rejectInsert = `
-              INSERT INTO bookings (place_id, room_id, customer_id, owner_id, check_in, check_out, full_name, email, phone, identity, adults, children, total_price, status, payment_status, payment_method, transaction_id)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'REJECTED', ?, ?, ?)
+              INSERT INTO bookings (place_id, room_id, customer_id, owner_id, check_in, check_out, full_name, email, phone, identity, adults, children, num_rooms, total_price, status, payment_status, payment_method, transaction_id)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'REJECTED', ?, ?, ?)
             `;
 
-            return connection.query(rejectInsert, [place_id, room_id, req.user.id, owner_id, check_in, check_out, full_name, email, phone, identity, adults || 1, children || 0, total_price, payment_status || 'UNPAID', payment_method || null, transaction_id || null], (err, result) => {
+            return connection.query(rejectInsert, [place_id, room_id, req.user.id, owner_id, check_in, check_out, full_name, email, phone, identity, adults || 1, children || 0, num_rooms || 1, total_price, payment_status || 'UNPAID', payment_method || null, transaction_id || null], (err, result) => {
               if (err) {
                 console.error("❌ REJECT INSERT ERROR:", err);
                 return connection.rollback(() => {
@@ -132,11 +132,11 @@ router.post("/", verifyToken, (req, res) => {
 
           // No conflict -> Insert as CONFIRMED directly
           const pendingInsert = `
-            INSERT INTO bookings (place_id, room_id, customer_id, owner_id, check_in, check_out, full_name, email, phone, identity, adults, children, total_price, status, payment_status, payment_method, transaction_id)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'CONFIRMED', ?, ?, ?)
+            INSERT INTO bookings (place_id, room_id, customer_id, owner_id, check_in, check_out, full_name, email, phone, identity, adults, children, num_rooms, total_price, status, payment_status, payment_method, transaction_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'CONFIRMED', ?, ?, ?)
           `;
 
-          connection.query(pendingInsert, [place_id, room_id, req.user.id, owner_id, check_in, check_out, full_name, email, phone, identity, adults || 1, children || 0, total_price, payment_status || 'UNPAID', payment_method || null, transaction_id || null], (err, result) => {
+          connection.query(pendingInsert, [place_id, room_id, req.user.id, owner_id, check_in, check_out, full_name, email, phone, identity, adults || 1, children || 0, num_rooms || 1, total_price, payment_status || 'UNPAID', payment_method || null, transaction_id || null], (err, result) => {
             if (err) {
               console.error("❌ INSERT BOOKING ERROR:", err);
               return connection.rollback(() => {
@@ -244,6 +244,7 @@ router.get("/owner", verifyToken, verifyOwner, (req, res) => {
       b.identity,
       b.adults,
       b.children,
+      b.num_rooms,
       b.total_price,
       b.check_in,
       b.check_out,

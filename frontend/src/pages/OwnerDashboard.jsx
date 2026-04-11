@@ -24,7 +24,8 @@ import {
   ExternalLink,
   ChevronRight,
   Coffee,
-  FileText
+  FileText,
+  MessageCircle
 } from "lucide-react";
 import "./OwnerDashboard.css";
 import OwnerBookings from "./OwnerBookings";
@@ -104,6 +105,10 @@ function OwnerDashboard() {
   });
   const [editingTable, setEditingTable] = useState(null);
   const [tablePlaceId, setTablePlaceId] = useState("");
+  
+  /* ================= INTEGRATED MENU STATES ================= */
+  const [tempMenuItems, setTempMenuItems] = useState([]);
+  const [quickItem, setQuickItem] = useState({ name: "", price: "", category: "Main Course" });
 
 
   /* ================= DASHBOARD FILTER ================= */
@@ -207,6 +212,22 @@ function OwnerDashboard() {
   /* ================= PLACE FUNCTIONS ================= */
   const handlePlaceChange = (e) => {
     const { name, value, type, checked } = e.target;
+    if (name === "whatsapp") {
+      let val = value;
+      if (!val.startsWith("+94 ")) {
+        val = "+94 " + val.replace(/^\+94\s*/, "");
+      }
+      const prefix = "+94 ";
+      let digits = val.substring(prefix.length).replace(/\D/g, "");
+      if (digits.length > 9) digits = digits.slice(0, 9);
+      let formattedDigits = "";
+      for (let i = 0; i < digits.length; i++) {
+        if (i === 2 || i === 5) formattedDigits += " ";
+        formattedDigits += digits[i];
+      }
+      setForm({ ...form, [name]: prefix + formattedDigits });
+      return;
+    }
     setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   };
 
@@ -224,6 +245,17 @@ function OwnerDashboard() {
     setGalleryFiles([]);
     setExistingGallery([]); // ⭐ NEW
     setSelectedAmenities([]);
+    setTempMenuItems([]);
+  };
+
+  const addQuickItem = () => {
+    if (!quickItem.name || !quickItem.price) return alert("Menu Item Name and Price are required!");
+    setTempMenuItems([...tempMenuItems, { ...quickItem, id: Date.now() }]);
+    setQuickItem({ name: "", price: "", category: "Main Course" });
+  };
+
+  const removeQuickItem = (id) => {
+    setTempMenuItems(tempMenuItems.filter(i => i.id !== id));
   };
 
   const handleAddPlace = async (e) => {
@@ -234,6 +266,11 @@ function OwnerDashboard() {
     if (imageFile) formData.append("image", imageFile);
     Array.from(galleryFiles).forEach(file => formData.append("gallery", file));
     if (menuPdfFile) formData.append("menu_pdf", menuPdfFile);
+    
+    // ⭐ INTEGRATED: Initial Menu Items
+    if (tempMenuItems.length > 0) {
+      formData.append("pre_order_items", JSON.stringify(tempMenuItems));
+    }
 
     try {
       await axios.post(`${API_BASE_URL}/api/places/owner/places`, formData, {
@@ -256,7 +293,8 @@ function OwnerDashboard() {
       // 1. Update text data (JSON)
       await axios.put(`${API_BASE_URL}/api/places/owner/places/${editingPlace}`, {
         ...form,
-        amenities: selectedAmenities
+        amenities: selectedAmenities,
+        pre_order_items: tempMenuItems.length > 0 ? JSON.stringify(tempMenuItems) : null
       }, {
         headers: { Authorization: "Bearer " + token }
       });
@@ -570,6 +608,11 @@ function OwnerDashboard() {
             <label>{businessType === 'dining' ? 'RESTAURANT NAME' : 'PROPERTY NAME'}</label>
             <input name="name" type="text" placeholder={businessType === 'dining' ? 'e.g. Blue Lagoon Resto' : 'e.g. Ocean View Boarding'} value={form.name} onChange={handlePlaceChange} required />
           </div>
+
+          <div className="form-group full-width">
+            <label>WHATSAPP NUMBER (For customer inquiries)</label>
+            <input name="whatsapp" type="text" placeholder="+94 77 123 4567" value={form.whatsapp} onChange={handlePlaceChange} className="glass-input" />
+          </div>
           
           <div className="form-row-multi">
              <div className="form-group">
@@ -727,44 +770,90 @@ function OwnerDashboard() {
              )}
           </div>
 
-          {businessType === 'dining' && (
-            <div className="form-group full-width" style={{ marginTop: '20px' }}>
-               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a', fontWeight: '800' }}>
-                 <FileText size={18} /> FULL MENU (PDF)
-               </label>
-               <div className="pdf-upload-container-premium" style={{ 
-                 background: 'linear-gradient(135deg, rgba(255,255,255,0.8), rgba(248,250,252,0.8))',
-                 border: '2px dashed #cbd5e1',
-                 borderRadius: '20px',
-                 padding: '24px',
-                 marginTop: '10px',
-                 textAlign: 'center',
-                 transition: 'all 0.3s ease'
-               }}>
-                  <div className="upload-wrapper glass-input" style={{ marginBottom: '12px' }}>
-                     <input type="file" accept="application/pdf" onChange={(e) => setMenuPdfFile(e.target.files[0])} />
-                     <Upload size={20} color="#003580" />
-                  </div>
-                  
-                  {menuPdfFile ? (
-                    <p className="helper-text" style={{color: '#059669', fontWeight: '700', fontSize: '0.9rem'}}>
-                      Selected: {menuPdfFile.name} (Ready to upload)
-                    </p>
-                  ) : existingMenuPdf ? (
-                    <div style={{ background: 'white', padding: '8px 16px', borderRadius: '10px', display: 'inline-flex', alignItems: 'center', gap: '8px', border: '1px solid #e2e8f0' }}>
-                      <CheckCircle size={14} color="#10b981" />
-                      <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#475569' }}>Current: {existingMenuPdf}</span>
-                    </div>
-                  ) : (
-                    <p className="helper-text" style={{ color: '#64748b' }}>
-                      Drag & drop your full menu PDF here or click to browse.
-                    </p>
-                  )}
-                  
-                  <p className="helper-text" style={{ marginTop: '12px', fontSize: '0.75rem', fontStyle: 'italic' }}>
-                    Guests will see a "View Full PDF Menu" button on your restaurant page.
+          <div className="form-group full-width" style={{ marginTop: '20px' }}>
+             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#0f172a', fontWeight: '800' }}>
+               <FileText size={18} /> FULL MENU (PDF)
+             </label>
+             <div className="pdf-upload-container-premium" style={{ 
+               background: 'linear-gradient(135deg, rgba(255,255,255,0.8), rgba(248,250,252,0.8))',
+               border: '2px dashed #cbd5e1',
+               borderRadius: '20px',
+               padding: '24px',
+               marginTop: '10px',
+               textAlign: 'center',
+               transition: 'all 0.3s ease'
+             }}>
+                <div className="upload-wrapper glass-input" style={{ marginBottom: '12px' }}>
+                   <input type="file" accept="application/pdf" onChange={(e) => setMenuPdfFile(e.target.files[0])} />
+                   <Upload size={20} color="#003580" />
+                </div>
+                
+                {menuPdfFile ? (
+                  <p className="helper-text" style={{color: '#059669', fontWeight: '700', fontSize: '0.9rem'}}>
+                    Selected: {menuPdfFile.name} (Ready to upload)
                   </p>
+                ) : existingMenuPdf ? (
+                  <div style={{ background: 'white', padding: '8px 16px', borderRadius: '10px', display: 'inline-flex', alignItems: 'center', gap: '8px', border: '1px solid #e2e8f0' }}>
+                    <CheckCircle size={14} color="#10b981" />
+                    <span style={{ fontSize: '0.85rem', fontWeight: '700', color: '#475569' }}>Current: {existingMenuPdf}</span>
+                  </div>
+                ) : (
+                  <p className="helper-text" style={{ color: '#64748b' }}>
+                    Drag & drop your full menu PDF here or click to browse.
+                  </p>
+                )}
+                
+                <p className="helper-text" style={{ marginTop: '12px', fontSize: '0.75rem', fontStyle: 'italic' }}>
+                  Guests will see a "View Full PDF Menu" button on your property page.
+                </p>
+             </div>
+           </div>
+          {businessType === 'dining' && (
+            <div className="form-group full-width" style={{ marginTop: '30px', padding: '25px', background: 'rgba(0, 53, 128, 0.03)', borderRadius: '24px', border: '1px dashed #cbd5e1' }}>
+               <h4 style={{ color: '#003580', fontWeight: '900', marginBottom: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                 <Utensils size={20} /> QUICK MENU SETUP (PRE-ORDER FOOD)
+               </h4>
+               <p className="helper-text" style={{ marginBottom: '20px' }}>Add some initial food items that customers can pre-order when booking.</p>
+               
+               <div className="quick-item-entry" style={{ display: 'grid', gridTemplateColumns: '1fr 120px 140px auto', gap: '12px', alignItems: 'end' }}>
+                  <div className="form-group">
+                    <label>ITEM NAME</label>
+                    <input type="text" placeholder="Sea Food Rice" value={quickItem.name} onChange={(e) => setQuickItem({...quickItem, name: e.target.value})} />
+                  </div>
+                  <div className="form-group">
+                    <label>PRICE (RS)</label>
+                    <input type="text" placeholder="1500" value={quickItem.price} onChange={(e) => setQuickItem({...quickItem, price: e.target.value})} />
+                  </div>
+                  <div className="form-group">
+                    <label>CATEGORY</label>
+                    <select className="glass-select" value={quickItem.category} onChange={(e) => setQuickItem({...quickItem, category: e.target.value})}>
+                      <option value="Appetizers">Appetizers</option>
+                      <option value="Main Course">Main Course</option>
+                      <option value="Desserts">Desserts</option>
+                      <option value="Beverages">Beverages</option>
+                      <option value="Snacks">Snacks</option>
+                    </select>
+                  </div>
+                  <button type="button" onClick={addQuickItem} className="btn-primary" style={{ height: '44px', width: '44px', padding: 0, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Plus size={20} />
+                  </button>
                </div>
+
+               {tempMenuItems.length > 0 && (
+                 <div className="temp-items-list" style={{ marginTop: '20px', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
+                   {tempMenuItems.map(item => (
+                     <div key={item.id} style={{ background: 'white', border: '1px solid #e2e8f0', padding: '8px 12px', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '10px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#1e293b' }}>{item.name}</span>
+                          <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Rs. {item.price} • {item.category}</span>
+                        </div>
+                        <button type="button" onClick={() => removeQuickItem(item.id)} style={{ border: 'none', background: '#fee2e2', color: '#ef4444', borderRadius: '8px', padding: '4px', cursor: 'pointer' }}>
+                          <Trash2 size={12} />
+                        </button>
+                     </div>
+                   ))}
+                 </div>
+               )}
             </div>
           )}
 

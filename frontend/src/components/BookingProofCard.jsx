@@ -59,7 +59,7 @@ const BookingProofCard = ({ booking, onClose }) => {
           ref={pdfRef}
           style={{ 
             width: '210mm', 
-            background: '#121212',
+            background: isDine ? '#121212' : '#040b17',
             color: '#ffffff',
             fontFamily: "'Georgia', serif, Arial",
             padding: '35px',
@@ -68,7 +68,14 @@ const BookingProofCard = ({ booking, onClose }) => {
           }}
         >
           {/* Decorative Outer Border */}
-          <div style={{ border: '4px double #d4af37', borderRadius: '15px', padding: '30px', minHeight: '260mm', position: 'relative', boxSizing: 'border-box' }}>
+          <div style={{ 
+            border: isDine ? '4px double #d4af37' : '2px solid #3b82f6', 
+            borderRadius: '15px', 
+            padding: '30px', 
+            minHeight: '260mm', 
+            position: 'relative', 
+            boxSizing: 'border-box' 
+          }}>
             
             {/* Header Decor */}
             <div style={{ textAlign: 'center', marginBottom: '0' }}>
@@ -76,38 +83,58 @@ const BookingProofCard = ({ booking, onClose }) => {
             </div>
 
             <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-              <h1 style={{ margin: '0 0 5px 0', fontSize: '42px', fontWeight: 900, color: '#d4af37', textTransform: 'uppercase', letterSpacing: '5px' }}>{booking.place_name}</h1>
-              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '3px', borderBottom: '2px solid #333', display: 'inline-block', paddingBottom: '8px' }}>Booking Confirmation</h2>
+              <h1 style={{ margin: '0 0 5px 0', fontSize: '42px', fontWeight: 900, color: isDine ? '#d4af37' : '#3b82f6', textTransform: 'uppercase', letterSpacing: '5px' }}>{booking.place_name}</h1>
+              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '3px', borderBottom: `2px solid ${isDine ? '#333' : '#3b82f6'}`, display: 'inline-block', paddingBottom: '8px' }}>Booking Confirmation</h2>
             </div>
 
-            {/* QR Section - Perfectly Centered */}
+            {/* QR Section - Redesigned for Stay as per user request */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '30px' }}>
-               <div style={{ background: '#ffffff', padding: '12px', borderRadius: '15px', border: '2px solid #d4af37' }}>
-                 <QRCodeSVG value={qrPayload} size={150} level="H" includeMargin={true} />
+               <div style={{ 
+                 background: isDine ? '#ffffff' : 'transparent', 
+                 padding: isDine ? '12px' : '0', 
+                 borderRadius: '15px', 
+                 border: isDine ? '2px solid #d4af37' : '4px solid #3b82f6',
+                 overflow: 'hidden',
+                 display: 'flex',
+                 alignItems: 'center',
+                 justifyContent: 'center',
+                 width: isDine ? 'auto' : '170px',
+                 height: isDine ? 'auto' : '170px'
+               }}>
+                 <QRCodeSVG 
+                    value={qrPayload} 
+                    size={isDine ? 150 : 170} 
+                    level="H" 
+                    includeMargin={isDine ? true : false} 
+                    bgColor={isDine ? "#ffffff" : "transparent"}
+                    fgColor={isDine ? "#000000" : "#ffffff"}
+                 />
                </div>
             </div>
 
             <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-               <div style={{ fontSize: '10px', color: '#d4af37', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '5px' }}>Order Confirmation ID</div>
-               <div style={{ fontSize: '32px', fontWeight: 900, color: '#d4af37', fontFamily: "'Inter', sans-serif, Arial", letterSpacing: '1px' }}>{orderId}</div>
+               <div style={{ fontSize: '10px', color: isDine ? '#d4af37' : '#3b82f6', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '5px' }}>Order Confirmation ID</div>
+               <div style={{ fontSize: '32px', fontWeight: 900, color: isDine ? '#d4af37' : '#3b82f6', fontFamily: "'Inter', sans-serif, Arial", letterSpacing: '1px' }}>{orderId}</div>
             </div>
 
             {/* Details Grid (2x2) */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '25px' }}>
-               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '15px', borderRadius: '12px', border: '1px solid #d4af37' }}>
-                  <div style={{ fontSize: '9px', fontWeight: 800, color: '#d4af37', marginBottom: '4px', textTransform: 'uppercase' }}>PROPERTY</div>
+               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '15px', borderRadius: '12px', border: `1px solid ${isDine ? '#d4af37' : '#3b82f6'}` }}>
+                  <div style={{ fontSize: '9px', fontWeight: 800, color: isDine ? '#d4af37' : '#3b82f6', marginBottom: '4px', textTransform: 'uppercase' }}>PROPERTY</div>
                   <div style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff' }}>{booking.place_name}</div>
                </div>
-               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '15px', borderRadius: '12px', border: '1px solid #d4af37' }}>
-                  <div style={{ fontSize: '9px', fontWeight: 800, color: '#d4af37', marginBottom: '4px', textTransform: 'uppercase' }}>BOOKING TYPE</div>
-                  <div style={{ fontSize: '15px', fontWeight: 700, color: '#d4af37' }}>Dining Reservation</div>
+               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '15px', borderRadius: '12px', border: `1px solid ${isDine ? '#d4af37' : '#3b82f6'}` }}>
+                  <div style={{ fontSize: '9px', fontWeight: 800, color: isDine ? '#d4af37' : '#3b82f6', marginBottom: '4px', textTransform: 'uppercase' }}>BOOKING TYPE</div>
+                  <div style={{ fontSize: '15px', fontWeight: 700, color: isDine ? '#d4af37' : '#ffffff' }}>
+                    {isDine ? "Dining Reservation" : (booking.room_name || "Accommodation Stays")}
+                  </div>
                </div>
-               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '15px', borderRadius: '12px', border: '1px solid #d4af37' }}>
-                  <div style={{ fontSize: '9px', fontWeight: 800, color: '#d4af37', marginBottom: '4px', textTransform: 'uppercase' }}>RESERVATION DATE</div>
+               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '15px', borderRadius: '12px', border: `1px solid ${isDine ? '#d4af37' : '#3b82f6'}` }}>
+                  <div style={{ fontSize: '9px', fontWeight: 800, color: isDine ? '#d4af37' : '#3b82f6', marginBottom: '4px', textTransform: 'uppercase' }}>RESERVATION DATE</div>
                   <div style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', fontFamily: "'Inter', sans-serif, Arial" }}>{new Date(booking.res_date || booking.check_in).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</div>
                </div>
-               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '15px', borderRadius: '12px', border: '1px solid #d4af37' }}>
-                  <div style={{ fontSize: '9px', fontWeight: 800, color: '#d4af37', marginBottom: '4px', textTransform: 'uppercase' }}>ARRIVAL TIME</div>
+               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '15px', borderRadius: '12px', border: `1px solid ${isDine ? '#d4af37' : '#3b82f6'}` }}>
+                  <div style={{ fontSize: '9px', fontWeight: 800, color: isDine ? '#d4af37' : '#3b82f6', marginBottom: '4px', textTransform: 'uppercase' }}>ARRIVAL TIME</div>
                   <div style={{ fontSize: '15px', fontWeight: 700, color: '#ffffff', fontFamily: "'Inter', sans-serif, Arial" }}>{isDine ? (booking.res_time ? booking.res_time.slice(0, 5) : "TBD") : "Check-in after 2PM"}</div>
                </div>
             </div>
@@ -123,18 +150,18 @@ const BookingProofCard = ({ booking, onClose }) => {
             {/* Bottom Row */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                <div style={{ maxWidth: '60%' }}>
-                  <h4 style={{ margin: '0 0 10px 0', fontSize: '12px', fontWeight: 900, color: '#d4af37', textTransform: 'uppercase' }}>Contact & Policies</h4>
+                  <h4 style={{ margin: '0 0 10px 0', fontSize: '12px', fontWeight: 900, color: isDine ? '#d4af37' : '#3b82f6', textTransform: 'uppercase' }}>Contact & Policies</h4>
                   <div style={{ fontSize: '12px', color: '#aaaaaa', lineHeight: '1.6' }}>
                      • Contact <strong>{booking.place_name}</strong>: {booking.place_phone}<br/>
                      • Location: {booking.place_location}<br/>
-                     • Please cancel at least 2 hours in advance.
+                     • {isDine ? "Please cancel at least 2 hours in advance." : "Please arrive after 2:00 PM for smooth check-in."}
                   </div>
                </div>
                
                <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                  <div style={{ background: '#d4af37', padding: '10px 20px', borderRadius: '10px', color: '#000000', textAlign: 'center', marginBottom: '15px' }}>
-                     <div style={{ fontSize: '14px', fontWeight: 900, textTransform: 'uppercase' }}>TABLE RESERVED</div>
-                     <div style={{ fontSize: '9px', fontWeight: 700 }}>Enjoy your dining experience</div>
+                  <div style={{ background: isDine ? '#d4af37' : '#3b82f6', padding: '10px 20px', borderRadius: '10px', color: isDine ? '#000000' : '#ffffff', textAlign: 'center', marginBottom: '15px' }}>
+                     <div style={{ fontSize: '14px', fontWeight: 900, textTransform: 'uppercase' }}>{isDine ? "TABLE RESERVED" : "ROOM RESERVED"}</div>
+                     <div style={{ fontSize: '9px', fontWeight: 700 }}>{isDine ? "Enjoy your dining experience" : "Enjoy your stay experience"}</div>
                   </div>
                   <div style={{ fontSize: '11px', color: '#666' }}>FindPlace | findplace.com</div>
                </div>
@@ -142,10 +169,10 @@ const BookingProofCard = ({ booking, onClose }) => {
 
             {/* Welcome Badge */}
             <div style={{ position: 'absolute', bottom: '-20px', left: '50%', transform: 'translateX(-50%)' }}>
-               <div style={{ background: '#d4af37', padding: '6px 35px', borderRadius: '50px', color: '#000000', fontWeight: 900, fontSize: '15px', textTransform: 'uppercase', letterSpacing: '2px', border: '4px solid #121212' }}>WELCOME</div>
+               <div style={{ background: isDine ? '#d4af37' : '#3b82f6', padding: '6px 35px', borderRadius: '50px', color: isDine ? '#000000' : '#ffffff', fontWeight: 900, fontSize: '15px', textTransform: 'uppercase', letterSpacing: '2px', border: `4px solid ${isDine ? '#121212' : '#040b17'}` }}>WELCOME</div>
             </div>
           </div>
-          <div style={{ textAlign: 'center', marginTop: '25px', color: '#d4af37', fontSize: '10px', opacity: 0.5 }}>Thank you for booking with FindPlace.</div>
+          <div style={{ textAlign: 'center', marginTop: '25px', color: isDine ? '#d4af37' : '#3b82f6', fontSize: '10px', opacity: 0.5 }}>Thank you for booking with FindPlace.</div>
         </div>
       </div>
 

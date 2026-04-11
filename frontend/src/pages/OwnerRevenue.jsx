@@ -34,12 +34,27 @@ const OwnerRevenue = ({ filterPlaceId = "ALL", places = [] }) => {
 
   const fetchBookings = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/bookings/owner`, {
+      const endpoint = businessType === 'dining' 
+        ? `${API_BASE_URL}/api/reservations/owner/all` 
+        : `${API_BASE_URL}/api/bookings/owner`;
+      
+      const res = await axios.get(endpoint, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setBookings(res.data || []);
+
+      // Normalize Dining Data to fit the "bookings" structure used in metrics
+      const rawData = res.data || [];
+      const normalizedData = businessType === 'dining' ? rawData.map(r => ({
+        ...r,
+        total_price: Number(r.total_price) || 0,
+        check_in: r.res_date,
+        check_out: r.res_date, // Dining is same day
+        status: (r.status || "").toUpperCase()
+      })) : rawData;
+
+      setBookings(normalizedData);
     } catch (err) {
-      console.error("Failed to fetch bookings for revenue dashboard", err);
+      console.error("Failed to fetch data for revenue dashboard", err);
     }
   };
 
@@ -95,23 +110,42 @@ const OwnerRevenue = ({ filterPlaceId = "ALL", places = [] }) => {
         placeRevenueMap[placeName] = (placeRevenueMap[placeName] || 0) + price;
 
         // Monthly Revenue Grouping
-        const date = new Date(b.created_at);
+        const date = new Date(b.created_at || b.res_date);
         const monthYear = date.toLocaleString('default', { month: 'short', year: 'numeric' });
         monthlyRevenueMap[monthYear] = (monthlyRevenueMap[monthYear] || 0) + price;
         
         // Time Status Calculation
-        const checkInDate = new Date(b.check_in);
-        checkInDate.setHours(0, 0, 0, 0);
-        
-        const checkOutDate = new Date(b.check_out);
-        checkOutDate.setHours(0, 0, 0, 0);
+        if (businessType === 'dining') {
+          // DINING LOGIC: Use res_date and res_time
+          const resDateStr = b.res_date ? b.res_date.split('T')[0] : '';
+          const resTimeStr = b.res_time || '00:00:00';
+          const resFullDate = new Date(`${resDateStr}T${resTimeStr}`);
+          
+          const now = new Date();
+          const twoHoursLater = new Date(resFullDate.getTime() + (2 * 60 * 60 * 1000));
 
-        if (checkOutDate < today) {
-          completedCount++; // Past bookings
-        } else if (checkInDate <= today && checkOutDate >= today) {
-          ongoingCount++; // Current stay
-        } else if (checkInDate > today) {
-          upcomingCount++; // Future bookings
+          if (status === 'COMPLETED' || twoHoursLater < now) {
+            completedCount++;
+          } else if (resFullDate <= now && twoHoursLater >= now) {
+            ongoingCount++;
+          } else {
+            upcomingCount++;
+          }
+        } else {
+          // STAY LOGIC: Use check_in and check_out
+          const checkInDate = new Date(b.check_in);
+          checkInDate.setHours(0, 0, 0, 0);
+          
+          const checkOutDate = new Date(b.check_out);
+          checkOutDate.setHours(0, 0, 0, 0);
+
+          if (checkOutDate < today) {
+            completedCount++; // Past bookings
+          } else if (checkInDate <= today && checkOutDate >= today) {
+            ongoingCount++; // Current stay
+          } else if (checkInDate > today) {
+            upcomingCount++; // Future bookings
+          }
         }
       }
     });
@@ -153,124 +187,137 @@ const OwnerRevenue = ({ filterPlaceId = "ALL", places = [] }) => {
         <p>Track your monthly earnings and analyze business performance.</p>
       </div>
 
-      {/* KPI CARDS */}
       <div className="revenue-kpi-grid">
         <motion.div variants={fadeUp} className="kpi-card">
-          <div className="kpi-icon"><DollarSign size={28} /></div>
-          <div className="kpi-info">
-            <h4>{businessType === 'dining' ? "Total Dining Sales" : "Total Revenue"}</h4>
+          <div className="kpi-info" style={{ paddingLeft: '0' }}>
+            <h4>{businessType === 'dining' ? "TOTAL DINING SALES" : "TOTAL REVENUE"}</h4>
             <p>Rs. {metrics.totalRevenue.toLocaleString()}</p>
           </div>
         </motion.div>
 
-        <motion.div variants={fadeUp} className="kpi-card">
-          <div className="kpi-icon" style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}><TrendingUp size={28} /></div>
+        <motion.div variants={fadeUp} className="kpi-card successful">
+          <div className="kpi-icon"><TrendingUp size={24} /></div>
           <div className="kpi-info">
-            <h4>{businessType === 'dining' ? "Successful Reservations" : "Successful Bookings"}</h4>
+            <h4>{businessType === 'dining' ? "SUCCESSFUL RESERVATIONS" : "SUCCESSFUL BOOKINGS"}</h4>
             <p>{metrics.successfulBookingsCount}</p>
-            <div className="subtitle">{businessType === 'dining' ? "Seated & Completed" : "Confirmed & Completed"}</div>
+            <div className="subtitle">{businessType === 'dining' ? "Confirmed & Completed" : "Confirmed & Completed"}</div>
           </div>
         </motion.div>
 
-        <motion.div variants={fadeUp} className="kpi-card">
-          <div className="kpi-icon" style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}><MapPin size={28} /></div>
+        <motion.div variants={fadeUp} className="kpi-card top-place">
+          <div className="kpi-icon"><MapPin size={24} /></div>
           <div className="kpi-info">
-            <h4>{filterPlaceId === "ALL" ? (businessType === 'dining' ? "Top Restaurant" : "Top Earning Place") : (businessType === 'dining' ? "This Restaurant" : "Selected Property")}</h4>
-            <p style={{ fontSize: '1.2rem', margin: '4px 0' }}>{filterPlaceId === "ALL" ? metrics.topPlaceName : (places.find(p => String(p.id) === String(filterPlaceId))?.name || "This Business")}</p>
+            <h4>{filterPlaceId === "ALL" ? (businessType === 'dining' ? "TOP RESTAURANT" : "TOP EARNING PLACE") : (businessType === 'dining' ? "THIS RESTAURANT" : "SELECTED PROPERTY")}</h4>
+            <p className="place-name">{filterPlaceId === "ALL" ? metrics.topPlaceName : (places.find(p => String(p.id) === String(filterPlaceId))?.name || "This Business")}</p>
             <div className="subtitle">{filterPlaceId === "ALL" ? `Rs. ${metrics.topPlaceRevenue.toLocaleString()} Generated` : "Performance Overview"}</div>
           </div>
         </motion.div>
       </div>
 
       {/* CHARTS GRID */}
-      <div className="charts-grid">
-        <motion.div variants={fadeUp} className="chart-card">
-          <h3><TrendingUp size={20} color="var(--primary-color)" /> {businessType === 'dining' ? "Restaurant Sales Trend" : "Monthly Revenue Trend"}</h3>
-          <div style={{ width: '100%', height: 300 }}>
-            <ResponsiveContainer>
-              <BarChart data={metrics.monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} tickFormatter={(value) => `Rs.${value/1000}k`} />
-                <Tooltip cursor={{fill: '#f8fafc'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}} />
-                <Bar dataKey="Revenue" fill="var(--primary-color)" radius={[4, 4, 0, 0]} barSize={40} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </motion.div>
-
-        {businessType === 'dining' ? (
+      <div className={businessType === 'dining' ? "charts-grid dining-layout" : "charts-grid"}>
+        {/* LEFT COLUMN: TREND CHART (Hidden for Dining) */}
+        {businessType !== 'dining' && (
           <motion.div variants={fadeUp} className="chart-card">
-            <h3><Clock size={20} color="var(--primary-color)" /> Peak Dining Hours</h3>
+            <h3>
+              <TrendingUp size={20} color="var(--primary-color)" /> 
+              Monthly Revenue Trend
+            </h3>
             <div style={{ width: '100%', height: 300 }}>
-               {peakHours.length > 0 ? (
-                 <ResponsiveContainer>
-                    <BarChart data={peakHours.map(p => ({ hour: `${p.hour}:00`, count: p.count }))}>
-                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                       <XAxis dataKey="hour" axisLine={false} tickLine={false} />
-                       <YAxis axisLine={false} tickLine={false} />
-                       <Tooltip />
-                       <Bar dataKey="count" fill="#4f46e5" radius={[4, 4, 0, 0]} />
-                    </BarChart>
-                 </ResponsiveContainer>
-               ) : (
-                 <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>No Reservations Data</div>
-               )}
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div variants={fadeUp} className="chart-card">
-            <h3><CalendarCheck size={20} color="var(--primary-color)" /> Booking Time Status</h3>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '16px' }}>
-              
-              <div style={{ width: '100%', height: 220 }}>
-                {metrics.timeStatusData.length > 0 ? (
-                  <ResponsiveContainer>
-                    <PieChart>
-                      <Pie data={metrics.timeStatusData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={5} dataKey="value">
-                        {metrics.timeStatusData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip wrapperStyle={{ outline: 'none' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>No Bookings Yet</div>
-                )}
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: '12px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-                  <div>
-                    <h4 style={{ margin: '0 0 4px 0', color: '#0f172a', fontSize: '1rem' }}>Upcoming</h4>
-                    <p style={{ margin: 0, color: '#64748b', fontSize: '0.8rem' }}>Future Bookings</p>
-                  </div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#10b981' }}>{metrics.upcomingCount}</div>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: '12px', background: '#eff6ff', border: '1px solid #bfdbfe' }}>
-                  <div>
-                    <h4 style={{ margin: '0 0 4px 0', color: '#1e3a8a', fontSize: '1rem' }}>Ongoing</h4>
-                    <p style={{ margin: 0, color: '#3b82f6', fontSize: '0.8rem' }}>Current Stays</p>
-                  </div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#2563eb' }}>{metrics.ongoingCount}</div>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderRadius: '12px', background: '#fef2f2', border: '1px solid #fecaca' }}>
-                  <div>
-                    <h4 style={{ margin: '0 0 4px 0', color: '#991b1b', fontSize: '1rem' }}>Completed</h4>
-                    <p style={{ margin: 0, color: '#ef4444', fontSize: '0.8rem' }}>Past Bookings</p>
-                  </div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#dc2626' }}>{metrics.completedCount}</div>
-                </div>
-              </div>
-
+              <ResponsiveContainer>
+                <BarChart data={metrics.monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} />
+                  <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} tickFormatter={(value) => `Rs.${value/1000}k`} />
+                  <Tooltip cursor={{fill: '#f8fafc'}} contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}} />
+                  <Bar dataKey="Revenue" fill="#0f172a" radius={[4, 4, 0, 0]} barSize={40} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </motion.div>
         )}
+
+        {/* RIGHT COLUMN: DONUT STATUS */}
+        <motion.div variants={fadeUp} className="chart-card">
+          <h3>
+             {businessType === 'dining' ? <Clock size={20} color="var(--primary-color)" /> : <CalendarCheck size={20} color="var(--primary-color)" />}
+             {businessType === 'dining' ? " Reservation Status" : " Booking Time Status"}
+          </h3>
+          
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '16px' }}>
+            
+            <div style={{ width: '100%', height: 220 }}>
+              {metrics.timeStatusData.length > 0 ? (
+                <ResponsiveContainer>
+                  <PieChart>
+                    <Pie data={metrics.timeStatusData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={5} dataKey="value">
+                      {metrics.timeStatusData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip wrapperStyle={{ outline: 'none' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
+                  {businessType === 'dining' ? "No Reservations Yet" : "No Bookings Yet"}
+                </div>
+              )}
+            </div>
+
+            <div className="status-grid">
+              <div className="status-item upcoming">
+                <div className="status-text">
+                  <h4>Upcoming</h4>
+                  <p>{businessType === 'dining' ? "Future Tables" : "Future Bookings"}</p>
+                </div>
+                <div className="status-value">{metrics.upcomingCount}</div>
+              </div>
+
+              <div className="status-item ongoing">
+                <div className="status-text">
+                  <h4>Ongoing</h4>
+                  <p>{businessType === 'dining' ? "Currently Seated" : "Current Stays"}</p>
+                </div>
+                <div className="status-value">{metrics.ongoingCount}</div>
+              </div>
+
+              <div className="status-item completed">
+                <div className="status-text">
+                  <h4>Completed</h4>
+                  <p>{businessType === 'dining' ? "Past Visits" : "Past Bookings"}</p>
+                </div>
+                <div className="status-value">{metrics.completedCount}</div>
+              </div>
+            </div>
+
+          </div>
+        </motion.div>
       </div>
+
+      {/* ADDITIONAL DINING CHARTS (MOVED BELOW) */}
+      {businessType === 'dining' && (
+        <div className="charts-grid" style={{ marginTop: '25px', gridTemplateColumns: '1fr' }}>
+           <motion.div variants={fadeUp} className="chart-card">
+              <h3><Clock size={20} color="var(--primary-color)" /> Peak Dining Hours</h3>
+              <div style={{ width: '100%', height: 300 }}>
+                 {peakHours.length > 0 ? (
+                   <ResponsiveContainer>
+                      <BarChart data={peakHours.map(p => ({ hour: `${p.hour}:00`, count: p.count }))}>
+                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                         <XAxis dataKey="hour" axisLine={false} tickLine={false} />
+                         <YAxis axisLine={false} tickLine={false} />
+                         <Tooltip />
+                         <Bar dataKey="count" fill="#4f46e5" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                   </ResponsiveContainer>
+                 ) : (
+                   <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>No Reservations Data</div>
+                 )}
+              </div>
+           </motion.div>
+        </div>
+      )}
 
       {businessType === 'dining' && (
         <motion.div variants={fadeUp} className="chart-card" style={{marginTop:'25px', padding:'24px'}}>
@@ -309,25 +356,29 @@ const OwnerRevenue = ({ filterPlaceId = "ALL", places = [] }) => {
         <div className="revenue-table-container">
           <table className="revenue-table">
             <thead>
-              <tr>
-                <th>Booking ID</th>
-                <th>Purchaser</th>
-                <th>Place & Room</th>
-                <th>Date Logged</th>
-                <th>Revenue</th>
-                <th>Status</th>
-              </tr>
+                <tr>
+                  <th>BOOKING ID</th>
+                  <th>PURCHASER</th>
+                  <th>PLACE & ROOM</th>
+                  <th>DATE LOGGED</th>
+                  <th>REVENUE</th>
+                  <th>STATUS</th>
+                </tr>
             </thead>
             <tbody>
               {bookings.slice(0, 5).map(b => (
                 <tr key={b.id}>
-                  <td style={{ fontWeight: 'bold', color: 'var(--primary-color)' }}>#BK-{b.id}</td>
+                  <td style={{ fontWeight: 'bold', color: 'var(--primary-color)' }}>
+                    {businessType === 'dining' ? `#DINE-${b.id}` : `#BK-${b.id}`}
+                  </td>
                   <td>{b.customer_name || b.full_name || '-'}</td>
                   <td>
                     <div style={{ fontWeight: 'bold' }}>{b.place_name}</div>
-                    <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{b.room_name || 'N/A'}</div>
+                    <div style={{ fontSize: '0.8rem', color: '#64748b' }}>
+                       {businessType === 'dining' ? (b.table_no ? `Table ${b.table_no}` : 'Table TBD') : (b.room_name || 'N/A')}
+                    </div>
                   </td>
-                  <td>{new Date(b.created_at).toLocaleDateString()}</td>
+                  <td>{new Date(b.created_at || b.res_date).toLocaleDateString()}</td>
                   <td style={{ fontWeight: 'bold' }}>Rs. {Number(b.total_price || 0).toLocaleString()}</td>
                   <td>
                     <span style={{ 

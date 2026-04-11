@@ -86,25 +86,25 @@ router.post("/", verifyToken, (req, res) => {
     return res.status(400).json({ message: "Comment too long (max 500 chars)" });
   }
 
-  // ✅ Optional validation (recommended): only customers with APPROVED booking can review
+  // ✅ Validation: Check both Stays (bookings) and Dining (reservations)
   const bookingCheckSql = `
-    SELECT id
-    FROM bookings
-    WHERE place_id = ?
-      AND customer_id = ?
-      AND status = 'APPROVED'
+    SELECT id FROM bookings 
+    WHERE place_id = ? AND customer_id = ? AND status = 'APPROVED'
+    UNION
+    SELECT id FROM reservations 
+    WHERE place_id = ? AND user_id = ? AND status IN ('confirmed', 'completed')
     LIMIT 1
   `;
 
-  db.query(bookingCheckSql, [place_id, req.user.id], (err, booking) => {
+  db.query(bookingCheckSql, [place_id, req.user.id, place_id, req.user.id], (err, results) => {
     if (err) {
       console.error("Booking check error:", err);
       return res.status(500).json({ message: "Server error" });
     }
 
-    if (!booking || booking.length === 0) {
+    if (!results || results.length === 0) {
       return res.status(403).json({
-        message: "Only customers with an approved booking can add a review",
+        message: "Only customers with an approved booking or confirmed reservation can add a review",
       });
     }
 
