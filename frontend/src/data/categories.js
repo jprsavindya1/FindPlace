@@ -3,7 +3,8 @@ const categories = [
   "Hotel",
   "Villa",
   "Cabana",
-  "Restaurant",
+  "Resort",
+
 ];
 
 export default categories;

@@ -1,7 +1,7 @@
 /* =====================================================
    AUTH PAGE – LUNA GLASS STYLE
    Palette:
-   #A7EBF2 | #54ACBF | #26658C | #023859 | #011C40
+   #006CE4 | #003580 | #006CE4 | #E9ECEF | #F8F9FA
 ===================================================== */
 
 /* ===== FULL PAGE BACKGROUND ===== */
@@ -11,7 +11,7 @@
   align-items: center;
   justify-content: center;
 
-  background: linear-gradient(135deg, #011c40, #023859);
+  background: linear-gradient(135deg, #F8F9FA, #E9ECEF);
 }
 
 /* ===== GLASS AUTH CARD ===== */
@@ -23,18 +23,18 @@
 
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.14),
-    rgba(255, 255, 255, 0.06)
+    rgba(0, 0, 0, 0.154),
+    rgba(0, 0, 0, 0.1)
   );
 
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
 
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(0, 0, 0, 0.158);
 
   box-shadow:
     0 30px 80px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    inset 0 1px 0 rgba(0, 0, 0, 0.152);
 
   text-align: center;
 
@@ -48,7 +48,7 @@
 .auth-card h2 {
   font-size: 30px;
   margin-bottom: 6px;
-  color: #ffffff;
+  color: #262626;
   font-weight: 900;
 }
 
@@ -71,10 +71,10 @@
   padding: 12px;
   border-radius: 14px;
 
-  border: 2px solid rgba(84,172,191,0.6);
-  background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(0, 53, 128,0.6);
+  background: rgba(0, 0, 0, 0.1);
 
-  color: #ffffff;
+  color: #262626;
   font-weight: 800;
   cursor: pointer;
 
@@ -83,9 +83,9 @@
 
 .role-select button.active,
 .role-select button:hover {
-  background: linear-gradient(135deg, #54acbf, #26658c);
+  background: linear-gradient(135deg, #003580, #006CE4);
   border-color: transparent;
-  box-shadow: 0 10px 24px rgba(84,172,191,0.45);
+  box-shadow: 0 10px 24px rgba(0, 53, 128,0.45);
 }
 
 /* ===== FORM ===== */
@@ -101,10 +101,10 @@
   padding: 12px 14px;
   border-radius: 14px;
 
-  border: 1px solid rgba(255,255,255,0.22);
-  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(0, 0, 0, 0.22);
+  background: rgba(0, 0, 0, 0.150);
 
-  color: #ffffff;
+  color: #262626;
   font-size: 14px;
   font-weight: 600;
 
@@ -116,7 +116,7 @@
 }
 
 .auth-form input:focus {
-  border-color: #54acbf;
+  border-color: #003580;
   box-shadow: 0 0 0 3px rgba(84,235,242,0.35);
 }
 
@@ -128,7 +128,7 @@
   border-radius: 14px;
   border: none;
 
-  background: linear-gradient(135deg, #54acbf, #26658c);
+  background: linear-gradient(135deg, #003580, #006CE4);
   color: white;
 
   font-size: 15px;
@@ -140,7 +140,7 @@
 
 .auth-form button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(84,172,191,0.45);
+  box-shadow: 0 12px 24px rgba(0, 53, 128,0.45);
 }
 
 /* ===== HINT ===== */

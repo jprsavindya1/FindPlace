@@ -1,463 +1,294 @@
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
+import { createPortal } from "react-dom";
+import { AnimatePresence } from "framer-motion";
+import BookingProofCard from "../components/BookingProofCard";
+import { API_BASE_URL } from "../apiConfig";
+import { differenceInDays, addDays, eachDayOfInterval } from "date-fns";
+import PaymentModal from "../components/PaymentModal";
+import Room360Modal from "../components/Room360Modal";
+import PlaceDetailsDining from "./PlaceDetailsDining";
+import PlaceDetailsStay from "./PlaceDetailsStay";
 import "./PlaceDetails.css";
 
 function PlaceDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [place, setPlace] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [amenities, setAmenities] = useState([]);
+  const [menuItems, setMenuItems] = useState([]);
+  const [rooms, setRooms] = useState([]);
+  const [tables, setTables] = useState([]);
+  const [gallery, setGallery] = useState([]);
 
-  // ===== Booking form state =====
-  const [showBookingForm, setShowBookingForm] = useState(false);
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-
-  // ===== Booking UI feedback state =====
-  const [bookingStatus, setBookingStatus] = useState(null); // "success" | "error" | null
-  const [bookingMsg, setBookingMsg] = useState("");
-  const [isBooking, setIsBooking] = useState(false);
-
-  // ===== Guests picker state =====
-  const [showGuestsPicker, setShowGuestsPicker] = useState(false);
-  const [adults, setAdults] = useState(2);
-  const [children, setChildren] = useState(0);
-  const [rooms, setRooms] = useState(1);
-  const [pets, setPets] = useState(false);
-
-  const guestsSummary = `${adults} adult${adults > 1 ? "s" : ""} · ${children} child${
-    children !== 1 ? "ren" : ""
-  } · ${rooms} room${rooms > 1 ? "s" : ""}`;
-
-  const clamp = (val, min, max) => Math.max(min, Math.min(max, val));
-
-  const changeCount = (setter, current, delta, min, max) => {
-    setter(clamp(current + delta, min, max));
-  };
-
-  // ===== REVIEWS STATE (NEW) =====
+  // Common States (Reviews, Favorites)
   const [reviews, setReviews] = useState([]);
   const [avgRating, setAvgRating] = useState(0);
   const [totalReviews, setTotalReviews] = useState(0);
-
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
   const [myRating, setMyRating] = useState(5);
   const [myComment, setMyComment] = useState("");
   const [reviewMsg, setReviewMsg] = useState("");
   const [isPostingReview, setIsPostingReview] = useState(false);
 
-  // ===== Fetch place details =====
+  // Dining States
+  const [resDate, setResDate] = useState(null);
+  const [resTime, setResTime] = useState("");
+  const [resGuests, setResGuests] = useState(2);
+  const [resTable, setResTable] = useState("");
+  const [wantsPreOrder, setWantsPreOrder] = useState(false);
+  const [preOrderQuantities, setPreOrderQuantities] = useState({});
+
+  // Stay States
+  const [checkIn, setCheckIn] = useState(null);
+  const [checkOut, setCheckOut] = useState(null);
+  const [adults, setAdults] = useState(1);
+  const [children, setChildren] = useState(0);
+  const [selectedRoom, setSelectedRoom] = useState("");
+  const [bookedDates, setBookedDates] = useState([]);
+  const [occupancy, setOccupancy] = useState({});
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [identity, setIdentity] = useState("");
+  const [showAllRooms, setShowAllRooms] = useState(false);
+  const [is360ModalOpen, setIs360ModalOpen] = useState(false);
+  const [selected360Image, setSelected360Image] = useState(null);
+  const [selectedRoomLabel, setSelectedRoomLabel] = useState("");
+
+  // Booking & UI States
+  const [isBooking, setIsBooking] = useState(false);
+  const [bookingStatus, setBookingStatus] = useState(null);
+  const [bookingMsg, setBookingMsg] = useState("");
+  const [currentProof, setCurrentProof] = useState(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [pendingBookingData, setPendingBookingData] = useState(null);
+  const [activeCategory, setActiveCategory] = useState("Breakfast");
+  const [showAllMenu, setShowAllMenu] = useState(false);
+
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+
+  // Initial Fetching
   useEffect(() => {
     setLoading(true);
+    fetch(`${API_BASE_URL}/api/places/${id}`)
+      .then(res => res.json())
+      .then(data => { setPlace(data); setLoading(false); })
+      .catch(() => { setLoading(false); });
 
-    fetch(`http://localhost:5000/api/places/${id}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Not found");
-        return res.json();
-      })
-      .then((data) => {
-        setPlace(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setPlace(null);
-        setLoading(false);
-      });
-  }, [id]);
-
-  // ===== Fetch reviews + summary (NEW) =====
-  const fetchReviews = async () => {
-    try {
-      const [listRes, summaryRes] = await Promise.all([
-        fetch(`http://localhost:5000/api/reviews/place/${id}`),
-        fetch(`http://localhost:5000/api/reviews/summary/${id}`),
-      ]);
-
+    axios.get(`${API_BASE_URL}/api/places/${id}/amenities`).then(res => setAmenities(res.data)).catch(console.error);
+    axios.get(`${API_BASE_URL}/api/menu/place/${id}`).then(res => setMenuItems(res.data)).catch(console.error);
+    axios.get(`${API_BASE_URL}/api/rooms/place/${id}`).then(res => setRooms(res.data)).catch(console.error);
+    axios.get(`${API_BASE_URL}/api/tables/place/${id}`).then(res => setTables(res.data)).catch(console.error);
+    axios.get(`${API_BASE_URL}/api/places/${id}/gallery`).then(res => setGallery(res.data)).catch(console.error);
+    
+    // Summary & Initial Reviews
+    Promise.all([
+      fetch(`${API_BASE_URL}/api/reviews/place/${id}`),
+      fetch(`${API_BASE_URL}/api/reviews/summary/${id}`)
+    ]).then(async ([listRes, summaryRes]) => {
       const listData = await listRes.json();
       const summaryData = await summaryRes.json();
-
       setReviews(Array.isArray(listData) ? listData : []);
-      setAvgRating(Number(summaryData?.avgRating || 0));
       setTotalReviews(Number(summaryData?.totalReviews || 0));
-    } catch (e) {
-      console.error("Reviews fetch error:", e);
-      setReviews([]);
-      setAvgRating(0);
-      setTotalReviews(0);
-    }
-  };
+      setAvgRating(Number(summaryData?.avgRating || 4.8));
+    }).catch(console.error);
 
+    if (token && role === "customer") {
+      axios.get(`${API_BASE_URL}/api/favorites/check/${id}`, { headers: { Authorization: `Bearer ${token}` } })
+           .then(res => setIsFavorite(res.data.isFavorite)).catch(console.error);
+    }
+  }, [id, token, role]);
+
+  // Stay specific: Fetch booked dates
   useEffect(() => {
-    fetchReviews();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+    if (selectedRoom) {
+      axios.get(`${API_BASE_URL}/api/bookings/place/${id}/room/${selectedRoom}/dates`)
+           .then(res => setBookedDates(res.data)).catch(console.error);
+    }
+  }, [selectedRoom, id]);
 
-  const toggleBookingForm = () => {
-    setShowBookingForm((prev) => !prev);
-    setShowGuestsPicker(false);
-    setBookingStatus(null);
-    setBookingMsg("");
-  };
+  const disabledDates = useMemo(() => {
+    let dates = [];
+    bookedDates.forEach(b => {
+      try { dates = [...dates, ...eachDayOfInterval({ start: new Date(b.check_in), end: new Date(b.check_out) })]; } catch {}
+    });
+    return dates;
+  }, [bookedDates]);
 
-  const handleCancel = () => {
-    setShowBookingForm(false);
-    setShowGuestsPicker(false);
-    setCheckIn("");
-    setCheckOut("");
-    setBookingStatus(null);
-    setBookingMsg("");
-  };
+  // Pre-fill user info
+  useEffect(() => {
+    setFullName(localStorage.getItem("userName") || "");
+    setEmail(localStorage.getItem("userEmail") || "");
+    setPhone(localStorage.getItem("userPhone") || "");
+  }, []);
 
-  // ===== Booking submit handler =====
-  const handleBookingSubmit = async (e) => {
-    e.preventDefault();
-
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setBookingStatus("error");
-      setBookingMsg("❌ Please login as a customer to book.");
+  // Shared Actions
+  const toggleFavorite = async () => {
+    if (!token || role !== "customer") {
+      navigate("/login", { state: { from: location.pathname } });
       return;
     }
-
-    if (!checkIn || !checkOut) {
-      setBookingStatus("error");
-      setBookingMsg("❌ Please select both check-in and check-out dates.");
-      return;
-    }
-
-    if (new Date(checkOut) <= new Date(checkIn)) {
-      setBookingStatus("error");
-      setBookingMsg("❌ Check-out must be after check-in.");
-      return;
-    }
-
-    setIsBooking(true);
-    setBookingStatus(null);
-    setBookingMsg("");
-
+    setIsLiking(true);
     try {
-      const res = await axios.post(
-        "http://localhost:5000/api/bookings",
-        {
-          place_id: place.id,
-          check_in: checkIn,
-          check_out: checkOut,
-          // UI only (optional future): adults, children, rooms, pets
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      setBookingStatus("success");
-      setBookingMsg(`✅ ${res.data.message} (ID: ${res.data.booking_id})`);
-
-      setCheckIn("");
-      setCheckOut("");
-      setShowGuestsPicker(false);
-    } catch (err) {
-      const status = err?.response?.status;
-
-      if (status === 409) {
-        setBookingStatus("error");
-        setBookingMsg(
-          "❌ Unavailable for selected dates. Please choose different dates."
-        );
-      } else if (status === 401) {
-        setBookingStatus("error");
-        setBookingMsg("❌ Please login again.");
-      } else if (status === 403) {
-        setBookingStatus("error");
-        setBookingMsg("❌ Customers only. Please login as a customer.");
+      if (isFavorite) {
+        await axios.delete(`${API_BASE_URL}/api/favorites/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+        setIsFavorite(false);
       } else {
-        setBookingStatus("error");
-        setBookingMsg(err?.response?.data?.message || "❌ Booking failed. Try again.");
+        await axios.post(`${API_BASE_URL}/api/favorites`, { placeId: id }, { headers: { Authorization: `Bearer ${token}` } });
+        setIsFavorite(true);
       }
-    } finally {
-      setIsBooking(false);
-    }
+    } catch { console.error("Favorite toggle failed"); } finally { setIsLiking(false); }
   };
 
-  // ===== Add Review handler (NEW) =====
   const handleAddReview = async (e) => {
     e.preventDefault();
-    setReviewMsg("");
     setIsPostingReview(true);
-
     try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        setReviewMsg("❌ Please login as a customer to add a review.");
-        return;
-      }
+      await axios.post(`${API_BASE_URL}/api/reviews`, { place_id: Number(id), rating: myRating, comment: myComment }, { headers: { Authorization: `Bearer ${token}` } });
+      const listRes = await fetch(`${API_BASE_URL}/api/reviews/place/${id}`);
+      setReviews(await listRes.json());
+      setMyComment(""); setMyRating(5);
+    } catch { setReviewMsg("❌ Failed to add review"); } finally { setIsPostingReview(false); }
+  };
 
-      const res = await axios.post(
-        "http://localhost:5000/api/reviews",
-        {
-          place_id: Number(id),
-          rating: myRating,
-          comment: myComment,
-        },
-        { headers: { Authorization: "Bearer " + token } }
-      );
+  // Dining Logic Wrapper
+  const handleDinnerBookingSubmit = async (e) => {
+    e.preventDefault();
+    if (!token) return navigate("/login", { state: { from: location.pathname } });
+    setIsBooking(true);
+    try {
+      const formattedDate = resDate.toISOString().split('T')[0];
+      const res = await axios.post(`${API_BASE_URL}/api/reservations`, {
+        place_id: place.id, customer_name: fullName, customer_email: email, customer_phone: phone,
+        res_date: formattedDate, res_time: resTime, people_count: resGuests,
+        table_id: resTable, food_order_items: wantsPreOrder ? JSON.stringify(preOrderQuantities) : null
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      setCurrentProof({ ...res.data, place_name: place.name, res_date: formattedDate, res_time: resTime, people_count: resGuests, customer_name: fullName, customer_phone: phone });
+      setResDate(null); setResTime(""); setResGuests(2);
+    } catch { alert("Reservation failed"); } finally { setIsBooking(false); }
+  };
 
-      setReviewMsg("✅ " + (res.data.message || "Review added"));
-      setMyRating(5);
-      setMyComment("");
+  // Stay Logic Wrapper
+  const handleBookingSubmit = async (e, paymentMethod = 'ONLINE') => {
+    if (e) e.preventDefault();
+    if (!token) return navigate("/login", { state: { from: location.pathname } });
+    const nightsCount = differenceInDays(checkOut, checkIn);
+    const room = rooms.find(r => String(r.id) === String(selectedRoom));
+    const finalPrice = nightsCount * (room?.price || 0);
 
-      // Refresh list + summary
-      fetchReviews();
-    } catch (err) {
-      setReviewMsg(err?.response?.data?.message || "❌ Failed to add review");
-    } finally {
-      setIsPostingReview(false);
+    // ✅ Match Backend snake_case expectation
+    const bookingData = { 
+      place_id: Number(id), 
+      room_id: Number(selectedRoom), 
+      check_in: checkIn.toISOString().split('T')[0], 
+      check_out: checkOut.toISOString().split('T')[0], 
+      full_name: fullName, 
+      email, 
+      phone, 
+      identity, 
+      adults: Number(adults),
+      children: Number(children),
+      total_price: finalPrice, 
+      payment_method: paymentMethod 
+    };
+
+    if (paymentMethod === 'ONLINE') { 
+      setPendingBookingData(bookingData); 
+      setIsPaymentModalOpen(true); 
+    } else {
+      // Direct booking for Pay at Hotel
+      setIsBooking(true);
+      try {
+        const res = await axios.post(`${API_BASE_URL}/api/bookings`, { 
+          ...bookingData, 
+          payment_status: 'UNPAID',
+          payment_method: 'CASH_AT_HOTEL'
+        }, { headers: { Authorization: `Bearer ${token}` } });
+        setCurrentProof({ ...res.data, place_name: place.name, check_in: bookingData.check_in, check_out: bookingData.check_out, total_price: bookingData.total_price, customer_name: fullName });
+        setCheckIn(null); setCheckOut(null); setSelectedRoom("");
+      } catch { alert("Booking failed. Please try again."); } finally { setIsBooking(false); }
     }
   };
 
-  if (loading) return <p style={{ padding: "30px" }}>Loading...</p>;
-  if (!place) return <p style={{ padding: "30px" }}>Place not found</p>;
+  const confirmPaidBooking = async (paymentResult) => {
+    setIsBooking(true);
+    try {
+      const payload = { 
+        ...pendingBookingData, 
+        payment_status: 'PAID',
+        payment_method: paymentResult?.method || 'ONLINE',
+        transaction_id: paymentResult?.transaction_id || null
+      };
+      const res = await axios.post(`${API_BASE_URL}/api/bookings`, payload, { headers: { Authorization: `Bearer ${token}` } });
+      setCurrentProof({ 
+        ...res.data, 
+        place_name: place.name, 
+        check_in: pendingBookingData.check_in, 
+        check_out: pendingBookingData.check_out, 
+        total_price: pendingBookingData.total_price, 
+        customer_name: fullName 
+      });
+      setCheckIn(null); setCheckOut(null); setSelectedRoom("");
+    } catch { alert("Booking failed after payment"); } finally { setIsBooking(false); setIsPaymentModalOpen(false); }
+  };
+
+  if (loading) return <div className="place-details"><p style={{padding: 100, textAlign: 'center'}}>Loading...</p></div>;
+  if (!place) return <div className="place-details"><p style={{padding: 100, textAlign: 'center'}}>Place not found</p></div>;
+
+  const sharedProps = {
+    place, id, token, role, navigate, location, API_BASE_URL,
+    reviews, avgRating, totalReviews, toggleFavorite, isFavorite, isLiking,
+    handleAddReview, myRating, setMyRating, myComment, setMyComment, reviewMsg, isPostingReview,
+    activeCategory, setActiveCategory, showAllMenu, setShowAllMenu, menuItems, filteredMenu: menuItems.filter(i => i.category === activeCategory),
+    setCurrentProof, gallery
+  };
 
   return (
-    <div className="place-details">
-      <img src={`http://localhost:5000/uploads/${place.image}`} alt={place.name} />
+    <>
+      {createPortal(
+        <AnimatePresence>
+          {currentProof && <div style={{ position: 'fixed', inset: 0, zIndex: 10000 }}><BookingProofCard booking={currentProof} onClose={() => setCurrentProof(null)} /></div>}
+        </AnimatePresence>,
+        document.body
+      )}
 
-      <div className="details-content">
-        <h2>{place.name}</h2>
-        <p>📍 {place.location}</p>
-        <p>💰 Rs. {Number(place.price).toLocaleString()} / month</p>
-        <p>👤 Owner: {place.owner_name}</p>
+      {place.type === 'dine' ? (
+        <PlaceDetailsDining 
+          {...sharedProps} resDate={resDate} setResDate={setResDate} resTime={resTime} setResTime={setResTime}
+          resGuests={resGuests} setResGuests={setResGuests} resTable={resTable} setResTable={setResTable} tables={tables}
+          wantsPreOrder={wantsPreOrder} setWantsPreOrder={setWantsPreOrder} preOrderQuantities={preOrderQuantities}
+          updatePreOrderQty={(itemId, delta) => setPreOrderQuantities(prev => {
+            const next = { ...prev, [itemId]: (prev[itemId] || 0) + delta };
+            if (next[itemId] <= 0) delete next[itemId];
+            return next;
+          })}
+          handleDinnerBookingSubmit={handleDinnerBookingSubmit} isBooking={isBooking}
+          fullName={fullName} setFullName={setFullName} email={email} setEmail={setEmail} phone={phone} setPhone={setPhone}
+        />
+      ) : (
+        <PlaceDetailsStay 
+          {...sharedProps} amenities={amenities} rooms={rooms} selectedRoom={selectedRoom} setSelectedRoom={setSelectedRoom}
+          showAllRooms={showAllRooms} setShowAllRooms={setShowAllRooms} checkIn={checkIn} setCheckIn={setCheckIn}
+          checkOut={checkOut} setCheckOut={setCheckOut} bookedDates={bookedDates} disabledDates={disabledDates}
+          occupancy={occupancy} fullName={fullName} setFullName={setFullName} email={email} setEmail={setEmail}
+          phone={phone} setPhone={setPhone} identity={identity} setIdentity={setIdentity}
+          isBooking={isBooking} handleBookingSubmit={handleBookingSubmit} addDays={addDays}
+          setIs360ModalOpen={setIs360ModalOpen} setSelected360Image={setSelected360Image} setSelectedRoomLabel={setSelectedRoomLabel}
+          nights={differenceInDays(checkOut || new Date(), checkIn || new Date())}
+          totalPrice={differenceInDays(checkOut || new Date(), checkIn || new Date()) * (rooms.find(r => String(r.id) === String(selectedRoom))?.price || 0)}
+        />
+      )}
 
-        {/* ✅ Rating summary (NEW) */}
-        <div className="rating-summary">
-          <span className="stars">⭐ {avgRating ? avgRating.toFixed(1) : "0.0"}</span>
-          <span className="muted">({totalReviews} reviews)</span>
-        </div>
-
-        <button className="book-btn" onClick={toggleBookingForm}>
-          {showBookingForm ? "Hide Booking Form" : "Request Booking"}
-        </button>
-
-        {showBookingForm && (
-          <form className="booking-form" onSubmit={handleBookingSubmit}>
-            {/* ===== Guests / Rooms Selector ===== */}
-            <div className="guests-wrap">
-              <button
-                type="button"
-                className="guests-trigger"
-                onClick={() => setShowGuestsPicker((v) => !v)}
-                disabled={isBooking}
-              >
-                <span className="guests-icon">👤</span>
-                <span className="guests-text">{guestsSummary}</span>
-                <span className={`guests-caret ${showGuestsPicker ? "up" : ""}`}>▾</span>
-              </button>
-
-              {showGuestsPicker && (
-                <div className="guests-panel">
-                  <div className="gp-row">
-                    <div className="gp-label">Adults</div>
-                    <div className="gp-control">
-                      <button
-                        type="button"
-                        className="gp-btn"
-                        onClick={() => changeCount(setAdults, adults, -1, 1, 10)}
-                        disabled={isBooking || adults <= 1}
-                      >
-                        −
-                      </button>
-                      <div className="gp-value">{adults}</div>
-                      <button
-                        type="button"
-                        className="gp-btn"
-                        onClick={() => changeCount(setAdults, adults, +1, 1, 10)}
-                        disabled={isBooking || adults >= 10}
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="gp-row">
-                    <div className="gp-label">Children</div>
-                    <div className="gp-control">
-                      <button
-                        type="button"
-                        className="gp-btn"
-                        onClick={() => changeCount(setChildren, children, -1, 0, 10)}
-                        disabled={isBooking || children <= 0}
-                      >
-                        −
-                      </button>
-                      <div className="gp-value">{children}</div>
-                      <button
-                        type="button"
-                        className="gp-btn"
-                        onClick={() => changeCount(setChildren, children, +1, 0, 10)}
-                        disabled={isBooking || children >= 10}
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="gp-row">
-                    <div className="gp-label">Rooms</div>
-                    <div className="gp-control">
-                      <button
-                        type="button"
-                        className="gp-btn"
-                        onClick={() => changeCount(setRooms, rooms, -1, 1, 10)}
-                        disabled={isBooking || rooms <= 1}
-                      >
-                        −
-                      </button>
-                      <div className="gp-value">{rooms}</div>
-                      <button
-                        type="button"
-                        className="gp-btn"
-                        onClick={() => changeCount(setRooms, rooms, +1, 1, 10)}
-                        disabled={isBooking || rooms >= 10}
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="gp-divider" />
-
-                  <div className="gp-pets">
-                    <div>
-                      <div className="gp-pets-title">Travelling with pets?</div>
-                      <div className="gp-pets-sub">
-                        Assistance animals aren&apos;t considered pets.
-                      </div>
-                    </div>
-
-                    <label className="switch">
-                      <input
-                        type="checkbox"
-                        checked={pets}
-                        onChange={(e) => setPets(e.target.checked)}
-                        disabled={isBooking}
-                      />
-                      <span className="slider" />
-                    </label>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="gp-done"
-                    onClick={() => setShowGuestsPicker(false)}
-                    disabled={isBooking}
-                  >
-                    Done
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* ===== Dates ===== */}
-            <label>
-              Check-in:
-              <input
-                type="date"
-                value={checkIn}
-                onChange={(e) => setCheckIn(e.target.value)}
-                required
-                disabled={isBooking}
-              />
-            </label>
-
-            <label>
-              Check-out:
-              <input
-                type="date"
-                value={checkOut}
-                onChange={(e) => setCheckOut(e.target.value)}
-                required
-                disabled={isBooking}
-              />
-            </label>
-
-            <div className="booking-buttons">
-              <button className="btn-book" type="submit" disabled={isBooking}>
-                {isBooking ? "Processing..." : "Confirm Booking"}
-              </button>
-
-              <button type="button" onClick={handleCancel} disabled={isBooking}>
-                Cancel
-              </button>
-            </div>
-
-            {bookingMsg && (
-              <div className={`booking-alert ${bookingStatus === "success" ? "success" : "error"}`}>
-                {bookingMsg}
-              </div>
-            )}
-          </form>
-        )}
-
-        {/* ================= REVIEWS SECTION (NEW) ================= */}
-        <div className="reviews-box">
-          <h3>Customer Reviews</h3>
-
-          <form className="review-form" onSubmit={handleAddReview}>
-            <div className="review-row">
-              <label>
-                Rating:
-                <select
-                  value={myRating}
-                  onChange={(e) => setMyRating(Number(e.target.value))}
-                  disabled={isPostingReview}
-                >
-                  <option value={5}>5 - Excellent</option>
-                  <option value={4}>4 - Very Good</option>
-                  <option value={3}>3 - Good</option>
-                  <option value={2}>2 - Fair</option>
-                  <option value={1}>1 - Poor</option>
-                </select>
-              </label>
-            </div>
-
-            <textarea
-              placeholder="Write your review (optional, max 500 chars)..."
-              value={myComment}
-              onChange={(e) => setMyComment(e.target.value)}
-              maxLength={500}
-              disabled={isPostingReview}
-            />
-
-            <button className="review-btn" disabled={isPostingReview}>
-              {isPostingReview ? "Posting..." : "Submit Review"}
-            </button>
-
-            {reviewMsg && <p className="review-msg">{reviewMsg}</p>}
-          </form>
-
-          {reviews.length === 0 ? (
-            <p className="muted">No reviews yet.</p>
-          ) : (
-            <div className="review-list">
-              {reviews.map((r) => (
-                <div className="review-card" key={r.id}>
-                  <div className="review-head">
-                    <strong>{r.customer_name || "Customer"}</strong>
-                    <span>⭐ {r.rating}</span>
-                  </div>
-
-                  {r.comment && <p className="review-text">{r.comment}</p>}
-
-                  <small className="muted">
-                    {r.created_at ? new Date(r.created_at).toLocaleDateString() : ""}
-                  </small>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        {/* ========================================================= */}
-      </div>
-    </div>
+      <Room360Modal isOpen={is360ModalOpen} onClose={() => setIs360ModalOpen(false)} roomLabel={selectedRoomLabel} image360={selected360Image} />
+      <PaymentModal isOpen={isPaymentModalOpen} onClose={() => setIsPaymentModalOpen(false)} onPaymentSuccess={confirmPaidBooking} amount={pendingBookingData?.total_price || 0} bookingData={pendingBookingData} />
+    </>
   );
 }
 

@@ -1,154 +1,256 @@
-/* ================= OWNER BOOKINGS (LUNA THEME) =================
-   Palette:
-   #A7EBF2 | #54ACBF | #26658C | #023859 | #011C40
-============================================================== */
+/* =========================================================
+   2026 MODERN OWNER BOOKINGS
+========================================================= */
 
 .bookings-section {
-  max-width: 1000px;
-  margin: auto;
-  padding: 20px;
-  font-family: "Segoe UI", Tahoma, sans-serif;
+  width: 100%;
+}
 
-  color: #023859;
+.bookings-section .content-header {
+  margin-bottom: 24px;
 }
 
 .bookings-section h2 {
-  text-align: center;
-  margin-bottom: 25px;
-  color: #011c40;
+  font-family: var(--font-heading);
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text-dark);
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+}
+
+.bookings-section p {
+  color: var(--text-muted);
+  font-size: 16px;
+  margin: 0;
+}
+
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: white;
+  color: var(--brand-primary);
+  border: 1px solid var(--brand-primary);
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: var(--font-heading);
+}
+
+.btn-export:hover {
+  background: var(--brand-primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 53, 128, 0.15);
+}
+
+/* ================= FILTERS ================= */
+.filters-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+  background: var(--surface-card);
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 200px;
+  background: var(--bg-main);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 0 16px;
+}
+
+.filter-icon {
+  color: var(--brand-primary);
+  opacity: 0.7;
+}
+
+.filter-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 12px 0;
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  font-weight: 600;
+  outline: none;
+}
+
+.filter-input::placeholder {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.date-group {
+  flex: 2;
+  min-width: 300px;
+}
+
+.date-picker-sm {
+  width: 100px;
 }
 
 /* ================= BOOKINGS TABLE ================= */
+.table-container {
+  overflow-x: auto;
+  border-radius: 20px;
+  border: 1px solid var(--border-light);
+  background: var(--surface-card);
+  box-shadow: var(--shadow-sm);
+}
 
 .bookings-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
   font-size: 14px;
-
-  background: #ffffff;
-  border-radius: 14px;
-  overflow: hidden;
-
-  border: 1px solid rgba(2, 56, 89, 0.12);
-  box-shadow: 0 14px 28px rgba(1, 28, 64, 0.08);
-
-  color: #023859;
+  color: var(--text-dark);
+  min-width: 800px;
 }
 
 .bookings-table th,
 .bookings-table td {
-  padding: 12px 10px;
+  padding: 16px 20px;
   text-align: left;
-  border-bottom: 1px solid rgba(2, 56, 89, 0.10);
+  border-bottom: 1px solid var(--border-light);
+  vertical-align: middle;
+}
+
+.bookings-table tr:last-child td {
+  border-bottom: none;
 }
 
 /* header row */
 .bookings-table th {
-  background: rgba(167, 235, 242, 0.22);
-  color: #011c40;
-  font-weight: 800;
+  background: var(--bg-alt);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 11px;
+  color: var(--text-muted);
 }
 
 /* row hover */
+.bookings-table tbody tr {
+  transition: background 0.2s ease;
+}
+
 .bookings-table tbody tr:hover {
-  background: rgba(167, 235, 242, 0.10);
+  background: rgba(0, 53, 128, 0.02);
 }
 
 /* ================= STATUS BADGES ================= */
-
 .status-badge {
-  padding: 4px 10px;
+  padding: 6px 14px;
   border-radius: 999px;
-  color: #ffffff;
+  font-size: 11px;
   font-weight: 800;
-  text-transform: capitalize;
-  font-size: 12px;
-  letter-spacing: 0.2px;
-  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* LUNA-style status colors (still intuitive) */
 .status-badge.pending {
-  background: linear-gradient(135deg, #54acbf, #26658c);
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
-.status-badge.approved {
-  background: linear-gradient(135deg, #26658c, #023859);
+.status-badge.confirmed, .status-badge.approved {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
-.status-badge.rejected {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
+.status-badge.completed {
+  background: rgba(59, 130, 246, 0.1);
+  color: #2563eb;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.status-badge.rejected, .status-badge.unavailable {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.status-badge.cancelled {
+  background: rgba(107, 114, 128, 0.1);
+  color: #4b5563;
+  border: 1px solid rgba(107, 114, 128, 0.2);
 }
 
 /* ================= ACTION BUTTONS ================= */
-
 .action-buttons {
   display: flex;
   gap: 8px;
 }
 
-.approve-btn,
-.reject-btn {
-  padding: 7px 12px;
-  border-radius: 10px;
+.icon-btn {
+  background: none;
   border: none;
-  color: white;
-  font-weight: 800;
+  border-radius: 8px;
+  padding: 6px;
   cursor: pointer;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
-  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
 }
 
-/* Approve button (LUNA) */
-.approve-btn {
-  background: linear-gradient(135deg, #54acbf, #26658c);
-  box-shadow: 0 10px 18px rgba(1, 28, 64, 0.16);
+.icon-btn.approve {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
 }
 
-.approve-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 14px 22px rgba(1, 28, 64, 0.20);
-  opacity: 0.98;
+.icon-btn.approve:hover {
+  background: #10b981;
+  color: white;
 }
 
-/* Reject button (keep red as clear action) */
-.reject-btn {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.14);
+.icon-btn.reject {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
 }
 
-.reject-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 14px 22px rgba(0, 0, 0, 0.18);
-  opacity: 0.98;
+.icon-btn.reject:hover {
+  background: #ef4444;
+  color: white;
+}
+
+.icon-btn.view {
+  color: #6b7280;
+  background: rgba(107, 114, 128, 0.1);
+}
+
+.icon-btn.view:hover {
+  background: #6b7280;
+  color: white;
 }
 
 /* ================= RESPONSIVE ================= */
-
 @media (max-width: 768px) {
   .bookings-table th,
   .bookings-table td {
-    font-size: 12px;
-    padding: 8px 6px;
+    font-size: 13px;
+    padding: 12px 14px;
   }
-
-  .approve-btn,
-  .reject-btn {
-    font-size: 12px;
-    padding: 6px 10px;
-    border-radius: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .action-buttons {
+  
+  .filters-container {
     flex-direction: column;
-    align-items: stretch;
-  }
-
-  .approve-btn,
-  .reject-btn {
-    width: 100%;
   }
 }

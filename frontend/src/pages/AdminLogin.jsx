@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { motion } from "framer-motion";
+import { ShieldCheck, Mail, Lock, AlertCircle, ArrowRight } from "lucide-react";
+import { API_BASE_URL } from "../apiConfig";
 import "./AdminLogin.css";
 
 function AdminLogin() {
@@ -12,7 +15,6 @@ function AdminLogin() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ If already logged in as admin, redirect to dashboard
   useEffect(() => {
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
@@ -30,7 +32,7 @@ function AdminLogin() {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/admin/login",
+        `${API_BASE_URL}/api/admin/login`,
         { email, password },
         { headers: { "Content-Type": "application/json" } }
       );
@@ -60,56 +62,86 @@ function AdminLogin() {
 
   return (
     <div className="admin-auth-page">
-      {/* ✅ Video background (put admin-bg.mp4 inside /public folder) */}
-      <video className="admin-auth-video" autoPlay muted loop playsInline>
-        <source src="/admin-bg.mp4" type="video/mp4" />
-      </video>
+      {/* GLOBAL Animated Background Elements (Synchronized with Luna Theme) */}
+      <div className="admin-bg-shape admin-bg-shape-1"></div>
+      <div className="admin-bg-shape admin-bg-shape-2"></div>
+      <div className="admin-bg-shape admin-bg-shape-3"></div>
 
-      {/* ✅ Dark overlay for readability */}
-      <div className="admin-auth-overlay" />
-
-      <div className="admin-auth-card">
-        <div className="admin-auth-badge">🔐 Admin Portal</div>
+      <motion.div 
+        className="admin-auth-card"
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div className="admin-auth-badge">
+          <ShieldCheck size={16} /> Admin Portal
+        </div>
 
         <h2 className="admin-auth-title">Admin Login</h2>
         <p className="admin-auth-subtitle">
-          Sign in to manage users & approve places
+          Secure access to manage the FindPlace ecosystem.
         </p>
 
-        {error && <div className="admin-auth-error">{error}</div>}
+        {error && (
+          <motion.div 
+            className="admin-auth-error"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <AlertCircle size={18} /> {error}
+          </motion.div>
+        )}
 
         <form className="admin-auth-form" onSubmit={handleLogin}>
-          <label className="admin-auth-label">Email</label>
-          <input
-            className="admin-auth-input"
-            type="email"
-            placeholder="admin@findplace.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoComplete="email"
-          />
+          <div className="admin-field-group">
+            <label className="admin-auth-label">Email Address</label>
+            <div className="admin-input-wrapper">
+              <Mail size={18} />
+              <input
+                className="admin-auth-input"
+                type="email"
+                placeholder="admin@findplace.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="email"
+              />
+            </div>
+          </div>
 
-          <label className="admin-auth-label">Password</label>
-          <input
-            className="admin-auth-input"
-            type="password"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            autoComplete="current-password"
-          />
+          <div className="admin-field-group">
+            <label className="admin-auth-label">Password</label>
+            <div className="admin-input-wrapper">
+              <Lock size={18} />
+              <input
+                className="admin-auth-input"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
+            </div>
+          </div>
 
           <button className="admin-auth-btn" type="submit" disabled={loading}>
-            {loading ? "Signing in..." : "Login as Admin"}
+            {loading ? "Verifying Authority..." : "Login to Portal"}
+            {!loading && <ArrowRight size={18} />}
           </button>
 
-          <p className="admin-auth-hint">
-            Tip: Admin login URL is <span>/admin/login</span>
-          </p>
+          <div className="admin-auth-footer">
+            <p>Unauthorized access is strictly prohibited.</p>
+            <button 
+              type="button" 
+              className="back-home-btn"
+              onClick={() => navigate("/")}
+            >
+              Back to Home
+            </button>
+          </div>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }

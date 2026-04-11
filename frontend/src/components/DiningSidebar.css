@@ -1,0 +1,166 @@
+/* Import shared sidebar styles if applicable, but we replicate core looks for independence */
+
+.dining-sidebar {
+  padding-top: 10px;
+}
+
+.dining-sidebar .filter-header h3 {
+  color: #1a1a1a;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Specific styling for Dining Icons */
+.dining-sidebar .amenity-icon {
+  color: #006CE4;
+  opacity: 0.6;
+}
+
+.dining-sidebar .checkbox-item:hover .amenity-icon {
+  opacity: 1;
+  transform: scale(1.1);
+  transition: all 0.2s ease;
+}
+
+/* Reuse Sidebar Core Styles */
+.search-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 16px 40px 0;
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding: 0 4px;
+}
+
+.filter-header h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0;
+}
+
+.clear-all-link {
+  background: transparent;
+  border: none;
+  color: #006CE4;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.filter-section {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.section-header h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.section-content {
+  padding: 0 16px 16px 16px;
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filter-section.expanded .section-content {
+  display: flex;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.checkbox-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 2px solid #cbd5e1;
+  appearance: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.checkbox-item input[type="checkbox"]:checked {
+  background: #006CE4;
+  border-color: #006CE4;
+}
+
+.checkbox-item input[type="checkbox"]:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+}
+
+.checkbox-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #475569;
+  flex: 1;
+}
+
+.price-inputs {
+  display: flex;
+  gap: 10px;
+}
+
+.price-input-group {
+  flex: 1;
+}
+
+.price-input-group label {
+  font-size: 0.75rem;
+  color: #64748b;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.price-input-group input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1e293b;
+  outline: none;
+}
+
+.stars-row {
+  display: flex;
+  gap: 2px;
+  margin-top: 2px;
+}

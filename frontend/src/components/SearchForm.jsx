@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
+import { MapPin, Search, Navigation2, Building2, AlignLeft } from "lucide-react";
 import sriLankaLocations from "../data/sriLankaLocations";
 import "./SearchForm.css";
 
@@ -28,76 +30,89 @@ function SearchForm({ onSearch }) {
   };
 
   return (
-    <form className="search-form" onSubmit={handleSearch}>
-      {/* Province */}
-      <select
-        value={province}
-        onChange={(e) => {
-          setProvince(e.target.value);
-          setDistrict("");
-          setArea("");
-        }}
-      >
-        <option value="">Select Province</option>
-        {provinces.map((p) => (
-          <option key={p} value={p}>
-            {p}
-          </option>
-        ))}
-      </select>
+    <motion.form 
+      className="search-form" 
+      onSubmit={handleSearch}
+      initial={{ y: 20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ delay: 0.1, duration: 0.5, ease: "easeOut" }}
+    >
+      <div className="search-input-group">
+        <MapPin size={18} className="search-icon" />
+        <select
+          value={province}
+          onChange={(e) => {
+            setProvince(e.target.value);
+            setDistrict("");
+            setArea("");
+          }}
+        >
+          <option value="">Select Province</option>
+          {provinces.map((p) => (
+            <option key={p} value={p}>{p}</option>
+          ))}
+        </select>
+      </div>
 
-      {/* District */}
-      <select
-        value={district}
-        onChange={(e) => {
-          setDistrict(e.target.value);
-          setArea("");
-        }}
-        disabled={!province}
-      >
-        <option value="">Select District</option>
-        {districts.map((d) => (
-          <option key={d} value={d}>
-            {d}
-          </option>
-        ))}
-      </select>
+      <div className="search-input-group">
+        <Navigation2 size={18} className="search-icon" />
+        <select
+          value={district}
+          onChange={(e) => {
+            setDistrict(e.target.value);
+            setArea("");
+          }}
+          disabled={!province}
+        >
+          <option value="">Select District</option>
+          {districts.map((d) => (
+            <option key={d} value={d}>{d}</option>
+          ))}
+        </select>
+      </div>
 
-      {/* Area */}
-      <select
-        value={area}
-        onChange={(e) => setArea(e.target.value)}
-        disabled={!district}
-      >
-        <option value="">Select Area (optional)</option>
-        {areas.map((a) => (
-          <option key={a} value={a}>
-            {a}
-          </option>
-        ))}
-      </select>
+      <div className="search-input-group">
+        <MapPin size={18} className="search-icon" />
+        <select
+          value={area}
+          onChange={(e) => setArea(e.target.value)}
+          disabled={!district}
+        >
+          <option value="">Select Area (optional)</option>
+          {areas.map((a) => (
+            <option key={a} value={a}>{a}</option>
+          ))}
+        </select>
+      </div>
 
-      {/* Category */}
-      <select value={category} onChange={(e) => setCategory(e.target.value)}>
-        <option value="">Select Category</option>
-        <option value="Hotel">Hotel</option>
-        <option value="Restaurant">Restaurant</option>
-        <option value="Villa">Villa</option>
-        <option value="Cabana">Cabana</option>
-        <option value="Room">Room</option>
-      </select>
+      <div className="search-input-group">
+        <Building2 size={18} className="search-icon" />
+        <select value={category} onChange={(e) => setCategory(e.target.value)}>
+          <option value="">Select Category</option>
+          <option value="Hotel">Hotel</option>
+          <option value="Resort">Resort</option>
+          <option value="Villa">Villa</option>
+          <option value="Cabana">Cabana</option>
+          <option value="Boarding House">Boarding Houses</option>
 
-      {/* Keywords */}
-      <input
-        className="keywords-input"
-        type="text"
-        placeholder="Keywords (wifi, parking...)"
-        value={keywords}
-        onChange={(e) => setKeywords(e.target.value)}
-      />
+        </select>
+      </div>
 
-      <button type="submit">Search</button>
-    </form>
+      <div className="search-input-group">
+        <AlignLeft size={18} className="search-icon" />
+        <input
+          type="text"
+          placeholder="Keywords (wifi, pool...)"
+          value={keywords}
+          onChange={(e) => setKeywords(e.target.value)}
+        />
+      </div>
+
+      <button type="submit" className="search-btn">
+        <Search size={18} />
+        Search
+      </button>
+    </motion.form>
   );
 }
 

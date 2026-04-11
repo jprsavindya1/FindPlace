@@ -1,0 +1,64 @@
+/* =========================================================
+   2026 MODERN UNAUTHORIZED PAGE
+========================================================= */
+
+.unauthorized-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 80px);
+  background: var(--bg-main);
+  padding: 20px;
+}
+
+.unauthorized-card {
+  background: var(--surface-card);
+  padding: 50px 40px;
+  border-radius: 24px;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+}
+
+.unauthorized-icon {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.unauthorized-card h2 {
+  font-family: var(--font-heading);
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: var(--text-dark);
+}
+
+.unauthorized-card p {
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.unauthorized-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 30px;
+  background: var(--text-dark);
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.unauthorized-btn:hover {
+  transform: translateY(-2px);
+  background: #000;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}

@@ -17,7 +17,7 @@ const normalizeRole = (role) => (role || "").toString().trim().toLowerCase();
 /* ================= REGISTER ================= */
 router.post("/register", async (req, res) => {
   try {
-    let { name, email, password, role } = req.body;
+    let { name, email, password, role, business_type, phone } = req.body;
 
     // basic validation
     if (!name || !email || !password || !role) {
@@ -28,6 +28,7 @@ router.post("/register", async (req, res) => {
     name = name.toString().trim();
     email = email.toString().trim().toLowerCase();
     role = normalizeRole(role);
+    const phoneNum = phone ? phone.toString().trim() : null;
 
     // role validation
     if (!ALLOWED_ROLES.includes(role)) {
@@ -38,11 +39,11 @@ router.post("/register", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const sql = `
-      INSERT INTO users (name, email, password, role)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO users (name, email, password, role, business_type, phone)
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
 
-    db.query(sql, [name, email, hashedPassword, role], (err) => {
+    db.query(sql, [name, email, hashedPassword, role, business_type || 'accommodation', phoneNum], (err) => {
       if (err) {
         if (err.code === "ER_DUP_ENTRY") {
           return res.status(400).json({ message: "Email already exists" });
@@ -108,7 +109,7 @@ router.post("/login", (req, res) => {
 
     // JWT
     const token = jwt.sign(
-      { id: user.id, role: user.role },
+      { id: user.id, role: user.role, businessType: user.business_type },
       process.env.JWT_SECRET || "findplace_secret",
       { expiresIn: "1d" }
     );
@@ -117,7 +118,9 @@ router.post("/login", (req, res) => {
       message: "Login successful",
       token,
       role: user.role,
+      businessType: user.business_type,
       userId: user.id,
+      name: user.name,
     });
   });
 });

@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Unauthorized from "./pages/Unauthorized";
+import Profile from "./pages/Profile";
 
 // Admin
 import AdminLogin from "./pages/AdminLogin";
@@ -20,6 +21,10 @@ import OwnerDashboard from "./pages/OwnerDashboard";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import CustomerBookings from "./pages/CustomerBookings";
 import PlaceDetails from "./pages/PlaceDetails";
+import MyFavorites from "./pages/MyFavorites";
+import CategoryPage from "./pages/CategoryPage";
+import DiningPage from "./pages/DiningPage";
+import SearchResultsPage from "./pages/SearchResultsPage";
 
 function App() {
   return (
@@ -48,15 +53,13 @@ function App() {
             }
           />
 
-          {/* ================= CUSTOMER ================= */}
-          <Route
-            path="/customer"
-            element={
-              <ProtectedRoute allowedRole="customer">
-                <CustomerDashboard />
-              </ProtectedRoute>
-            }
-          />
+          {/* ================= CUSTOMER / GUEST EXPLORER ================= */}
+          <Route path="/customer" element={<CustomerDashboard />} />
+          <Route path="/dine" element={<DiningPage />} />
+          {/* Landing pages bypassed per user request to streamline search journey */}
+          {/* <Route path="/category/:type" element={<CategoryPage />} /> */}
+          <Route path="/search" element={<SearchResultsPage />} />
+          <Route path="/places/:id" element={<PlaceDetails />} />
 
           <Route
             path="/customer/bookings"
@@ -67,12 +70,11 @@ function App() {
             }
           />
 
-          {/* Customer can view place details */}
           <Route
-            path="/places/:id"
+            path="/customer/favorites"
             element={
               <ProtectedRoute allowedRole="customer">
-                <PlaceDetails />
+                <MyFavorites />
               </ProtectedRoute>
             }
           />
@@ -87,11 +89,21 @@ function App() {
             }
           />
 
+          {/* ================= SHARED ROUTES (ALL AUTH USERS) ================= */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute allowedRoles={["customer", "owner", "admin"]}>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+
           {/* ================= DEFAULT REDIRECT ================= */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Navigate to="/customer" replace />} />
 
           {/* ================= UNKNOWN ROUTES ================= */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/customer" replace />} />
 
         </Routes>
 

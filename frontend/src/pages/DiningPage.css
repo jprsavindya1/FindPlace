@@ -1,0 +1,371 @@
+.dining-page-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background: #fff;
+  padding-bottom: 100px;
+}
+
+/* HERO SECTION */
+.dining-hero {
+  position: relative;
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+  padding: 0 20px;
+  background-size: cover;
+  background-position: center;
+}
+
+.dining-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.6) 100%);
+}
+
+.dining-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 800px;
+}
+
+.dining-badge {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  padding: 8px 16px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: inline-block;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.dining-hero-content h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 4.5rem;
+  font-weight: 900;
+  margin-bottom: 16px;
+  line-height: 1;
+}
+
+.dining-hero-content p {
+  font-size: 1.4rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+/* SEARCH BAR CONTAINER */
+.dining-search-form-wrapper {
+  margin-top: -60px;
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* SECTIONS */
+.dining-section {
+  padding: 60px 0;
+}
+
+.dining-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.dining-section-title {
+  font-family: 'Outfit', sans-serif;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.dining-section-subtitle {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 40px;
+}
+
+/* CUISINE GRID */
+.cuisine-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.cuisine-card {
+  position: relative;
+  height: 250px;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.cuisine-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.cuisine-card:hover img {
+  transform: scale(1.1);
+}
+
+.cuisine-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+}
+
+.cuisine-overlay h3 {
+  color: white;
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.cuisine-count {
+  color: rgba(255,255,255,0.7);
+  font-size: 0.9rem;
+}
+
+/* AMBIENCE FILTERS */
+.ambience-filters {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 40px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+}
+
+.ambience-btn {
+  padding: 12px 24px;
+  border-radius: 12px;
+  background: #f4f4f4;
+  border: 1px solid #eee;
+  color: #555;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.ambience-btn:hover {
+  background: #eee;
+}
+
+.ambience-btn.active {
+  background: #1a1a1a;
+  color: #fff;
+  border-color: #1a1a1a;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+/* RESTAURANT GRID */
+.restaurant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 32px;
+}
+
+/* OFFERS SECTION */
+.offers-section {
+  background: #fff8f0;
+  border-radius: 30px;
+  padding: 80px 60px;
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.offer-content h2 {
+  font-size: 3rem;
+  font-weight: 900;
+  color: #c2410c;
+  margin-bottom: 16px;
+}
+
+.offer-content p {
+  font-size: 1.2rem;
+  color: #92400e;
+  max-width: 500px;
+}
+
+.offer-img {
+  width: 400px;
+  height: 250px;
+  border-radius: 20px;
+  object-fit: cover;
+  box-shadow: 0 20px 40px rgba(186, 73, 13, 0.2);
+}
+
+@media (max-width: 1024px) {
+  .cuisine-grid { grid-template-columns: repeat(2, 1fr); }
+  .dining-hero-content h1 { font-size: 3.5rem; }
+}
+
+@media (max-width: 768px) {
+  .cuisine-grid { grid-template-columns: 1fr; }
+  .offers-section { flex-direction: column; text-align: center; padding: 40px 20px; }
+  .offer-img { width: 100%; margin-top: 40px; }
+  .dining-hero-content h1 { font-size: 2.8rem; }
+}
+
+/* ================= RESULTS LAYOUT ================= */
+.results-layout {
+  padding-top: 60px;
+  padding-bottom: 60px;
+}
+
+.breadcrumb-nav {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.search-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.results-main {
+  flex: 1;
+}
+
+.results-header {
+  margin-bottom: 24px;
+}
+
+.results-title-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.results-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin: 0;
+  letter-spacing: -0.03em;
+}
+
+.results-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.view-toggle {
+  display: flex;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.view-toggle button {
+  background: transparent;
+  border: none;
+  padding: 8px 12px;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-toggle button.active {
+  background: #f1f5f9;
+  color: #006CE4;
+}
+
+.results-tabs {
+  display: flex;
+  gap: 32px;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 24px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  padding: 12px 4px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+  color: #006CE4;
+}
+
+.tab-btn.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: #006CE4;
+  border-radius: 4px;
+}
+
+.results-list.grid-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.no-results-state {
+  text-align: center;
+  padding: 60px 0;
+  background: white;
+  border-radius: 20px;
+  border: 1px dashed #cbd5e1;
+}
+
+.no-results-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.error-state {
+  text-align: center;
+  padding: 40px;
+  color: #ef4444;
+}
+
+@media (max-width: 900px) {
+  .search-layout {
+    flex-direction: column;
+  }
+}
