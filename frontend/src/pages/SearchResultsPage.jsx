@@ -31,16 +31,17 @@ const SearchResultsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [viewMode, setViewMode] = useState('list');
-  const [sortBy, setSortBy] = useState('our-picks');
   const [totalRecords, setTotalRecords] = useState(0);
-  const [currentPage, setCurrentPage] = useState(parseInt(queryParams.get('page')) || 1);
+  const queryPage = parseInt(queryParams.get('page'));
+  const [currentPage, setCurrentPage] = useState(isNaN(queryPage) ? 1 : queryPage);
+  const [sortBy, setSortBy] = useState(queryParams.get('sortBy') || 'our-picks');
 
   // Filters State
   const [filters, setFilters] = useState({
     minPrice: queryParams.get('minPrice') || '',
     maxPrice: queryParams.get('maxPrice') || '',
     category: queryParams.get('category') || '',
-    stars: queryParams.get('stars') ? parseInt(queryParams.get('stars')) : null,
+    stars: queryParams.get('stars') ? queryParams.get('stars').split(',').map(s => parseInt(s)).filter(s => !isNaN(s)) : [],
     wifi: queryParams.get('wifi') === 'true',
     ac: queryParams.get('ac') === 'true',
     pool: queryParams.get('pool') === 'true',
@@ -59,7 +60,7 @@ const SearchResultsPage = () => {
       minPrice: qp.get('minPrice') || '',
       maxPrice: qp.get('maxPrice') || '',
       category: qp.get('category') || '',
-      stars: qp.get('stars') ? parseInt(qp.get('stars')) : null,
+      stars: qp.get('stars') ? qp.get('stars').split(',').map(s => parseInt(s)).filter(s => !isNaN(s)) : [],
       wifi: qp.get('wifi') === 'true',
       ac: qp.get('ac') === 'true',
       pool: qp.get('pool') === 'true',
@@ -70,7 +71,9 @@ const SearchResultsPage = () => {
       area: qp.get('area') || '',
       keywords: qp.get('keywords') || ''
     });
-    setCurrentPage(parseInt(qp.get('page')) || 1);
+    const queryPageNum = parseInt(qp.get('page'));
+    setCurrentPage(isNaN(queryPageNum) ? 1 : queryPageNum);
+    setSortBy(qp.get('sortBy') || 'our-picks');
   }, [location.search]);
 
   // Fetch Results
@@ -82,9 +85,14 @@ const SearchResultsPage = () => {
         
         // Build query string from current filters and existing params
         const searchParams = new URLSearchParams(location.search);
+        // Ensure specific params are set correctly for the fetch
+        const pageFromUrl = searchParams.get('page') || '1';
         searchParams.set('type', 'stay'); // ⭐ Force Stay Only
-        searchParams.set('page', currentPage);
+        searchParams.set('page', pageFromUrl);
         searchParams.set('limit', '4');
+        if (sortBy !== 'our-picks') {
+          searchParams.set('sortBy', sortBy);
+        }
         
         const finalUrl = `${API_BASE_URL}/api/places/find-places?${searchParams.toString()}`;
         console.log("[Search Debug] Fetching URL:", finalUrl);
@@ -110,28 +118,37 @@ const SearchResultsPage = () => {
     fetchResults();
   }, [location.search]);
 
-  // Derived sorted results
-  const sortedResults = React.useMemo(() => {
-    let sorted = [...results];
-    if (sortBy === 'price-low') {
-      sorted.sort((a, b) => a.price - b.price);
-    } else if (sortBy === 'rating') {
-      sorted.sort((a, b) => b.avg_rating - a.avg_rating);
-    }
-    return sorted;
-  }, [results, sortBy]);
+  // Use results directly from backend
+  const sortedResults = results;
 
   // Handlers
   const handleFilterChange = (key, value) => {
-    const newFilters = { ...filters, [key]: value };
+    let newFilters;
+    if (key === 'stars') {
+      // Toggle stars in the array
+      const currentStars = filters.stars || [];
+      if (currentStars.includes(value)) {
+        newFilters = { ...filters, stars: currentStars.filter(s => s !== value) };
+      } else {
+        newFilters = { ...filters, stars: [...currentStars, value] };
+      }
+    } else {
+      newFilters = { ...filters, [key]: value };
+    }
+    
     setFilters(newFilters);
     
     // Update URL query params
     const newParams = new URLSearchParams(location.search);
-    if (value === null || value === '' || value === false) {
+    const newValue = newFilters[key];
+
+    // Reset to page 1 when filters change
+    newParams.delete('page');
+    
+    if (newValue === null || newValue === '' || newValue === false || (Array.isArray(newValue) && newValue.length === 0)) {
       newParams.delete(key);
     } else {
-      newParams.set(key, value);
+      newParams.set(key, Array.isArray(newValue) ? newValue.join(',') : newValue);
     }
     
     navigate(`/search?${newParams.toString()}`, { replace: true });
@@ -139,7 +156,7 @@ const SearchResultsPage = () => {
 
   const handleClearFilters = () => {
     const resetFilters = {
-      minPrice: '', maxPrice: '', category: '', stars: null,
+      minPrice: '', maxPrice: '', category: '', stars: [],
       wifi: false, ac: false, pool: false, parking: false, breakfast: false
     };
     setFilters(prev => ({ ...prev, ...resetFilters }));
@@ -215,7 +232,13 @@ const SearchResultsPage = () => {
               <div className="results-title-group">
                 <h1 className="results-title">{getSearchSummary()}</h1>
                 <div className="results-actions">
-                  <div className="sort-dropdown" onClick={() => setSortBy(sortBy === 'price-low' ? 'our-picks' : 'price-low')}>
+                  <div className="sort-dropdown" onClick={() => {
+                    const nextSort = sortBy === 'price-low' ? 'our-picks' : 'price-low';
+                    const newParams = new URLSearchParams(location.search);
+                    newParams.set('sortBy', nextSort);
+                    newParams.delete('page'); // Reset to page 1
+                    navigate(`/search?${newParams.toString()}`);
+                  }}>
                     <SortAsc size={16} />
                     <span>Sort by: {sortBy === 'price-low' ? 'Lowest price first' : sortBy === 'rating' ? 'Best reviewed' : 'Our top picks'}</span>
                     <ChevronDown size={16} />
@@ -241,19 +264,34 @@ const SearchResultsPage = () => {
               <div className="results-tabs">
                 <button 
                   className={`tab-btn ${sortBy === 'our-picks' ? 'active' : ''}`}
-                  onClick={() => setSortBy('our-picks')}
+                  onClick={() => {
+                    const newParams = new URLSearchParams(location.search);
+                    newParams.set('sortBy', 'our-picks');
+                    newParams.delete('page');
+                    navigate(`/search?${newParams.toString()}`);
+                  }}
                 >
                   Our top picks
                 </button>
                 <button 
                   className={`tab-btn ${sortBy === 'price-low' ? 'active' : ''}`}
-                  onClick={() => setSortBy('price-low')}
+                  onClick={() => {
+                    const newParams = new URLSearchParams(location.search);
+                    newParams.set('sortBy', 'price-low');
+                    newParams.delete('page');
+                    navigate(`/search?${newParams.toString()}`);
+                  }}
                 >
                   Price (lowest first)
                 </button>
                 <button 
                   className={`tab-btn ${sortBy === 'rating' ? 'active' : ''}`}
-                  onClick={() => setSortBy('rating')}
+                  onClick={() => {
+                    const newParams = new URLSearchParams(location.search);
+                    newParams.set('sortBy', 'rating');
+                    newParams.delete('page');
+                    navigate(`/search?${newParams.toString()}`);
+                  }}
                 >
                   Best reviewed
                 </button>

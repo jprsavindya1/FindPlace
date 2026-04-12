@@ -171,8 +171,8 @@ const SearchSidebar = ({ filters, onFilterChange, onClearFilters }) => {
             <label key={star} className="checkbox-item">
               <input 
                 type="checkbox" 
-                checked={filters.stars === star}
-                onChange={() => onFilterChange('stars', filters.stars === star ? null : star)}
+                checked={filters.stars?.includes(star)}
+                onChange={() => onFilterChange('stars', star)}
               />
               <span className="checkbox-label">
                 {star} stars

@@ -37,6 +37,7 @@ router.get("/find-places", (req, res) => {
     province, district, area, category, keywords, 
     minPrice, maxPrice, stars, wifi, ac, pool, parking, breakfast,
     type, cuisine, ambience,
+    sortBy,
     page = 1, limit = 4
   } = req.query;
 
@@ -81,8 +82,12 @@ router.get("/find-places", (req, res) => {
     params.push(maxPrice);
   }
   if (stars) {
-    whereClause += " AND p.stars >= ?";
-    params.push(stars);
+    const starList = typeof stars === 'string' ? stars.split(',').map(s => parseInt(s)).filter(s => !isNaN(s)) : [parseInt(stars)];
+    if (starList.length > 0) {
+      const placeholders = starList.map(() => '?').join(',');
+      whereClause += ` AND p.stars IN (${placeholders})`;
+      params.push(...starList);
+    }
   }
   if (wifi === 'true') {
     whereClause += " AND p.id IN (SELECT place_id FROM place_amenities WHERE amenity_id = 1)";
@@ -111,6 +116,12 @@ router.get("/find-places", (req, res) => {
     whereClause += " AND p.ambience LIKE ?";
     params.push(`%${ambience}%`);
   }
+  let orderBy = "p.id DESC";
+  if (sortBy === 'price-low') {
+    orderBy = "CAST(p.price AS DECIMAL(10,2)) ASC";
+  } else if (sortBy === 'rating') {
+    orderBy = "avg_rating DESC, review_count DESC";
+  }
 
   // Final Queries
   let sql = `
@@ -126,7 +137,7 @@ router.get("/find-places", (req, res) => {
       GROUP BY place_id
     ) rev ON p.id = rev.place_id
     ${whereClause}
-    ORDER BY p.id DESC
+    ORDER BY ${orderBy}
     LIMIT ? OFFSET ?
   `;
 
