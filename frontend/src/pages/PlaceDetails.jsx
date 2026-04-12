@@ -189,7 +189,10 @@ function PlaceDetails() {
       }, { headers: { Authorization: `Bearer ${token}` } });
       setCurrentProof({ ...res.data, place_name: place.name, res_date: formattedDate, res_time: resTime, people_count: resGuests, customer_name: fullName, customer_phone: phone });
       setResDate(null); setResTime(""); setResGuests(2);
-    } catch { alert("Reservation failed"); } finally { setIsBooking(false); }
+    } catch (err) { 
+      const errMsg = err.response?.data?.message || "Reservation failed. Please try again.";
+      alert(errMsg); 
+    } finally { setIsBooking(false); }
   };
 
   // Stay Logic Wrapper

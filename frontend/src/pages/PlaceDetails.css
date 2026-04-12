@@ -1516,9 +1516,11 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
   margin-bottom: 24px;
   background: rgba(0, 0, 0, 0.04);
-  padding: 8px;
+  padding: 8px 16px;
   border-radius: 20px;
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
@@ -1526,6 +1528,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .pd-lux-menu-tabs {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
 }
 
 .pd-lux-menu-tab {

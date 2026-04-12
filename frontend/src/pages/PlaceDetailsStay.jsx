@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { 
   MapPin, Star, Check, Users, Bed, Calendar, Phone, FileText, 
   Heart, Clock, PawPrint, Ban, Info, CheckCircle, Eye, User,
-  MessageCircle, PlusCircle, Share2, Edit3
+  MessageCircle, PlusCircle, Share2, Edit3, ChevronRight
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import DatePicker from "react-datepicker";
@@ -25,6 +25,19 @@ const PlaceDetailsStay = ({
   activeCategory, setActiveCategory, showAllMenu, setShowAllMenu, menuItems, filteredMenu,
   handleBookingSubmit, addDays, gallery
 }) => {
+  const tabsRef = React.useRef(null);
+
+  const scrollTabs = () => {
+    if (tabsRef.current) {
+      tabsRef.current.scrollBy({ left: 150, behavior: 'smooth' });
+    }
+  };
+
+  const availableCategories = React.useMemo(() => {
+    return [...new Set(menuItems.map(item => item.category))].filter(Boolean);
+  }, [menuItems]);
+  
+  const currentTab = activeCategory || availableCategories[0];
 
   const handleShare = async () => {
     const shareData = {
@@ -236,29 +249,30 @@ const PlaceDetailsStay = ({
                 {/* Dining Options Section */}
                 {menuItems && menuItems.length > 0 && (
                   <div className="pd-section" style={{ marginTop: '40px' }}>
-                    <div className="pd-menu-tabs-row">
+                    <div className="res-menu-heading-row">
                       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                        <h2 className="pd-section-title" style={{ margin: 0 }}>Dining Options</h2>
+                        <h2 className="pd-section-title" style={{ margin: 0 }}>Restaurant Menu</h2>
                         {place.menu_pdf && (
                           <a href={`${API_BASE_URL}/uploads/pdfs/${place.menu_pdf}`} target="_blank" rel="noopener noreferrer" className="btn-pdf-menu">
                             <FileText size={14} /> View Full PDF Menu
                           </a>
                         )}
                       </div>
-                      <div className="pd-lux-menu-tabs">
-                        {["Breakfast", "Lunch", "Dinner", "Drinks", "Desserts"].map((cat) => {
-                          const hasItems = menuItems.some(item => item.category === cat);
-                          if (!hasItems) return null;
-                          return (
-                            <div 
-                              key={cat} 
-                              className={`pd-lux-menu-tab ${activeCategory === cat ? 'active' : ''}`} 
-                              onClick={() => setActiveCategory(cat)}
-                            >
-                              {cat}
-                            </div>
-                          );
-                        })}
+                      <div className="pd-menu-tabs-container">
+                        <div className="pd-menu-tabs-scroll-wrapper" ref={tabsRef}>
+                          <div className="pd-menu-tabs">
+                            {availableCategories.map((cat) => (
+                              <div key={cat} className={`pd-menu-tab ${currentTab === cat ? 'active' : ''}`} onClick={() => setActiveCategory(cat)}>
+                                {cat}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        {availableCategories.length > 2 && (
+                          <div className="pd-menu-scroll-indicator" onClick={scrollTabs}>
+                             <ChevronRight size={16} />
+                          </div>
+                        )}
                       </div>
                     </div>
 

@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require("../db");
 const { verifyToken, verifyOwner } = require("../middleware/authMiddleware");
 const PDFDocument = require("pdfkit");
+const QRCode = require("qrcode");
 
 // ✅ TEMP CONFIRMATION (to ensure correct file is being loaded)
 console.log("✅ NEW booking.js (UPGRADED) LOADED");
@@ -325,6 +326,12 @@ router.get("/customer", verifyToken, (req, res) => {
       b.total_price,
       b.status,
       b.created_at,
+      b.adults,
+      b.children,
+      b.num_rooms,
+      b.full_name,
+      b.email,
+      b.phone,
       CONCAT('FP-STAY-', LPAD(b.id, 4, '0')) as order_id
     FROM bookings b
     JOIN places p ON b.place_id = p.id
@@ -358,6 +365,8 @@ router.get("/invoice/:id", verifyToken, (req, res) => {
       b.total_price,
       b.payment_status,
       b.status,
+      b.adults,
+      b.children,
       CONCAT('FP-STAY-', LPAD(b.id, 4, '0')) as order_id
     FROM bookings b
     JOIN places p ON b.place_id = p.id
@@ -366,129 +375,109 @@ router.get("/invoice/:id", verifyToken, (req, res) => {
     WHERE b.id = ? AND (b.customer_id = ? OR b.owner_id = ?)
   `;
 
-  db.query(sql, [bookingId, userId, userId], (err, results) => {
+  db.query(sql, [bookingId, userId, userId], async (err, results) => {
     if (err) return res.status(500).json({ message: "Database error" });
     if (results.length === 0) return res.status(404).json({ message: "Booking not found" });
 
     const b = results[0];
 
-    // Create PDF
-    const doc = new PDFDocument({ 
-      size: 'A4',
-      margin: 50
-    });
+    try {
+      // Create PDF
+      const doc = new PDFDocument({ 
+        size: 'A4',
+        margin: 0
+      });
 
-    // Set response headers
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename=Invoice-FindPlace-${b.id}.pdf`);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `attachment; filename=Luxury-Stay-Confirmation-${b.id}-Final.pdf`);
+      doc.pipe(res);
 
-    doc.pipe(res);
+      // --- COLORS & STYLES ---
+      const colors = {
+        bg: "#040b17",
+        blue: "#3b82f6",
+        white: "#ffffff",
+        textGrey: "#aaaaaa",
+        success: "#10b981"
+      };
 
-    // --- Background Decor ---
-    doc.save();
-    doc.fillColor("#006CE4").opacity(0.03);
-    doc.moveTo(0, 0).lineTo(600, 0).bezierCurveTo(400, 100, 200, 0, 0, 120).fill();
-    doc.restore();
+      // 1. Fill Dark Background
+      doc.rect(0, 0, 595, 842).fill(colors.bg);
 
-    const left = 50;
-    const right = 545;
-    const center = 300;
-    let y = 60;
+      // 2. Luxury Blue Border
+      doc.rect(20, 20, 555, 802).lineWidth(2).strokeColor(colors.blue).stroke();
 
-    // --- Header ---
-    doc.fillColor("#003580").fontSize(30).font("Helvetica-Bold").text("Find", left, y, { continued: true });
-    doc.fillColor("#006CE4").text("Place");
-    
-    y += 35;
-    doc.fillColor("#64748b").fontSize(12).font("Helvetica").text("PREMIUM BOOKING INVOICE", left, y);
-    
-    y += 35;
-    doc.strokeColor("#e2e8f0").lineWidth(1).moveTo(left, y).lineTo(right, y).stroke();
+      let y = 60;
 
-    // --- Blue Stripe ---
-    y += 15;
-    doc.rect(0, y, 600, 35).fill("#006CE4");
-    y += 55;
+      // 3. Header
+      y += 35;
+      doc.fillColor(colors.blue).fontSize(42).text(b.place_name?.toUpperCase() || "FINDPLACE LUXURY", 0, y, { align: 'center', characterSpacing: 5 });
+      y += 45;
+      doc.fillColor(colors.white).fontSize(16).text("BOOKING CONFIRMATION & INVOICE", 0, y, { align: 'center', characterSpacing: 2 });
+      y += 20;
+      doc.rect(220, y, 155, 2).fill(colors.blue);
 
-    // --- Invoice Info (Orderly Columns) ---
-    doc.fillColor("#64748b").fontSize(10).font("Helvetica").text("INVOICE ID", left, y);
-    doc.fillColor("#1e293b").fontSize(12).font("Helvetica-Bold").text(`INV-${String(b.id).padStart(5, '0')}`, left, y + 15);
+      // 4. QR Code Section (Digital Proof for Stays)
+      y += 40;
+      const orderId = `FP-RES-${String(b.id).padStart(4, '0')}`;
+      const qrData = JSON.stringify({ order_id: orderId, type: "stay", customer: b.customer_name, check_in: b.check_in });
+      const qrBuffer = await QRCode.toBuffer(qrData, { 
+        margin: 1, 
+        width: 170,
+        color: { dark: "#ffffff", light: "#040b17" } // White on Navy for stay theme
+      });
+      
+      doc.image(qrBuffer, 212, y, { width: 170 });
+      
+      y += 180;
+      doc.fillColor(colors.blue).fontSize(10).font("Helvetica-Bold").text("ORDER CONFIRMATION ID", 0, y, { align: 'center' });
+      y += 15;
+      doc.fillColor(colors.blue).fontSize(32).text(orderId, 0, y, { align: 'center' });
 
-    doc.fillColor("#64748b").fontSize(10).font("Helvetica").text("TRANSACTION ID", 320, y);
-    doc.fillColor("#1e293b").fontSize(12).font("Helvetica-Bold").text(b.transaction_id || 'TXN-PENDING', 320, y + 15);
+      // 5. Details Cards
+      y += 45;
+      const cardWidth = 230;
+      const cardHeight = 50;
+      const leftCol = 60;
+      const rightCol = 305;
 
-    y += 50;
-    doc.strokeColor("#f1f5f9").lineWidth(1).moveTo(left, y).lineTo(right, y).stroke();
+      const drawCard = (x, y, label, value, color) => {
+        doc.roundedRect(x, y, cardWidth, cardHeight, 10).strokeColor(colors.blue).lineWidth(1).stroke();
+        doc.fillColor(colors.blue).fontSize(8).font("Helvetica-Bold").text(label, x + 15, y + 12);
+        doc.fillColor(color || colors.white).fontSize(12).text(value || 'N/A', x + 15, y + 26);
+      };
 
-    // --- Customer & Stay Details (Clean Layout) ---
-    y += 20;
-    
-    // Left Side: Customer
-    doc.fillColor("#64748b").fontSize(10).font("Helvetica").text("CUSTOMER", left, y);
-    doc.fillColor("#1e293b").fontSize(12).font("Helvetica-Bold").text(b.customer_name, left, y + 15);
-    doc.fillColor("#64748b").fontSize(10).font("Helvetica").text(req.user.email || 'customer@example.com', left, y + 32);
+      drawCard(leftCol, y, "PROPERTY", b.place_name);
+      drawCard(rightCol, y, "ROOM TYPE", b.room_name || "Accommodation", colors.white);
+      
+      y += 60;
+      drawCard(leftCol, y, "CHECK-IN", new Date(b.check_in).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }));
+      drawCard(rightCol, y, "CHECK-OUT", new Date(b.check_out).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }));
 
-    // Right Side: Property
-    doc.fillColor("#64748b").fontSize(10).font("Helvetica").text("PROPERTY & ROOM", 320, y);
-    doc.fillColor("#1e293b").fontSize(12).font("Helvetica-Bold").text(b.place_name, 320, y + 15);
-    doc.fillColor("#64748b").fontSize(11).font("Helvetica").text(b.room_name || 'Standard Room', 320, y + 32);
+      y += 60;
+      drawCard(leftCol, y, "GUEST NAME", b.customer_name);
+      drawCard(rightCol, y, "STAY DURATION", `${Math.ceil((new Date(b.check_out) - new Date(b.check_in)) / (1000 * 60 * 60 * 24))} Night(s)`);
 
-    y += 70;
-    doc.strokeColor("#f1f5f9").lineWidth(1).moveTo(left, y).lineTo(right, y).stroke();
+      y += 60;
+      const statusColor = b.payment_status?.toUpperCase() === 'PAID' ? colors.success : "#ff4d4d";
+      drawCard(leftCol, y, "GUESTS", `${b.adults} Adults, ${b.children} Children`);
+      drawCard(rightCol, y, "PAYMENT STATUS", b.payment_status?.toUpperCase() || "PENDING", statusColor);
 
-    // --- Dates Section ---
-    y += 20;
-    doc.fillColor("#64748b").fontSize(10).font("Helvetica").text("CHECK-IN", left, y);
-    doc.fillColor("#1e293b").fontSize(11).font("Helvetica-Bold").text(new Date(b.check_in).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }), left, y + 15);
+      y += 60;
+      drawCard(leftCol, y, "TOTAL PAYMENT", `Rs. ${Number(b.total_price).toLocaleString()}`, colors.success);
 
-    doc.fillColor("#64748b").fontSize(10).font("Helvetica").text("CHECK-OUT", 320, y);
-    doc.fillColor("#1e293b").fontSize(11).font("Helvetica-Bold").text(new Date(b.check_out).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }), 320, y + 15);
+      // 6. Footer Badge
+      const footerY = 760;
+      doc.roundedRect(247, footerY, 100, 30, 15).fill(colors.blue);
+      doc.fillColor(colors.bg).fontSize(14).font("Times-Bold").text("WELCOME", 247, footerY + 8, { width: 100, align: 'center' });
+      
+      doc.fillColor(colors.blue).fontSize(8).font("Helvetica").text("THANK YOU FOR BOOKING WITH FINDPLACE.COM", 0, 805, { align: 'center' });
 
-    y += 50;
-
-    // --- Table (Professional Spacing) ---
-    doc.rect(left, y, right - left, 30).fill("#006CE4");
-    doc.fillColor("#ffffff").fontSize(11).font("Helvetica-Bold").text("DESCRIPTION", left + 15, y + 10);
-    doc.text("AMOUNT", 450, y + 10);
-
-    y += 30;
-    doc.rect(left, y, right - left, 45).fill("#f8fafc");
-    doc.fillColor("#1e293b").fontSize(11).font("Helvetica").text(`Booking Charges for ${b.room_name || 'Room'}`, left + 15, y + 15);
-    doc.font("Helvetica-Bold").text(`Rs. ${b.total_price.toLocaleString()}.00`, 440, y + 15);
-
-    y += 45;
-    doc.rect(left, y, right - left, 45).fill("#ffffff");
-    doc.fillColor("#003580").fontSize(13).font("Helvetica-Bold").text("TOTAL AMOUNT", left + 15, y + 15);
-    doc.text(`Rs. ${b.total_price.toLocaleString()}.00`, 440, y + 15);
-
-    y += 45;
-    doc.rect(left, y, right - left, 40).fill("#f1f5f9");
-    doc.fillColor("#64748b").fontSize(11).font("Helvetica").text("PAYMENT STATUS", left + 15, y + 13);
-    const statusCol = b.payment_status === 'PAID' ? "#059669" : "#dc2626";
-    doc.fillColor(statusCol).font("Helvetica-Bold").text(b.payment_status, 440, y + 13);
-
-    // --- Footer (Strict Centering) ---
-    const footerY = 750;
-    doc.strokeColor("#e2e8f0").lineWidth(1).moveTo(left, footerY - 20).lineTo(right, footerY - 20).stroke();
-    
-    doc.fillColor("#1e293b").fontSize(15).font("Helvetica-Bold").text("Thank you for choosing FindPlace ❤️", left, footerY, {
-      width: right - left,
-      align: 'center'
-    });
-    
-    doc.fillColor("#94a3b8").fontSize(10).font("Helvetica").text("This is a system-generated invoice.", left, footerY + 25, {
-      width: right - left,
-      align: 'center'
-    });
-
-    // Decorative Bottom Decor
-    doc.save();
-    doc.translate(0, 842);
-    doc.fillColor("#006CE4").opacity(0.03);
-    doc.moveTo(0, 0).lineTo(600, 0).bezierCurveTo(400, -100, 200, 0, 0, -120).fill();
-    doc.restore();
-
-    doc.end();
+      doc.end();
+    } catch (err) {
+      console.error("Stay PDF Generation Error:", err);
+      res.status(500).json({ message: "PDF generation failed" });
+    }
   });
 });
 

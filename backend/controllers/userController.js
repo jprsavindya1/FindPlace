@@ -26,7 +26,7 @@ exports.updateProfile = (req, res) => {
   });
 };
 
-// Upload Profile Picture
+// Upload Profile Picture (With Cleanup)
 exports.uploadProfilePic = (req, res) => {
   const userId = req.user.id;
   const profilePic = req.file ? req.file.filename : null;
@@ -35,12 +35,34 @@ exports.uploadProfilePic = (req, res) => {
     return res.status(400).json({ message: "Please upload an image" });
   }
 
-  const sql = "UPDATE users SET profile_pic = ? WHERE id = ?";
-  db.query(sql, [profilePic, userId], (err, result) => {
+  // 1. Get old pic to delete
+  db.query("SELECT profile_pic FROM users WHERE id = ?", [userId], (err, results) => {
     if (err) return res.status(500).json({ message: "Database error" });
-    res.json({ message: "Profile picture updated", profile_pic: profilePic });
+    const oldPic = results[0]?.profile_pic;
+
+    // 2. Update DB
+    const sql = "UPDATE users SET profile_pic = ? WHERE id = ?";
+    db.query(sql, [profilePic, userId], (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Database error during image update" });
+      }
+
+      // 3. Cleanup old file
+      if (oldPic) {
+        const path = require("path");
+        const fs = require("fs");
+        const oldPath = path.join("uploads/profiles/", oldPic);
+        if (fs.existsSync(oldPath)) {
+          fs.unlinkSync(oldPath);
+        }
+      }
+
+      res.json({ message: "Profile picture updated successfully", profile_pic: profilePic });
+    });
   });
 };
+
 
 // Change Password
 exports.changePassword = async (req, res) => {

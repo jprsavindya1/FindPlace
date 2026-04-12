@@ -13,6 +13,7 @@ const fadeUp = {
 
 const OwnerRevenue = ({ filterPlaceId = "ALL", places = [] }) => {
   const [bookings, setBookings] = useState([]);
+  const [stayAnalytics, setStayAnalytics] = useState([]); // ⭐ NEW
   const [peakHours, setPeakHours] = useState([]);
   const [topDishes, setTopDishes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,6 +54,15 @@ const OwnerRevenue = ({ filterPlaceId = "ALL", places = [] }) => {
       })) : rawData;
 
       setBookings(normalizedData);
+
+      // If stay mode, also fetch the pre-aggregated analytics
+      if (businessType === 'accommodation') {
+        const analyticsRes = await axios.get(`${API_BASE_URL}/api/owner/stay/analytics/revenue`, {
+          params: { placeId: filterPlaceId },
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setStayAnalytics(analyticsRes.data);
+      }
     } catch (err) {
       console.error("Failed to fetch data for revenue dashboard", err);
     }
@@ -151,10 +161,15 @@ const OwnerRevenue = ({ filterPlaceId = "ALL", places = [] }) => {
     });
 
     // Formatting Monthly Data for Recharts
-    const monthlyData = Object.keys(monthlyRevenueMap).map(key => ({
-      name: key,
-      Revenue: monthlyRevenueMap[key],
-    })).sort((a, b) => new Date(a.name) - new Date(b.name));
+    const monthlyData = businessType === 'accommodation' && stayAnalytics.length > 0 
+      ? stayAnalytics.map(a => ({
+          name: new Date(2026, a.month - 1).toLocaleString('default', { month: 'short' }),
+          Revenue: Number(a.revenue)
+        }))
+      : Object.keys(monthlyRevenueMap).map(key => ({
+          name: key,
+          Revenue: monthlyRevenueMap[key],
+        })).sort((a, b) => new Date(a.name) - new Date(b.name));
 
     // Time Based Pie Chart Data
     const timeStatusData = [

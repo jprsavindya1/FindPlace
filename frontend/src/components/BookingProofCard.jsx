@@ -25,16 +25,32 @@ const BookingProofCard = ({ booking, onClose }) => {
   };
 
   const handleDownload = () => {
-    const element = pdfRef.current;
-    const opt = {
-      margin: 0,
-      filename: `Luxury-Confirmation-${orderId}.pdf`,
-      image: { type: "jpeg", quality: 1 },
-      html2canvas: { scale: 3, useCORS: true, letterRendering: true },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-      pagebreak: { mode: ['avoid-all'] }
-    };
-    html2pdf().set(opt).from(element).save();
+    const token = localStorage.getItem("token");
+    const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:5007";
+    const endpoint = isDine ? "reservations" : "bookings";
+    
+    // Robust ID retrieval: check .id, then ._id, then parse from order_id
+    const rawId = booking.id || booking._id;
+    let finalId = rawId;
+
+    if (!finalId && orderId) {
+      // If orderId is "FP-STAY-0017", split gives ["FP", "STAY", "0017"], pop gives "0017"
+      const parts = orderId.split('-');
+      const possibleId = parts[parts.length - 1];
+      if (!isNaN(possibleId)) {
+        finalId = parseInt(possibleId, 10);
+      }
+    }
+
+    if (!finalId) {
+      console.error("❌ PDF Download Error: Could not determine booking ID", booking);
+      alert("Error: Could not determine booking ID. Please try again.");
+      return;
+    }
+    
+    console.log(`🚀 Downloading PDF for ${endpoint}/${finalId}`);
+    const downloadUrl = `${baseUrl}/api/${endpoint}/invoice/${finalId}?token=${token}&cb=${Date.now()}`;
+    window.open(downloadUrl, '_blank');
   };
 
   const isDine = orderId.includes("DINE") || booking.res_date;
@@ -139,9 +155,51 @@ const BookingProofCard = ({ booking, onClose }) => {
                </div>
             </div>
 
-            <div style={{ background: 'rgba(212, 175, 55, 0.05)', padding: '15px 20px', borderRadius: '10px', marginBottom: '35px', border: '1px solid #d4af3766' }}>
-               <p style={{ margin: 0, fontSize: '13px', color: '#bbbbbb', lineHeight: '1.5', textAlign: 'center' }}>
-                  Check-in: Present this QR code at the reception desk upon arrival. This PDF is a valid reservation confirmation.
+            {/* Guest Details Section (NEW) */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '25px' }}>
+               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '15px', borderRadius: '12px', border: `1px solid ${isDine ? '#d4af37' : '#3b82f6'}` }}>
+                  <div style={{ fontSize: '9px', fontWeight: 800, color: isDine ? '#d4af37' : '#3b82f6', marginBottom: '4px', textTransform: 'uppercase' }}>GUEST NAME</div>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff' }}>{booking.full_name || booking.customer_name || 'Guest'}</div>
+               </div>
+               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '15px', borderRadius: '12px', border: `1px solid ${isDine ? '#d4af37' : '#3b82f6'}` }}>
+                  <div style={{ fontSize: '9px', fontWeight: 800, color: isDine ? '#d4af37' : '#3b82f6', marginBottom: '4px', textTransform: 'uppercase' }}>CONTACT DETAIL</div>
+                  <div style={{ fontSize: '12px', fontWeight: 700, color: '#ffffff' }}>{booking.phone || 'N/A'}</div>
+                  <div style={{ fontSize: '10px', color: '#aaaaaa' }}>{booking.email || ''}</div>
+               </div>
+            </div>
+
+            {/* Stay/Dining Metrics (NEW) */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginBottom: '25px' }}>
+               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '15px', borderRadius: '12px', border: `1px solid ${isDine ? '#d4af37' : '#3b82f6'}` }}>
+                  <div style={{ fontSize: '9px', fontWeight: 800, color: isDine ? '#d4af37' : '#3b82f6', marginBottom: '4px', textTransform: 'uppercase' }}>{isDine ? "GUEST COUNT" : "ROOMS / GUESTS"}</div>
+                  <div style={{ fontSize: '14px', fontWeight: 700, color: '#ffffff' }}>
+                    {isDine ? `${booking.people_count} People` : `${booking.num_rooms || 1} Room(s) • ${booking.adults} Adults`}
+                  </div>
+               </div>
+               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '15px', borderRadius: '12px', border: `1px solid ${isDine ? '#d4af37' : '#3b84f6'}`, borderColor: '#10b981' }}>
+                  <div style={{ fontSize: '9px', fontWeight: 800, color: '#10b981', marginBottom: '4px', textTransform: 'uppercase' }}>TOTAL PAYMENT</div>
+                  <div style={{ fontSize: '18px', fontWeight: 900, color: '#10b981', fontFamily: "'Inter', sans-serif" }}>Rs. {Number(booking.total_price || 0).toLocaleString()}</div>
+               </div>
+            </div>
+
+            {/* Food Order Section (For Dining) */}
+            {isDine && booking.food_order_items && (
+               <div style={{ background: 'rgba(255,255,255,0.03)', padding: '20px', borderRadius: '15px', border: '1px dashed #d4af37', marginBottom: '25px' }}>
+                  <div style={{ fontSize: '10px', fontWeight: 800, color: '#d4af37', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '1px' }}>Pre-ordered Delicacies</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                     {JSON.parse(booking.food_order_items).map((item, i) => (
+                        <div key={i} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
+                           <span style={{ color: '#ffffff', fontWeight: 600 }}>{item.quantity}x {item.name}</span>
+                           <span style={{ color: '#d4af37' }}>Rs. {(item.price * item.quantity).toLocaleString()}</span>
+                        </div>
+                     ))}
+                  </div>
+               </div>
+            )}
+
+            <div style={{ background: isDine ? 'rgba(212, 175, 55, 0.05)' : 'rgba(59, 130, 246, 0.05)', padding: '15px 20px', borderRadius: '10px', marginBottom: '35px', border: `1px solid ${isDine ? '#d4af3766' : '#3b82f666'}` }}>
+               <p style={{ margin: 0, fontSize: '12px', color: '#bbbbbb', lineHeight: '1.5', textAlign: 'center' }}>
+                  {isDine ? "Present this QR code to the restaurant host." : "Present this QR code at the reception desk upon arrival."} This is a digitally verified reservation.
                </p>
             </div>
 

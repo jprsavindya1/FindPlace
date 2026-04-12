@@ -454,4 +454,61 @@ router.get("/dining/analytics/top-dishes", verifyToken, verifyOwner, (req, res) 
   });
 });
 
+/* ======================================================
+   OWNER – STAY ANALYTICS (REVENUE)
+====================================================== */
+router.get("/stay/analytics/revenue", verifyToken, verifyOwner, (req, res) => {
+  const { placeId } = req.query;
+  const ownerId = req.user.id;
+
+  let sql = `
+    SELECT 
+      MONTH(check_in) as month,
+      SUM(total_price) as revenue,
+      COUNT(*) as booking_count
+    FROM bookings
+    WHERE owner_id = ? AND status = 'CONFIRMED' AND YEAR(check_in) = YEAR(CURDATE())
+  `;
+  const params = [ownerId];
+
+  if (placeId && placeId !== "ALL") {
+    sql += " AND place_id = ?";
+    params.push(placeId);
+  }
+
+  sql += " GROUP BY month ORDER BY month ASC";
+
+  db.query(sql, params, (err, results) => {
+    if (err) {
+      console.error("Revenue Analytics Error:", err);
+      return res.status(500).json({ message: "Failed to fetch revenue analytics" });
+    }
+    res.json(results);
+  });
+});
+
+/* ======================================================
+   OWNER – UNIFIED DASHBOARD STATS
+====================================================== */
+router.get("/dashboard-stats", verifyToken, verifyOwner, (req, res) => {
+  const ownerId = req.user.id;
+
+  const statsSql = `
+    SELECT 
+      (SELECT COUNT(*) FROM bookings WHERE owner_id = ? AND status = 'PENDING') as pending_stay_bookings,
+      (SELECT COUNT(*) FROM reservations r JOIN places p ON r.place_id = p.id WHERE p.owner_id = ? AND r.status = 'confirmed' AND r.res_date = CURDATE()) as today_dining_reservations,
+      (SELECT COALESCE(SUM(total_price), 0) FROM bookings WHERE owner_id = ? AND status = 'CONFIRMED' AND MONTH(created_at) = MONTH(CURDATE())) as monthly_stay_revenue,
+      (SELECT COALESCE(SUM(total_price), 0) FROM reservations r JOIN places p ON r.place_id = p.id WHERE p.owner_id = ? AND r.status = 'confirmed' AND MONTH(r.res_date) = MONTH(CURDATE())) as monthly_dining_revenue
+  `;
+
+  db.query(statsSql, [ownerId, ownerId, ownerId, ownerId], (err, results) => {
+    if (err) {
+      console.error("Dashboard Stats Error:", err);
+      return res.status(500).json({ message: "Failed to fetch dashboard stats" });
+    }
+    res.json(results[0]);
+  });
+});
+
+
 module.exports = router;

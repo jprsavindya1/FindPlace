@@ -7,13 +7,15 @@ const fs = require("fs");
 // 🔥 DEBUG LOGGING TO FILE
 const logFile = path.join(__dirname, "debug.log");
 const logStream = fs.createWriteStream(logFile, { flags: 'a' });
-console.log = function(d) {
-  logStream.write(`[LOG] ${new Date().toISOString()}: ${require('util').format(d)}\n`);
-  process.stdout.write(require('util').format(d) + '\n');
+console.log = function(...args) {
+  const msg = require('util').format(...args);
+  logStream.write(`[LOG] ${new Date().toISOString()}: ${msg}\n`);
+  process.stdout.write(msg + '\n');
 };
-console.error = function(d) {
-  logStream.write(`[ERR] ${new Date().toISOString()}: ${require('util').format(d)}\n`);
-  process.stderr.write(require('util').format(d) + '\n');
+console.error = function(...args) {
+  const msg = require('util').format(...args);
+  logStream.write(`[ERR] ${new Date().toISOString()}: ${msg}\n`);
+  process.stderr.write(msg + '\n');
 };
 
 /* ================= ROUTES ================= */
@@ -31,7 +33,6 @@ const userRoutes = require("./routes/userRoutes"); // ⭐ PROFILE SYSTEM
 const personalizedRoutes = require("./routes/personalized"); // ⭐ PERSONALIZED DASHBOARD
 const tableRoutes = require("./routes/tableRoutes"); // ⭐ RESTAURANT TABLES
 const reservationRoutes = require("./routes/reservationRoutes"); // ⭐ RESTAURANT RESERVATIONS
-const diningBookingsRoutes = require("./routes/diningBookings");
 
 /* ================= DB CONNECTION ================= */
 const db = require("./db");
@@ -89,7 +90,7 @@ app.use((req, res) => {
 });
 
 /* ================= SERVER ================= */
-const PORT = process.env.PORT || 5000;
+const PORT = 5007;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);

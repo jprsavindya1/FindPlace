@@ -10,7 +10,8 @@ import {
   Utensils, 
   Bed, 
   QrCode,
-  ArrowRight
+  ArrowRight,
+  DownloadCloud
 } from "lucide-react";
 import { API_BASE_URL } from "../apiConfig";
 import "./CustomerBookings.css";
@@ -62,6 +63,12 @@ function CustomerBookings() {
     if (s === "REJECTED" || s === "UNAVAILABLE") return { cls: "rejected", label: "Unavailable", icon: <XCircle size={16}/> };
     if (s === "CANCELLED") return { cls: "cancelled", label: "Cancelled", icon: <XCircle size={16}/> };
     return { cls: "pending", label: "Pending", icon: <Clock size={16}/> };
+  };
+
+  const handleDownloadInvoice = (item) => {
+    const type = activeTab === "stays" ? "bookings" : "reservations";
+    const url = `${API_BASE_URL}/api/${type}/invoice/${item.id}?token=${token}`;
+    window.open(url, "_blank");
   };
 
   const currentData = activeTab === "stays" ? bookings : reservations;
@@ -179,10 +186,20 @@ function CustomerBookings() {
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                            <button 
                             onClick={() => setSelectedProof(item)}
-                            style={{ padding: '10px 20px', borderRadius: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', color: '#1e293b', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                            style={{ padding: '10px 15px', borderRadius: '12px', background: '#f8fafc', border: '1px solid #e2e8f0', color: '#1e293b', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                            title="View Booking Proof"
                            >
-                              <QrCode size={16} /> View Proof
+                              <QrCode size={16} /> 
                            </button>
+                           {(meta.cls === "approved" || meta.cls === "completed") && (
+                             <button 
+                              onClick={() => handleDownloadInvoice(item)}
+                              style={{ padding: '10px 15px', borderRadius: '12px', background: '#05966910', border: '1px solid #05966930', color: '#059669', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                              title="Download Invoice PDF"
+                             >
+                                <DownloadCloud size={16} /> Invoice
+                             </button>
+                           )}
                         </div>
                       </td>
                     </motion.tr>

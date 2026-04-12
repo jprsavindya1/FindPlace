@@ -111,6 +111,7 @@ function OwnerDashboard() {
   const [quickItem, setQuickItem] = useState({ name: "", price: "", category: "Main Course" });
 
 
+
   /* ================= DASHBOARD FILTER ================= */
   const [dashboardFilterPlaceId, setDashboardFilterPlaceId] = useState("ALL");
   
@@ -129,8 +130,11 @@ function OwnerDashboard() {
     }
   };
 
+
   useEffect(() => {
-    if (token) fetchOwnerPlaces();
+    if (token) {
+      fetchOwnerPlaces();
+    }
   }, [token]);
 
   const handleQuickImageUpdate = async (placeId, file) => {
@@ -1346,6 +1350,7 @@ function OwnerDashboard() {
       </div>
 
       <main className="owner-content">
+
         {activeTab === 'revenue' && (
           <header className="dashboard-filter-header">
              <div className="filter-group">
