@@ -25,6 +25,7 @@ import MyFavorites from "./pages/MyFavorites";
 import CategoryPage from "./pages/CategoryPage";
 import DiningPage from "./pages/DiningPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
+import SmartPlanner from "./pages/SmartPlanner/SmartPlanner"; // ⭐ AI Smart Itinerary Planner
 
 function App() {
   return (
@@ -59,6 +60,7 @@ function App() {
           {/* Landing pages bypassed per user request to streamline search journey */}
           {/* <Route path="/category/:type" element={<CategoryPage />} /> */}
           <Route path="/search" element={<SearchResultsPage />} />
+          <Route path="/smart-planner" element={<SmartPlanner />} />
           <Route path="/places/:id" element={<PlaceDetails />} />
 
           <Route

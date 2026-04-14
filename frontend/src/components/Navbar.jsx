@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { LayoutDashboard, CalendarDays, LogOut, CodeSquare, Home, Contact, MessageSquare, Heart, User, ChevronDown, Settings } from "lucide-react";
+import { LayoutDashboard, CalendarDays, LogOut, CodeSquare, Home, Contact, MessageSquare, Heart, User, ChevronDown, Settings, Sparkles } from "lucide-react";
 import axios from "axios";
 import { API_BASE_URL } from "../apiConfig";
 import "./Navbar.css";
@@ -42,6 +42,9 @@ function Navbar() {
 
   const isPlaceDetails = location.pathname.includes("/place/");
   const isAdminRoute = location.pathname.startsWith("/admin");
+  const isSmartPlanner = location.pathname === "/smart-planner";
+
+  if (isSmartPlanner) return null;
 
   const navLinkClass = ({ isActive }) =>
     `nav-link ${isActive ? "active" : ""}`;
@@ -70,6 +73,13 @@ function Navbar() {
                 <div style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
                   <Home size={18} />
                   Explore
+                </div>
+              </NavLink>
+
+              <NavLink to="/smart-planner" className={navLinkClass}>
+                <div style={{display: 'flex', alignItems: 'center', gap: '6px', color: '#38bdf8', fontWeight: 'bold'}}>
+                  <Sparkles size={18} />
+                  Smart Planner
                 </div>
               </NavLink>
 
@@ -110,6 +120,13 @@ function Navbar() {
                 <div style={{display: 'flex', alignItems: 'center', gap: '6px'}}>
                   <Heart size={18} />
                   Favorites
+                </div>
+              </NavLink>
+
+              <NavLink to="/smart-planner" className={navLinkClass}>
+                <div style={{display: 'flex', alignItems: 'center', gap: '6px', color: '#38bdf8', fontWeight: 'bold'}}>
+                  <Sparkles size={18} />
+                  Smart Planner
                 </div>
               </NavLink>
             </>

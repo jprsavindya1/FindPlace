@@ -1,0 +1,342 @@
+.timeline-container {
+  display: flex;
+  flex-direction: column;
+  color: #e2e8f0;
+}
+
+.trip-header {
+  margin-bottom: 1.5rem;
+}
+
+.trip-subtitle {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.3rem;
+}
+
+.trip-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+/* Horizontal Date Selector */
+.date-selector {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.date-box {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 0.8rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.date-box:hover {
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.date-box.active {
+  border-color: #facc15;
+  background: rgba(250, 204, 21, 0.1);
+}
+
+.day-name {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.date-box.active .day-name {
+  color: #facc15;
+}
+
+.date-number {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.active-dot {
+  position: absolute;
+  bottom: 0px;
+  color: #facc15;
+  font-size: 1.5rem;
+  line-height: 0.5;
+}
+
+/* Timeline Layout */
+.timeline-events-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-row {
+  display: flex;
+  align-items: stretch;
+}
+
+.transport-pill-row {
+  display: flex;
+  align-items: center;
+  height: 60px;
+}
+
+.time-indicator {
+  width: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-right: 1.5rem;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.time-indicator.blank {
+  justify-content: center;
+}
+
+.time-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  margin-top: 1rem;
+  margin-bottom: 0.2rem;
+}
+
+.time-dot {
+  position: absolute;
+  right: -5px; /* Centers dot on the line */
+  top: 1.2rem;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid #facc15;
+  z-index: 2;
+}
+
+.time-line {
+  position: absolute;
+  right: -1px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(56, 189, 248, 0.2);
+  z-index: 1;
+}
+
+.timeline-row:first-child .time-line {
+  top: 1.5rem;
+}
+
+.transport-pill-row .time-line {
+  height: 100%;
+}
+
+/* Event Cards glowing glassmorphism */
+.event-card {
+  background: linear-gradient(145deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.8));
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  display: flex;
+  flex-grow: 1;
+  padding: 0.8rem;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.event-card.glow-cyan {
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.1) inset;
+}
+
+.event-card.glow-gold {
+  border: 1px solid rgba(250, 204, 21, 0.4);
+  box-shadow: 0 0 15px rgba(250, 204, 21, 0.1) inset;
+}
+
+/* Add a bottom glow line to card */
+.event-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  border-radius: 2px;
+}
+
+.event-card.glow-cyan::after {
+  background: #38bdf8;
+  box-shadow: 0 -2px 10px #38bdf8;
+}
+
+.event-card.glow-gold::after {
+  background: #facc15;
+  box-shadow: 0 -2px 10px #facc15;
+}
+
+.card-thumb {
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.card-thumb.icon-mode {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.category-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+}
+
+.card-details {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-bottom: 0.3rem;
+}
+
+.event-type {
+  color: #facc15;
+}
+
+.event-weather {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #cbd5e1;
+}
+
+.event-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  color: #fff;
+}
+
+.event-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  color: #94a3b8;
+  margin-bottom: 0.3rem;
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+.event-address {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-bottom: 0.8rem;
+}
+
+.card-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background: #facc15;
+  color: #0f172a;
+  border: none;
+  font-weight: 600;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.btn-secondary:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.btn-link {
+  background: transparent;
+  color: #facc15;
+  border: none;
+  font-weight: 600;
+  padding: 0.4rem 0;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-right: 1rem;
+}
+
+/* Transport Pill */
+.transport-pill {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 20px;
+  padding: 0.4rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-left: 1rem; /* Space from the timeline */
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.transport-pill:hover {
+  background: rgba(56, 189, 248, 0.1);
+  color: #38bdf8;
+}
+
+.arrow-icon {
+  margin-left: 1rem;
+  color: #475569;
+}

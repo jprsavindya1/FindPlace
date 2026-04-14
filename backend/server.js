@@ -33,6 +33,7 @@ const userRoutes = require("./routes/userRoutes"); // ⭐ PROFILE SYSTEM
 const personalizedRoutes = require("./routes/personalized"); // ⭐ PERSONALIZED DASHBOARD
 const tableRoutes = require("./routes/tableRoutes"); // ⭐ RESTAURANT TABLES
 const reservationRoutes = require("./routes/reservationRoutes"); // ⭐ RESTAURANT RESERVATIONS
+const itineraryRoutes = require("./routes/itineraryRoutes"); // ⭐ SMART ITINERARY
 
 /* ================= DB CONNECTION ================= */
 const db = require("./db");
@@ -74,6 +75,7 @@ app.use("/api/users", userRoutes); // ⭐ PROFILE SYSTEM ROUTE
 app.use("/api/personalized", personalizedRoutes); // ⭐ PERSONALIZED DASHBOARD ROUTE
 app.use("/api/tables", tableRoutes); // ⭐ RESTAURANT TABLES ROUTE
 app.use("/api/reservations", reservationRoutes); // ⭐ RESTAURANT RESERVATIONS ROUTE
+app.use("/api/itinerary", itineraryRoutes); // ⭐ SMART ITINERARY ROUTE
 
 /* ================= HEALTH CHECK ================= */
 app.get("/api/test", (req, res) => {
