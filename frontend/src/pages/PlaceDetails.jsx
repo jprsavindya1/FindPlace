@@ -179,6 +179,12 @@ function PlaceDetails() {
   const handleDinnerBookingSubmit = async (e) => {
     e.preventDefault();
     if (!token) return navigate("/login", { state: { from: location.pathname } });
+    
+    if (!resDate || !resTime) {
+      alert("Please select both a date and a time for your reservation.");
+      return;
+    }
+
     setIsBooking(true);
     try {
       const formattedDate = formatDate(resDate);
