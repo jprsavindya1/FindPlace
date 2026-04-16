@@ -125,6 +125,37 @@ router.post("/login", (req, res) => {
   });
 });
 
+/* ================= FORGOT PASSWORD (SIMULATED) ================= */
+router.post("/forgot-password", (req, res) => {
+  let { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ message: "Email is required" });
+  }
+
+  email = email.toString().trim().toLowerCase();
+
+  // Check if user exists
+  const sql = "SELECT * FROM users WHERE email = ? LIMIT 1";
+  db.query(sql, [email], (err, results) => {
+    if (err) {
+      console.error("FORGOT PASSWORD DB ERROR:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "No account found with this email" });
+    }
+
+    // SIMULATION SUCCESS
+    // In a real app, you would generate a token and send an actual email here.
+    return res.json({ 
+      message: "Reset link sent! Please check your email inbox (Simulated).",
+      success: true 
+    });
+  });
+});
+
 /* ================= GOOGLE LOGIN ================= */
 router.post("/google", googleAuth);
 

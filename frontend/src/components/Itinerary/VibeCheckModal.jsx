@@ -21,7 +21,8 @@ const VibeCheckModal = ({ onClose, onSubmit }) => {
     diet: '',
     wheelchair: false,
     budget: '',
-    mustVisitPlaces: ''
+    mustVisitPlaces: '',
+    partySize: 1
   });
 
   const handleNext = () => setStep(step + 1);
@@ -35,6 +36,13 @@ const VibeCheckModal = ({ onClose, onSubmit }) => {
     const newVal = preferences.durationDays + delta;
     if (newVal >= 1 && newVal <= 14) {
       updatePref('durationDays', newVal);
+    }
+  };
+
+  const handlePartySizeChange = (delta) => {
+    const newVal = preferences.partySize + delta;
+    if (newVal >= 1 && newVal <= 25) {
+      updatePref('partySize', newVal);
     }
   };
 
@@ -123,26 +131,41 @@ const VibeCheckModal = ({ onClose, onSubmit }) => {
           {/* STEP 2: Companions */}
           {step === 2 && (
             <motion.div className="step-content" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-              <h3>Who is traveling with you?</h3>
+              <h3 className="vibe-step-title">Who is traveling with you?</h3>
               <div className="options-grid">
-                <button className={preferences.companions === 'solo' ? 'active' : ''} onClick={() => updatePref('companions', 'solo')}>
+                <button className={`companion-btn ${preferences.companions === 'solo' ? 'active' : ''}`} onClick={() => { updatePref('companions', 'solo'); updatePref('partySize', 1); }}>
                   <User size={24} />
                   <span>Solo</span>
                 </button>
-                <button className={preferences.companions === 'couple' ? 'active' : ''} onClick={() => updatePref('companions', 'couple')}>
+                <button className={`companion-btn ${preferences.companions === 'couple' ? 'active' : ''}`} onClick={() => { updatePref('companions', 'couple'); updatePref('partySize', 2); }}>
                   <Users size={24} />
                   <span>Couple</span>
                 </button>
-                <button className={preferences.companions === 'family' ? 'active' : ''} onClick={() => updatePref('companions', 'family')}>
+                <button className={`companion-btn ${preferences.companions === 'family' ? 'active' : ''}`} onClick={() => updatePref('companions', 'family')}>
                   <Baby size={24} />
                   <span>Family (with Kids)</span>
                 </button>
-                <button className={preferences.companions === 'friends' ? 'active' : ''} onClick={() => updatePref('companions', 'friends')}>
+                <button className={`companion-btn ${preferences.companions === 'friends' ? 'active' : ''}`} onClick={() => updatePref('companions', 'friends')}>
                   <UsersRound size={24} />
                   <span>Friends Group</span>
                 </button>
               </div>
-              <div className="actions">
+
+              {(preferences.companions === 'family' || preferences.companions === 'friends') && (
+                <motion.div className="member-counter-section" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+                   <h3 className="vibe-step-title mt-6">How many members?</h3>
+                   <div className="counter-group">
+                      <button onClick={() => handlePartySizeChange(-1)} className="counter-btn"><Minus size={18}/></button>
+                      <div className="counter-display">
+                          <Users size={18} className="mr-2" />
+                          <span>{preferences.partySize} People</span>
+                      </div>
+                      <button onClick={() => handlePartySizeChange(1)} className="counter-btn"><Plus size={18}/></button>
+                   </div>
+                </motion.div>
+              )}
+
+              <div className="actions mt-6">
                 <button className="secondary-btn" onClick={() => setStep(1)}>Back</button>
                 <button className="primary-btn" onClick={handleNext} disabled={!preferences.companions}>Next</button>
               </div>
@@ -152,33 +175,33 @@ const VibeCheckModal = ({ onClose, onSubmit }) => {
           {/* STEP 3: Vibe & Transport */}
           {step === 3 && (
             <motion.div className="step-content" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-              <h3>What's your travel vibe?</h3>
+              <h3 className="vibe-step-title">What's your travel vibe?</h3>
               <div className="options-grid small-grid">
-                <button className={preferences.vibe === 'relaxing' ? 'active' : ''} onClick={() => updatePref('vibe', 'relaxing')}>
+                <button className={`option-btn ${preferences.vibe === 'relaxing' ? 'active' : ''}`} onClick={() => updatePref('vibe', 'relaxing')}>
                   <Coffee size={20} /><span>Relaxing</span>
                 </button>
-                <button className={preferences.vibe === 'adventure' ? 'active' : ''} onClick={() => updatePref('vibe', 'adventure')}>
+                <button className={`option-btn ${preferences.vibe === 'adventure' ? 'active' : ''}`} onClick={() => updatePref('vibe', 'adventure')}>
                   <Compass size={20} /><span>Adventure</span>
                 </button>
-                <button className={preferences.vibe === 'culture' ? 'active' : ''} onClick={() => updatePref('vibe', 'culture')}>
+                <button className={`option-btn ${preferences.vibe === 'culture' ? 'active' : ''}`} onClick={() => updatePref('vibe', 'culture')}>
                   <Map size={20} /><span>Culture</span>
                 </button>
               </div>
 
-              <h3 className="mt-4">Preferred mode of transport?</h3>
-              <div className="options-grid small-grid">
-                <button className={preferences.transport === 'private' ? 'active' : ''} onClick={() => updatePref('transport', 'private')}>
+              <h3 className="vibe-step-title mt-6">Preferred mode of transport?</h3>
+              <div className="options-grid">
+                <button className={`option-btn ${preferences.transport === 'private' ? 'active' : ''}`} onClick={() => updatePref('transport', 'private')}>
                   <Car size={20} /><span>Private Car/Uber</span>
                 </button>
-                <button className={preferences.transport === 'public' ? 'active' : ''} onClick={() => updatePref('transport', 'public')}>
+                <button className={`option-btn ${preferences.transport === 'public' ? 'active' : ''}`} onClick={() => updatePref('transport', 'public')}>
                   <Bus size={20} /><span>Public Transport</span>
                 </button>
-                <button className={preferences.transport === 'tuktuk' ? 'active' : ''} onClick={() => updatePref('transport', 'tuktuk')}>
+                <button className={`option-btn ${preferences.transport === 'tuktuk' ? 'active' : ''}`} onClick={() => updatePref('transport', 'tuktuk')}>
                   <Train size={20} /><span>Tuk-Tuk & Local</span>
                 </button>
               </div>
 
-              <div className="actions">
+              <div className="actions mt-6">
                 <button className="secondary-btn" onClick={() => setStep(2)}>Back</button>
                 <button className="primary-btn" onClick={handleNext} disabled={!preferences.vibe || !preferences.transport}>Next</button>
               </div>
@@ -188,18 +211,20 @@ const VibeCheckModal = ({ onClose, onSubmit }) => {
           {/* STEP 4: Dietary & Accessibility */}
           {step === 4 && (
             <motion.div className="step-content" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-              <h3>What are your dietary preferences?</h3>
+              <h3 className="vibe-step-title">What are your dietary preferences?</h3>
               <div className="options-grid small-grid">
-                <button className={preferences.diet === 'any' ? 'active' : ''} onClick={() => updatePref('diet', 'any')}>🍽️ Anything</button>
-                <button className={preferences.diet === 'vegetarian' ? 'active' : ''} onClick={() => updatePref('diet', 'vegetarian')}>🥗 Vegetarian</button>
-                <button className={preferences.diet === 'seafood' ? 'active' : ''} onClick={() => updatePref('diet', 'seafood')}>🦐 Seafood</button>
-                <button className={preferences.diet === 'halal' ? 'active' : ''} onClick={() => updatePref('diet', 'halal')}>🥩 Halal</button>
+                <button className={`option-btn ${preferences.diet === 'any' ? 'active' : ''}`} onClick={() => updatePref('diet', 'any')}>🍽️ Anything</button>
+                <button className={`option-btn ${preferences.diet === 'vegetarian' ? 'active' : ''}`} onClick={() => updatePref('diet', 'vegetarian')}>🥗 Vegetarian</button>
+                <button className={`option-btn ${preferences.diet === 'seafood' ? 'active' : ''}`} onClick={() => updatePref('diet', 'seafood')}>🦐 Seafood</button>
+                <button className={`option-btn ${preferences.diet === 'halal' ? 'active' : ''}`} onClick={() => updatePref('diet', 'halal')}>🥩 Halal</button>
               </div>
 
-              <h3 className="mt-4">Accessibility Needs</h3>
-              <div className="toggle-row">
-                 <Accessibility size={20} color="#94a3b8"/>
-                 <span>Wheelchair access required?</span>
+              <h3 className="vibe-step-title mt-6">Accessibility Needs</h3>
+              <div className="toggle-row luxury-toggle">
+                 <div className="toggle-info">
+                   <Accessibility size={22} color="#38bdf8"/>
+                   <span>Wheelchair access required?</span>
+                 </div>
                  <label className="switch">
                     <input 
                       type="checkbox" 
@@ -210,7 +235,7 @@ const VibeCheckModal = ({ onClose, onSubmit }) => {
                  </label>
               </div>
 
-              <div className="actions">
+              <div className="actions mt-6">
                 <button className="secondary-btn" onClick={() => setStep(3)}>Back</button>
                 <button className="primary-btn" onClick={handleNext} disabled={!preferences.diet}>Next</button>
               </div>
@@ -220,20 +245,37 @@ const VibeCheckModal = ({ onClose, onSubmit }) => {
           {/* STEP 5: Budget & Must Visit */}
           {step === 5 && (
             <motion.div className="step-content" initial={{ x: 50, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
-              <h3>What is your budget tier?</h3>
-              <div className="options-grid small-grid">
-                <button className={preferences.budget === 'budget' ? 'active' : ''} onClick={() => updatePref('budget', 'budget')}>
-                  <Coins size={20} color="#fbbf24"/> Budget
+              <h3 className="vibe-step-title">What is your budget tier? <small className="price-hint">(per person/day)</small></h3>
+              <div className="budget-selection-grid">
+                <button className={`budget-card ${preferences.budget === 'budget' ? 'active' : ''}`} onClick={() => updatePref('budget', 'budget')}>
+                  <div className="budget-card-icon"><Coins size={24} color="#fbbf24"/></div>
+                  <div className="budget-card-info">
+                    <span className="budget-name">Budget</span>
+                    <span className="budget-price">Rs. 5k - 10k</span>
+                    <span className="budget-include">Hostels, Local Transport</span>
+                  </div>
                 </button>
-                <button className={preferences.budget === 'standard' ? 'active' : ''} onClick={() => updatePref('budget', 'standard')}>
-                  <Banknote size={20} color="#4ade80"/> Standard
+
+                <button className={`budget-card ${preferences.budget === 'standard' ? 'active' : ''}`} onClick={() => updatePref('budget', 'standard')}>
+                  <div className="budget-card-icon"><Banknote size={24} color="#4ade80"/></div>
+                  <div className="budget-card-info">
+                    <span className="budget-name">Standard</span>
+                    <span className="budget-price">Rs. 10k - 25k</span>
+                    <span className="budget-include">3-Star Hotels, AC Cars</span>
+                  </div>
                 </button>
-                <button className={preferences.budget === 'luxury' ? 'active' : ''} onClick={() => updatePref('budget', 'luxury')}>
-                  <Gem size={20} color="#60a5fa"/> Luxury
+
+                <button className={`budget-card ${preferences.budget === 'luxury' ? 'active' : ''}`} onClick={() => updatePref('budget', 'luxury')}>
+                  <div className="budget-card-icon"><Gem size={24} color="#60a5fa"/></div>
+                  <div className="budget-card-info">
+                    <span className="budget-name">Luxury</span>
+                    <span className="budget-price">Rs. 25k+</span>
+                    <span className="budget-include">Resorts, Private VIP Tours</span>
+                  </div>
                 </button>
               </div>
 
-              <h3 className="mt-4">Any specific places you must visit? (Optional)</h3>
+              <h3 className="vibe-step-title mt-6">Any specific places you must visit? (Optional)</h3>
               <div className="input-group">
                 <Star className="input-icon" size={20} color="#facc15" />
                 <input 
@@ -251,6 +293,7 @@ const VibeCheckModal = ({ onClose, onSubmit }) => {
               </div>
             </motion.div>
           )}
+
 
         </div>
       </motion.div>

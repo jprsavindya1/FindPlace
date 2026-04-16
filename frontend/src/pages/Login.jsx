@@ -170,10 +170,7 @@ function Login() {
                   onClick={() => { setError(""); setRole("customer"); }}
                 >
                   <Search size={18} />
-                  <div className="role-btn-text">
-                    <span className="role-name">Customer</span>
-                    <span className="role-desc">Looking for a stay</span>
-                  </div>
+                  <span className="role-name">Customer</span>
                 </button>
                 <button
                   type="button"
@@ -181,10 +178,7 @@ function Login() {
                   onClick={() => { setError(""); setRole("owner"); }}
                 >
                   <Home size={18} />
-                  <div className="role-btn-text">
-                    <span className="role-name">Owner</span>
-                    <span className="role-desc">Hosting a place</span>
-                  </div>
+                  <span className="role-name">Owner</span>
                 </button>
               </div>
 

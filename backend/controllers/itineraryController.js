@@ -3,7 +3,7 @@ const db = require('../db');
 
 exports.generateItinerary = async (req, res) => {
     try {
-        const { baseLocation, endLocation, durationDays, departureDate, departureTime, companions, vibe, transport, diet, wheelchair, budget, mustVisitPlaces } = req.body;
+        const { baseLocation, endLocation, durationDays, departureDate, departureTime, companions, vibe, transport, diet, wheelchair, budget, mustVisitPlaces, partySize } = req.body;
 
         console.log("--- AI ITINERARY GENERATOR (MULTI-DAY) ---");
         
@@ -14,8 +14,18 @@ exports.generateItinerary = async (req, res) => {
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
+        const budgetContext = {
+            "budget": "Rs. 5,000 - 10,000 per person/day. Focus on Guest Houses, Home-stays, and Public Transport.",
+            "standard": "Rs. 10,000 - 25,000 per person/day. Focus on 3-Star Hotels, Boutique Villas, and AC Vehicles.",
+            "luxury": "Rs. 25,000+ per person/day. Focus on 5-Star Resorts, Private Luxury Tours, and Luxury Vehicles."
+        };
+
         const prompt = `
         You are an expert Sri Lankan travel guide. Plan a ${durationDays}-day trip from ${baseLocation} to ${endLocation}.
+        
+        TRAVEL PARTY:
+        - Companions: ${companions}
+        - Party Size: ${partySize || 1} people (Crucial: Suggest places that can accommodate this group size).
         
         GEOGRAPHY:
         - Route must be logically consistent with Sri Lankan roads.
@@ -25,7 +35,8 @@ exports.generateItinerary = async (req, res) => {
         DETAILS:
         - Start: ${baseLocation}, End: ${endLocation}
         - Departure: ${departureTime} on Day 1
-        - Vibes: ${vibe}, Budget: ${budget}, Diet: ${diet}
+        - Vibes: ${vibe}, Diet: ${diet}
+        - Budget Tier: ${budget} (${budgetContext[budget] || 'Moderate spending'})
         - Wheelchair: ${wheelchair ? 'Required' : 'Not needed'}
         - Must Visit: ${mustVisitPlaces || 'None'}
 

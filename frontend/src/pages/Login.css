@@ -166,19 +166,19 @@ html {
 
 .modern-auth-card {
   width: 100%;
-  max-width: 400px;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 28px;
-  padding: 32px 28px;
+  max-width: 360px; /* Reduced from 400px */
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 24px; /* Slightly tighter radius */
+  padding: 24px 22px; /* Reduced from 32px 28px */
   display: flex;
   flex-direction: column;
   box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.1),
-    0 0 20px rgba(0, 108, 228, 0.05),
-    inset 0 0 15px rgba(255, 255, 255, 0.5);
+    0 20px 40px -10px rgba(0, 0, 0, 0.08),
+    0 0 15px rgba(0, 108, 228, 0.04),
+    inset 0 0 10px rgba(255, 255, 255, 0.6);
   position: relative;
   overflow: hidden;
 }
@@ -194,25 +194,25 @@ html {
 }
 
 .card-header {
-  margin-bottom: 28px;
+  margin-bottom: 20px; /* Reduced margin */
   text-align: center;
 }
 
 .card-header h2 {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.8rem;
+  font-size: 1.6rem; /* Slightly smaller */
   font-weight: 900;
   background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   letter-spacing: -0.02em;
 }
 
 .card-header p.subtitle {
   color: #64748b;
-  font-size: 0.95rem;
+  font-size: 0.85rem; /* Slightly smaller */
   font-weight: 500;
   margin: 0;
 }
@@ -220,12 +220,12 @@ html {
 /* ROLE SELECT */
 .modern-role-select {
   display: flex;
-  gap: 10px;
-  margin: 20px 0;
+  gap: 8px;
+  margin: 16px 0; /* Reduced margin */
   background: rgba(0, 0, 0, 0.03);
   padding: 4px;
-  border-radius: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .modern-role-select button {
@@ -368,12 +368,12 @@ html {
 .modern-auth-form input {
   width: 100%;
   box-sizing: border-box;
-  padding: 12px 16px;
-  border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  background: rgba(255, 255, 255, 0.9);
-  color: #262626;
-  font-size: 0.9rem;
+  padding: 10px 14px; /* Reduced padding */
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+  color: #1e293b;
+  font-size: 0.85rem; /* Slightly smaller */
   outline: none;
   transition: all 0.3s ease;
 }
@@ -450,17 +450,17 @@ html {
 
 .primary-login-btn {
   width: 100%;
-  padding: 14px;
-  border-radius: 10px;
+  padding: 12px; /* Reduced from 14px */
+  border-radius: 12px;
   border: none;
   background: linear-gradient(135deg, var(--luna-teal), var(--luna-steel));
   color: #ffffff;
-  font-weight: 800;
-  font-size: 1rem;
+  font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: 4px;
-  box-shadow: 0 8px 20px rgba(0, 53, 128, 0.2);
+  box-shadow: 0 8px 20px rgba(0, 53, 128, 0.15);
 }
 
 .primary-login-btn:hover {
@@ -525,10 +525,10 @@ html {
 }
 
 .modern-auth-footer {
-  margin-top: 24px;
+  margin-top: 20px; /* Reduced from 24px */
   text-align: center;
-  font-size: 0.9rem;
-  color: #555555;
+  font-size: 0.85rem;
+  color: #64748b;
 }
 
 .modern-auth-footer a {

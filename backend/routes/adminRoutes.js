@@ -10,6 +10,100 @@ const fs = require("fs");
 const { verifyToken, verifyAdmin } = require("../middleware/authMiddleware");
 
 /* ========================================================
+   ==================== ADMIN STATS =======================
+   ======================================================== */
+
+router.get("/stats", verifyToken, verifyAdmin, async (req, res) => {
+  const stats = {
+    users: { total: 0, admin: 0, owner: 0, customer: 0 },
+    places: { total: 0, pending: 0, approved: 0, rejected: 0 },
+    bookings: { total: 0 },
+    recent: []
+  };
+
+  try {
+    // 1. User stats
+    try {
+      const [userRows] = await db.promise().query("SELECT role, COUNT(*) as count FROM users GROUP BY role");
+      userRows.forEach(r => {
+        const role = (r.role || "").toLowerCase();
+        if (stats.users.hasOwnProperty(role)) {
+          stats.users[role] = r.count;
+          stats.users.total += r.count;
+        }
+      });
+    } catch (e) { console.error("User stats error:", e); }
+
+    // 2. Place stats
+    try {
+      const [placeRows] = await db.promise().query("SELECT status, COUNT(*) as count FROM places GROUP BY status");
+      placeRows.forEach(r => {
+        const status = (r.status || "").toLowerCase();
+        if (stats.places.hasOwnProperty(status)) {
+          stats.places[status] = r.count;
+          stats.places.total += r.count;
+        }
+      });
+    } catch (e) { console.error("Place stats error:", e); }
+
+    // 3. Booking stats
+    try {
+      const [bookingRows] = await db.promise().query("SELECT COUNT(*) as total FROM reservations");
+      stats.bookings = { total: bookingRows[0]?.total || 0 };
+    } catch (e) { console.error("Booking stats error:", e); }
+
+    // 4. Recent activity - Fix: Order by ID since created_at missing
+    try {
+      const [recentRows] = await db.promise().query(
+        "SELECT 'place' as type, name, status, id as created_at FROM places ORDER BY id DESC LIMIT 5"
+      );
+      stats.recent = recentRows;
+    } catch (e) { console.error("Recent activity error:", e); }
+
+    res.json(stats);
+  } catch (err) {
+    console.error("Critical error in stats route:", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
+/* ========================================================
+   ================== SYSTEM SETTINGS =====================
+   ======================================================== */
+
+router.get("/settings", async (req, res) => {
+  try {
+    const [results] = await db.promise().query("SELECT * FROM settings");
+    const settings = {};
+    results.forEach(r => { 
+      if (r.setting_key) settings[r.setting_key] = r.setting_value; 
+    });
+    res.json(settings);
+  } catch (err) {
+    console.error("Error fetching settings:", err);
+    res.json({ fuel_price: "370" }); // Fallback to default
+  }
+});
+
+router.put("/settings", verifyToken, verifyAdmin, async (req, res) => {
+  const settings = req.body;
+  try {
+    const queries = Object.keys(settings).map(key => {
+      return db.promise().query(
+        "INSERT INTO settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?",
+        [key, settings[key], settings[key]]
+      );
+    });
+
+    await Promise.all(queries);
+    res.json({ message: "Settings updated successfully" });
+  } catch (err) {
+    console.error("Error updating settings:", err);
+    res.status(500).json({ message: "Error updating settings" });
+  }
+});
+
+/* ========================================================
    =================== ADMIN LOGIN ========================
    ======================================================== */
 

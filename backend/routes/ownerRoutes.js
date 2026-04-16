@@ -3,7 +3,7 @@ const router = express.Router();
 const db = require("../db");
 const {
   verifyToken,
-  verifyOwner,
+  verifyOwnerOrAdmin,
 } = require("../middleware/authMiddleware");
 
 /* ================= MULTER IMPORTS ================= */
@@ -49,7 +49,7 @@ const uploadPdf = multer({
 /* ======================================================
    OWNER – GET OWN PLACES
 ====================================================== */
-router.get("/places", verifyToken, verifyOwner, (req, res) => {
+router.get("/places", verifyToken, verifyOwnerOrAdmin, (req, res) => {
 
   const sql = "SELECT * FROM places WHERE owner_id = ? ORDER BY id DESC";
 
@@ -69,7 +69,7 @@ router.get("/places", verifyToken, verifyOwner, (req, res) => {
 /* ======================================================
    OWNER – DELETE OWN PLACE
 ====================================================== */
-router.delete("/places/:id", verifyToken, verifyOwner, (req, res) => {
+router.delete("/places/:id", verifyToken, verifyOwnerOrAdmin, (req, res) => {
 
   const placeId = req.params.id;
   const ownerId = req.user.id;
@@ -102,7 +102,7 @@ router.delete("/places/:id", verifyToken, verifyOwner, (req, res) => {
 router.put(
   "/places/:id/image",
   verifyToken,
-  verifyOwner,
+  verifyOwnerOrAdmin,
   upload.single("image"),
   (req, res) => {
 
@@ -171,7 +171,7 @@ router.put(
 router.put(
   "/places/:id/gallery",
   verifyToken,
-  verifyOwner,
+  verifyOwnerOrAdmin,
   upload.array("gallery", 10),
   (req, res) => {
     const placeId = req.params.id;
@@ -234,7 +234,7 @@ router.put(
 router.put(
   "/places/:id/menu-pdf",
   verifyToken,
-  verifyOwner,
+  verifyOwnerOrAdmin,
   uploadPdf.single("menu_pdf"),
   (req, res) => {
     const placeId = req.params.id;
@@ -278,7 +278,7 @@ router.put(
 /* ======================================================
    OWNER – DELETE GALLERY IMAGE
 ====================================================== */
-router.delete("/gallery/:imageId", verifyToken, verifyOwner, (req, res) => {
+router.delete("/gallery/:imageId", verifyToken, verifyOwnerOrAdmin, (req, res) => {
   const imageId = req.params.imageId;
   const ownerId = req.user.id;
 
@@ -329,7 +329,7 @@ router.delete("/gallery/:imageId", verifyToken, verifyOwner, (req, res) => {
 /* ======================================================
    OWNER – DELETE COVER IMAGE
 ====================================================== */
-router.delete("/places/:id/image", verifyToken, verifyOwner, (req, res) => {
+router.delete("/places/:id/image", verifyToken, verifyOwnerOrAdmin, (req, res) => {
   const placeId = req.params.id;
   const ownerId = req.user.id;
 
@@ -390,7 +390,7 @@ router.get("/places/:id/gallery", (req, res) => {
 /* ======================================================
    OWNER – DINING ANALYTICS (PEAK HOURS)
 ====================================================== */
-router.get("/dining/analytics/peak-hours", verifyToken, verifyOwner, (req, res) => {
+router.get("/dining/analytics/peak-hours", verifyToken, verifyOwnerOrAdmin, (req, res) => {
   const { placeId } = req.query;
   const ownerId = req.user.id;
 
@@ -426,7 +426,7 @@ router.get("/dining/analytics/peak-hours", verifyToken, verifyOwner, (req, res) 
    User asked for 'Top Selling Dish' - I'll implement a query on menu items
    grouped by a hypothetical orders table, or just return special items for now.
 ====================================================== */
-router.get("/dining/analytics/top-dishes", verifyToken, verifyOwner, (req, res) => {
+router.get("/dining/analytics/top-dishes", verifyToken, verifyOwnerOrAdmin, (req, res) => {
   const { placeId } = req.query;
   const ownerId = req.user.id;
 
@@ -457,7 +457,7 @@ router.get("/dining/analytics/top-dishes", verifyToken, verifyOwner, (req, res) 
 /* ======================================================
    OWNER – STAY ANALYTICS (REVENUE)
 ====================================================== */
-router.get("/stay/analytics/revenue", verifyToken, verifyOwner, (req, res) => {
+router.get("/stay/analytics/revenue", verifyToken, verifyOwnerOrAdmin, (req, res) => {
   const { placeId } = req.query;
   const ownerId = req.user.id;
 
@@ -490,7 +490,7 @@ router.get("/stay/analytics/revenue", verifyToken, verifyOwner, (req, res) => {
 /* ======================================================
    OWNER – UNIFIED DASHBOARD STATS
 ====================================================== */
-router.get("/dashboard-stats", verifyToken, verifyOwner, (req, res) => {
+router.get("/dashboard-stats", verifyToken, verifyOwnerOrAdmin, (req, res) => {
   const ownerId = req.user.id;
 
   const statsSql = `

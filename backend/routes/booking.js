@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../db");
-const { verifyToken, verifyOwner } = require("../middleware/authMiddleware");
+const { verifyToken, verifyOwnerOrAdmin } = require("../middleware/authMiddleware");
 const PDFDocument = require("pdfkit");
 const QRCode = require("qrcode");
 
@@ -229,7 +229,7 @@ router.get("/place/:placeId/room/:roomId/dates", (req, res) => {
 /* =================================================
    2️⃣ OWNER – VIEW OWN BOOKINGS
    ================================================= */
-router.get("/owner", verifyToken, verifyOwner, (req, res) => {
+router.get("/owner", verifyToken, verifyOwnerOrAdmin, (req, res) => {
   const ownerId = req.user.id;
 
   const sql = `
@@ -268,7 +268,7 @@ router.get("/owner", verifyToken, verifyOwner, (req, res) => {
 /* =================================================
    3️⃣ OWNER – ACTION ENDPOINTS (Approve/Reject/Complete)
    ================================================= */
-router.put("/:id/status", verifyToken, verifyOwner, (req, res) => {
+router.put("/:id/status", verifyToken, verifyOwnerOrAdmin, (req, res) => {
   const bookingId = req.params.id;
   const ownerId = req.user.id;
   const { status } = req.body;
@@ -372,10 +372,14 @@ router.get("/invoice/:id", verifyToken, (req, res) => {
     JOIN places p ON b.place_id = p.id
     LEFT JOIN rooms r ON b.room_id = r.id
     JOIN users u ON b.customer_id = u.id
-    WHERE b.id = ? AND (b.customer_id = ? OR b.owner_id = ?)
+    JOIN users u ON b.customer_id = u.id
+    WHERE b.id = ? 
+    ${req.user.role === 'admin' ? '' : 'AND (b.customer_id = ? OR b.owner_id = ?)'}
   `;
 
-  db.query(sql, [bookingId, userId, userId], async (err, results) => {
+  const queryParams = req.user.role === 'admin' ? [bookingId] : [bookingId, userId, userId];
+
+  db.query(sql, queryParams, async (err, results) => {
     if (err) return res.status(500).json({ message: "Database error" });
     if (results.length === 0) return res.status(404).json({ message: "Booking not found" });
 

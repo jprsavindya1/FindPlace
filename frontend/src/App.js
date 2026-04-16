@@ -7,6 +7,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 // Public Pages
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
 import Unauthorized from "./pages/Unauthorized";
 import Profile from "./pages/Profile";
 
@@ -40,6 +41,7 @@ function App() {
           {/* ================= PUBLIC ROUTES ================= */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/unauthorized" element={<Unauthorized />} />
 
           {/* ================= ADMIN ================= */}
@@ -66,7 +68,7 @@ function App() {
           <Route
             path="/customer/bookings"
             element={
-              <ProtectedRoute allowedRole="customer">
+              <ProtectedRoute allowedRoles={["customer", "admin"]}>
                 <CustomerBookings />
               </ProtectedRoute>
             }
@@ -75,7 +77,7 @@ function App() {
           <Route
             path="/customer/favorites"
             element={
-              <ProtectedRoute allowedRole="customer">
+              <ProtectedRoute allowedRoles={["customer", "admin"]}>
                 <MyFavorites />
               </ProtectedRoute>
             }
@@ -85,7 +87,7 @@ function App() {
           <Route
             path="/owner"
             element={
-              <ProtectedRoute allowedRole="owner">
+              <ProtectedRoute allowedRoles={["owner", "admin"]}>
                 <OwnerDashboard />
               </ProtectedRoute>
             }

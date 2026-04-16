@@ -36,21 +36,29 @@ const verifyToken = (req, res, next) => {
 /* ================= ADMIN ONLY ================= */
 const verifyAdmin = (req, res, next) => {
   if (!req.user || req.user.role !== "admin") {
-    return res.status(403).json({ message: "Admin access only" });
+    console.warn(`Unauthorized Admin Access Attempt by: ${req.user?.id || 'Unknown'}, Role: ${req.user?.role || 'None'}`);
+    return res.status(403).json({ message: "Access Denied: Admin privileges required." });
   }
   next();
 };
 
-/* ================= OWNER ONLY ================= */
-const verifyOwner = (req, res, next) => {
-  if (!req.user || req.user.role !== "owner") {
-    return res.status(403).json({ message: "Owner access only" });
+/* ================= OWNER OR ADMIN ================= */
+const verifyOwnerOrAdmin = (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "Unauthorized: No user found" });
   }
-  next();
+
+  const role = req.user.role;
+  if (role === "owner" || role === "admin") {
+    return next();
+  }
+
+  console.warn(`Unauthorized Resource Access Attempt by: ${req.user.id}, Role: ${role}`);
+  return res.status(403).json({ message: "Access Denied: Owner or Admin privileges required." });
 };
 
 module.exports = {
   verifyToken,
   verifyAdmin,
-  verifyOwner,
+  verifyOwnerOrAdmin,
 };

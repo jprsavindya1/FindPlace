@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Fuel, Bike, Car, Truck, Gauge, CircleDollarSign } from 'lucide-react';
+import axios from 'axios';
+import { API_BASE_URL } from '../../apiConfig';
 import './FuelEstimator.css';
 
 const FuelEstimator = ({ totalDistance }) => {
@@ -13,6 +15,20 @@ const FuelEstimator = ({ totalDistance }) => {
     suv: { label: 'SUV', efficiency: 10, icon: <Truck size={18} /> },
     van: { label: 'Van', efficiency: 12, icon: <Truck size={18} /> },
   };
+
+  useEffect(() => {
+    const fetchGlobalFuelPrice = async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/admin/settings`);
+        if (res.data && res.data.fuel_price) {
+          setFuelPrice(Number(res.data.fuel_price));
+        }
+      } catch (err) {
+        console.error("Failed to fetch global fuel price:", err);
+      }
+    };
+    fetchGlobalFuelPrice();
+  }, []);
 
   useEffect(() => {
     const efficiency = vehicleProfiles[vehicleType].efficiency;
