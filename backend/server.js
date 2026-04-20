@@ -34,6 +34,7 @@ const personalizedRoutes = require("./routes/personalized"); // ⭐ PERSONALIZED
 const tableRoutes = require("./routes/tableRoutes"); // ⭐ RESTAURANT TABLES
 const reservationRoutes = require("./routes/reservationRoutes"); // ⭐ RESTAURANT RESERVATIONS
 const itineraryRoutes = require("./routes/itineraryRoutes"); // ⭐ SMART ITINERARY
+const tableLayoutRoutes = require("./routes/tableLayout"); // ⭐ INTERACTIVE FLOOR PLAN
 
 /* ================= DB CONNECTION ================= */
 const db = require("./db");
@@ -76,6 +77,7 @@ app.use("/api/personalized", personalizedRoutes); // ⭐ PERSONALIZED DASHBOARD 
 app.use("/api/tables", tableRoutes); // ⭐ RESTAURANT TABLES ROUTE
 app.use("/api/reservations", reservationRoutes); // ⭐ RESTAURANT RESERVATIONS ROUTE
 app.use("/api/itinerary", itineraryRoutes); // ⭐ SMART ITINERARY ROUTE
+app.use("/api/table-layout", tableLayoutRoutes); // ⭐ INTERACTIVE FLOOR PLAN ROUTE
 
 /* ================= HEALTH CHECK ================= */
 app.get("/api/test", (req, res) => {

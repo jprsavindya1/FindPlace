@@ -1,24 +1,46 @@
 import React from 'react';
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   MapPin, Star, Check, FileText, Users, Heart, Clock, User, 
-  MessageCircle, Plus, Minus, ChevronRight, Share2, Edit3
+  MessageCircle, Plus, Minus, ChevronRight, Share2, Edit3, X, Grid
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import DatePicker from "react-datepicker";
+import TableMap from "../components/Booking/TableMap";
 
 const PlaceDetailsDining = ({
   place, id, token, role, navigate, location, API_BASE_URL,
-  menuItems, filteredMenu, activeCategory, setActiveCategory, showAllMenu, setShowAllMenu,
-  resDate, setResDate, resTime, setResTime, resGuests, setResGuests, resTable, setResTable, tables,
+  reviews, toggleFavorite, isFavorite, isLiking,
+  handleAddReview, myRating, setMyRating, myComment, setMyComment, reviewMsg, isPostingReview,
+  activeCategory, setActiveCategory, showAllMenu, setShowAllMenu, menuItems, filteredMenu,
+  setCurrentProof, gallery, resDate, setResDate, resTime, setResTime,
+  resGuests, setResGuests, resTables, setResTables, tables,
   wantsPreOrder, setWantsPreOrder, preOrderQuantities, updatePreOrderQty,
-  handleDinnerBookingSubmit, isBooking, reviews, toggleFavorite, isFavorite, isLiking,
-  proofModal, setCurrentProof,
-  handleAddReview, myRating, setMyRating, myComment, setMyComment, reviewMsg, isPostingReview, gallery,
-  fullName, setFullName, email, setEmail, phone, setPhone, avgRating, totalReviews
+  handleDinnerBookingSubmit, isBooking,
+  fullName, setFullName, email, setEmail, phone, setPhone, avgRating, totalReviews,
+  occupiedTableIds, resDuration, setResDuration
 }) => {
   const tabsRef = React.useRef(null);
   const [showAllReviews, setShowAllReviews] = React.useState(false);
+  const [showMapModal, setShowMapModal] = React.useState(false);
+
+  // Helper to calculate reservation end time
+  const getEndTime = () => {
+    if (!resTime) return null;
+    const [h, m] = resTime.split(':').map(Number);
+    const date = new Date();
+    date.setHours(h, m + resDuration, 0, 0);
+    const endH = date.getHours();
+    const endM = date.getMinutes();
+    const hour12 = endH % 12 || 12;
+    const ampm = endH >= 12 ? 'PM' : 'AM';
+    return `${hour12}:${String(endM).padStart(2, '0')} ${ampm}`;
+  };
+
+  // Calculate totals for selected tables
+  const selectedTableData = tables.filter(t => resTables.includes(t.id));
+  const totalCapacity = selectedTableData.reduce((sum, t) => sum + t.capacity, 0);
+  const totalMinSpend = selectedTableData.reduce((sum, t) => sum + Number(t.min_spend), 0);
 
   const handleShare = async () => {
     const shareData = {
@@ -83,6 +105,16 @@ const PlaceDetailsDining = ({
     }
     return slots;
   }, [resDate, place.opening_hours, place.closing_hours]);
+
+  // SMART SUGGESTIONS: Auto-set duration based on time slot
+  React.useEffect(() => {
+    if (resTime) {
+      const hour = parseInt(resTime.split(':')[0]);
+      if (hour >= 12 && hour < 15) setResDuration(90); // Lunch: 1.5h
+      else if (hour >= 18 && hour < 22) setResDuration(150); // Dinner: 2.5h
+      else setResDuration(120); // Default: 2h
+    }
+  }, [resTime, setResDuration]);
 
   const groupedSlots = React.useMemo(() => {
     const breakfast = timeSlots.filter(s => s.category === "Breakfast");
@@ -480,6 +512,39 @@ const PlaceDetailsDining = ({
                       ))}
                     </div>
                   </div>
+
+                  <div className="pd-input-group" style={{ marginBottom: '24px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <label className="pd-label" style={{ margin: 0 }}>Duration of Stay</label>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                         <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                           <Clock size={12} /> +15m Buffer included
+                         </span>
+                         {resTime && (
+                           <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#003580' }}>
+                             Expected checkout: {getEndTime()}
+                           </span>
+                         )}
+                      </div>
+                   </div>
+                    <div className="pd-input-wrapper" style={{ background: '#f8fafc' }}>
+                      <Clock size={16} className="pd-icon" />
+                      <select 
+                        className="pd-input" 
+                        style={{ border: 'none', background: 'transparent', width: '100%', outline: 'none', fontWeight: 700 }}
+                        value={resDuration}
+                        onChange={(e) => setResDuration(Number(e.target.value))}
+                      >
+                        <option value={60}>1 Hour Session</option>
+                        <option value={90}>1.5 Hours (Quick Bite)</option>
+                        <option value={120}>2 Hours (Standard)</option>
+                        <option value={150}>2.5 Hours (Relaxed)</option>
+                        <option value={180}>3 Hours (Long Dinner)</option>
+                        <option value={240}>4 Hours (Celebration)</option>
+                      </select>
+                    </div>
+                  </div>
+
                     <div className="pd-input-group">
                       <label className="pd-label">Guests</label>
                       <div className="pd-input-wrapper">
@@ -489,16 +554,138 @@ const PlaceDetailsDining = ({
                     </div>
                   </div>
 
-                  <div className="pd-input-group">
-                    <label className="pd-label">Select Table (Optional)</label>
-                    <div className="pd-input-wrapper">
-                      <Users size={16} className="pd-icon" />
-                      <select className="pd-input" value={resTable} onChange={e => setResTable(e.target.value)}>
-                        <option value="">System will auto-allocate</option>
-                        {tables.map(t => <option key={t.id} value={t.id}>{t.table_number ? `Table ${t.table_number}` : t.name} ({t.capacity} seats)</option>)}
-                      </select>
+                  {/* INTERACTIVE FLOOR PLAN BUTTON */}
+                  {resDate && resTime ? (
+                    <div className="pd-table-selection-trigger">
+                      <button 
+                        type="button" 
+                        className="pd-btn-secondary"
+                        onClick={() => setShowMapModal(true)}
+                        style={{ 
+                           width: '100%', 
+                           justifyContent: 'center', 
+                           gap: '12px',
+                           padding: '12px',
+                           borderRadius: '16px',
+                           marginTop: '10px',
+                           display: 'flex',
+                           alignItems: 'center',
+                           background: resTables.length > 0 ? '#10b98110' : '#00358005',
+                           border: resTables.length > 0 ? '1px solid #10b98160' : '1px dashed #00358040',
+                           color: resTables.length > 0 ? '#10b981' : '#003580',
+                           cursor: 'pointer',
+                           fontWeight: '800'
+                        }}
+                      >
+                        {resTables.length > 0 ? (
+                          <>❤️ {resTables.length} Tables Selected</>
+                        ) : (
+                          <><Grid size={18} /> Pick Your Tables</>
+                        )}
+                      </button>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="table-map-placeholder">
+                       <p>Please select date & time to see available tables.</p>
+                    </div>
+                  )}
+
+                  {/* FULL SCREEN TABLE MAP MODAL */}
+                  <AnimatePresence>
+                    {showMapModal && (
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="pd-map-modal-overlay"
+                        style={{
+                          position: 'fixed',
+                          inset: 0,
+                          background: 'rgba(0, 53, 128, 0.4)',
+                          backdropFilter: 'blur(10px)',
+                          zIndex: 2000,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '20px'
+                        }}
+                      >
+                        <motion.div 
+                          initial={{ y: "100%", opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          exit={{ y: "100%", opacity: 0 }}
+                          transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                          className="pd-map-modal-content"
+                          style={{
+                            background: 'white',
+                            width: '100%',
+                            maxWidth: '1000px',
+                            height: '90vh',
+                            borderRadius: '32px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            overflow: 'hidden',
+                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                          }}
+                        >
+                          <div className="pd-modal-header" style={{ padding: '24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                             <div>
+                               <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.25rem' }}>Floor Plan Layout</h3>
+                               <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>Select up to 3 preferred tables</p>
+                             </div>
+                             <button onClick={() => setShowMapModal(false)} style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                               <X size={20} />
+                             </button>
+                          </div>
+
+                          <div className="pd-modal-body" style={{ flex: 1, overflow: 'auto', padding: '10px' }}>
+                            <TableMap 
+                              placeId={place.id} 
+                              date={resDate} 
+                              time={resTime} 
+                              onSelect={setResTables} 
+                              selectedTables={resTables} 
+                              occupiedTableIds={occupiedTableIds}
+                              resDuration={resDuration}
+                            />
+                          </div>
+
+                           <div className="pd-modal-footer" style={{ padding: '20px', background: 'white', borderTop: '1px solid #e2e8f0', display: 'flex', gap: '15px', alignItems: 'center' }}>
+                             {resTables.length > 0 && (
+                               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                 <span style={{ fontSize: '0.85rem', fontWeight: 700, color: '#1e293b' }}>
+                                   {totalCapacity} Total Seats Selected
+                                 </span>
+                                 {totalMinSpend > 0 && (
+                                   <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#10b981' }}>
+                                     Min Spend: LKR {totalMinSpend.toLocaleString()}
+                                   </span>
+                                 )}
+                               </div>
+                             )}
+                             <button 
+                               type="button"
+                               className="pd-btn-primary" 
+                               style={{ 
+                                 flex: resTables.length > 0 ? '0 0 200px' : '1', 
+                                 padding: '16px', 
+                                 borderRadius: '16px', 
+                                 background: '#003580', 
+                                 color: 'white', 
+                                 border: 'none', 
+                                 fontWeight: '800', 
+                                 cursor: 'pointer' 
+                               }} 
+                               onClick={() => setShowMapModal(false)}
+                             >
+                               Done Selecting
+                             </button>
+                           </div>
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
 
                   <div className="res-preorder-section">
                     <div className="preorder-header" onClick={() => setWantsPreOrder(!wantsPreOrder)}>

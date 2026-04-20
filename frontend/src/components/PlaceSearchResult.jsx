@@ -3,16 +3,13 @@ import { motion } from 'framer-motion';
 import { 
   Star, 
   MapPin, 
-  Heart, 
-  Camera, 
   Wifi, 
   Wind, 
   Coffee, 
-  User, 
   CheckCircle2, 
   ChevronRight,
   ShieldCheck,
-  ArrowRight
+  Home
 } from 'lucide-react';
 import { API_BASE_URL } from "../apiConfig";
 import { useNavigate } from 'react-router-dom';
@@ -44,15 +41,13 @@ const PlaceSearchResult = ({ place, viewMode }) => {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4, boxShadow: "0 12px 30px rgba(0,0,0,0.08)" }}
-      className={`search-result-card ${viewMode === 'grid' ? 'grid-mode' : ''}`}
+      className={`accommodation-card-modern ${viewMode === 'grid' ? 'grid-mode' : ''}`}
       onClick={() => navigate(`/places/${place.id}`)}
     >
-      <div className="result-card-inner">
-        {/* Left: Image */}
-        <div className="result-card-image">
+      <div className="acc-card-container">
+        <div className="acc-card-gallery">
           <img 
             src={place.image 
               ? `${API_BASE_URL}/uploads/places/${place.image}` 
@@ -61,69 +56,67 @@ const PlaceSearchResult = ({ place, viewMode }) => {
             alt={place.name} 
           />
           {place.avg_rating >= 9 && (
-            <div className="result-badge">Best Seller</div>
+            <div className="premium-badge-acc">Best Seller</div>
           )}
         </div>
 
-        {/* Right: Content */}
-        <div className="result-card-content">
-          <div className="result-main-info">
-            <div className="result-header">
-              <div className="result-title-group">
-                <div className="result-title-row">
-                  <h3 className="result-name">{place.name}</h3>
-                  <div className="result-stars">
-                    {renderStars(place.stars || 0)}
-                  </div>
+        <div className="acc-card-body">
+          <div className="acc-card-main">
+            <div className="acc-header-row">
+              <div className="acc-title-block">
+                <div className="acc-stars-row">
+                  {renderStars(place.stars || 0)}
                 </div>
-                <div className="result-location">
-                  <MapPin size={14} />
+                <h3 className="acc-name-title">{place.name}</h3>
+                <div className="acc-location-row">
+                  <MapPin size={14} className="icon-map-acc" />
                   <span>{place.area}, {place.district}</span>
-                  <span className="location-action">Show on map</span>
+                  <button className="map-link-btn-acc" onClick={(e) => { e.stopPropagation(); }}>Show on map</button>
                 </div>
               </div>
 
-              <div className="result-rating-group">
-                <div className="rating-text">
-                  <span className="rating-label">{getRatingLabel(place.avg_rating)}</span>
-                  <span className="review-count">{place.review_count} reviews</span>
+              <div className="acc-rating-block">
+                <div className="rating-info-mini-acc">
+                  <span className="rating-word-acc">{getRatingLabel(place.avg_rating)}</span>
+                  <span className="rating-count-acc">{place.review_count || 0} reviews</span>
                 </div>
-                <div className="rating-badge">
+                <div className="rating-score-box-acc">
                   {Number(place.avg_rating || 0).toFixed(1)}
                 </div>
               </div>
             </div>
 
-            <div className="result-amenities-summary">
-              {place.wifi && <div className="amenity-tag"><Wifi size={14} /> WiFi</div>}
-              {place.ac && <div className="amenity-tag"><Wind size={14} /> AC</div>}
-              {place.pool && <div className="amenity-tag"><User size={14} /> Pool</div>}
-              {place.breakfast && <div className="amenity-tag"><Coffee size={14} /> Breakfast</div>}
+            <div className="acc-tags-container">
+               {!!place.wifi && <div className="acc-tag"><Wifi size={14} /> WiFi</div>}
+               {!!place.ac && <div className="acc-tag"><Wind size={14} /> AC</div>}
+               {!!place.pool && <div className="acc-tag"><Home size={14} /> Pool</div>}
+               {!!place.breakfast && <div className="acc-tag"><Coffee size={14} /> Breakfast included</div>}
             </div>
 
-            <div className="result-description">
-              <CheckCircle2 size={16} className="text-success" />
-              <span>{place.category} • Professional Management</span>
-            </div>
-
-            <div className="result-selling-point">
-              <ShieldCheck size={16} className="text-primary" />
-              <span>Free cancellation • No prepayment needed</span>
+            <div className="acc-highlights">
+              <div className="highlight-item-acc">
+                <CheckCircle2 size={16} className="text-success-acc" />
+                <span>{place.category} • Professional Management</span>
+              </div>
+              <div className="highlight-item-acc">
+                <ShieldCheck size={16} className="text-benefit-acc" />
+                <span>Free cancellation • No prepayment needed</span>
+              </div>
             </div>
           </div>
 
-          <div className="result-pricing-section">
-            <div className="pricing-info">
-              <span className="price-label">1 night, 2 adults</span>
-              <div className="price-value">
-                <span className="currency">LKR</span>
-                <span className="amount">{place.price.toLocaleString()}</span>
-              </div>
-              <span className="tax-label">+LKR {(place.price * 0.1).toLocaleString()} taxes and fees</span>
+          <div className="acc-card-action-bar">
+            <div className="acc-pricing-info">
+               <span className="price-starting-label">Starting from</span>
+               <div className="price-value-container">
+                 <span className="price-currency">LKR</span>
+                 <span className="price-amount">{(place.price || 0).toLocaleString()}</span>
+               </div>
+               <span className="price-tax-hint">+LKR {(place.price * 0.1).toLocaleString()} taxes & fees</span>
             </div>
             
             <button 
-              className="see-availability-btn"
+              className="acc-see-availability-btn"
               onClick={(e) => {
                 e.stopPropagation();
                 navigate(`/places/${place.id}`);

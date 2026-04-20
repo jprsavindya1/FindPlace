@@ -13,7 +13,11 @@ const fs = require("fs");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/places");
+    const uploadDir = "uploads/places";
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     cb(
@@ -74,11 +78,11 @@ router.get("/find-places", (req, res) => {
     params.push(`%${keywords}%`, `%${keywords}%`, `%${keywords}%`, `%${keywords}%`);
   }
   if (minPrice) {
-    whereClause += " AND CAST(p.price AS DECIMAL(10,2)) >= ?";
+    whereClause += " AND (COALESCE((SELECT MIN(price) FROM rooms WHERE place_id = p.id), p.price)) >= ?";
     params.push(minPrice);
   }
   if (maxPrice) {
-    whereClause += " AND CAST(p.price AS DECIMAL(10,2)) <= ?";
+    whereClause += " AND (COALESCE((SELECT MIN(price) FROM rooms WHERE place_id = p.id), p.price)) <= ?";
     params.push(maxPrice);
   }
   if (stars) {
@@ -118,7 +122,7 @@ router.get("/find-places", (req, res) => {
   }
   let orderBy = "p.id DESC";
   if (sortBy === 'price-low') {
-    orderBy = "CAST(p.price AS DECIMAL(10,2)) ASC";
+    orderBy = "effective_price ASC";
   } else if (sortBy === 'rating') {
     orderBy = "avg_rating DESC, review_count DESC";
   }
@@ -126,6 +130,8 @@ router.get("/find-places", (req, res) => {
   // Final Queries
   let sql = `
     SELECT p.*, 
+           COALESCE((SELECT MIN(price) FROM rooms WHERE place_id = p.id), p.price) as price,
+           COALESCE((SELECT MIN(price) FROM rooms WHERE place_id = p.id), p.price) as effective_price,
            COALESCE(rev.avg_rating, 0) as avg_rating,
            COALESCE(rev.review_count, 0) as review_count
     FROM places p
@@ -567,6 +573,38 @@ router.put("/owner/places/:id/image", verifyToken, upload.single("image"), (req,
   });
 });
 
+
+/* =================================================
+   UPDATE FLOOR PLAN IMAGE
+   ================================================= */
+router.put("/owner/places/:id/floor-plan", verifyToken, upload.single("floor_plan"), (req, res) => {
+  if (req.user.role !== "owner") {
+    return res.status(403).json({ message: "Owner only" });
+  }
+
+  const placeId = req.params.id;
+  const ownerId = req.user.id;
+  const image = req.file ? req.file.filename : null;
+
+  console.log(`[DEBUG] Floor plan upload attempt: Place ID ${placeId}, Owner ID ${ownerId}, File: ${image}`);
+
+  if (!image) {
+    return res.status(400).json({ message: "No image uploaded" });
+  }
+
+  const sql = "UPDATE places SET floor_plan_image = ? WHERE id = ? AND owner_id = ?";
+  db.query(sql, [image, placeId, ownerId], (err, result) => {
+    if (err) {
+      console.error("Floor plan image update error:", err);
+      return res.status(500).json({ message: "Failed to update floor plan image" });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(403).json({ message: "Not allowed to update this place" });
+    }
+    res.json({ message: "Floor plan image updated successfully", filename: image });
+  });
+});
+
 /* =================================================
    UPDATE OWNER PLACE (UPDATED WITH HOUSE RULES)
 ================================================= */
@@ -929,7 +967,5 @@ router.put(
 
   }
 );
-
-module.exports = router;
 
 module.exports = router;

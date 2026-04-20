@@ -1,7 +1,11 @@
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { Calendar, Search, Filter, Download, FileText } from "lucide-react";
+import { 
+  Calendar, Search, Filter, Download, FileText, 
+  Home, User, IndianRupee, ArrowRight, ArrowUpRight, ArrowDownLeft,
+  X, CheckCircle, Info, MoreVertical
+} from "lucide-react";
 import html2pdf from "html2pdf.js";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -141,126 +145,177 @@ const OwnerBookings = ({ filterPlaceId = "ALL" }) => {
   };
 
   return (
-    <div className="bookings-section">
-      <div className="content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+    <div className="bookings-section" style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
+      <div className="content-header" style={{ marginBottom: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div>
-          <h2>Booking Records</h2>
-          <p>Manage your reservations, approve requests, and track revenue.</p>
+          <h2 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '2.8rem', fontWeight: 900, color: '#1e293b', letterSpacing: '-0.03em', margin: 0 }}>Stay Bookings</h2>
+          <p style={{ color: '#64748b', fontSize: '1.1rem', marginTop: '5px', fontWeight: '500' }}>Manage your property check-ins, rooms, and stay revenue.</p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <button className="btn-export" onClick={exportCSV}>
+        <div style={{ display: 'flex', gap: '15px' }}>
+          <button className="btn-export-luxury" onClick={exportCSV} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 24px', background: 'white', border: '1px solid #e2e8f0', borderRadius: '14px', color: '#003580', fontWeight: '800', fontSize: '13px', cursor: 'pointer', transition: 'all 0.3s', boxShadow: '0 4px 6px rgba(0,0,0,0.02)' }}>
             <Download size={18} /> Export CSV
           </button>
-          <button className="btn-export" onClick={exportPDF}>
+          <button className="btn-export-luxury" onClick={exportPDF} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 24px', background: '#003580', border: 'none', borderRadius: '14px', color: 'white', fontWeight: '800', fontSize: '13px', cursor: 'pointer', transition: 'all 0.3s', boxShadow: '0 10px 20px rgba(0, 53, 128, 0.2)' }}>
             <FileText size={18} /> Export PDF
           </button>
         </div>
       </div>
 
-      {/* FILTER CONTROLS */}
-      <div className="filters-container">
-        <div className="filter-group search-group">
-          <Search size={18} className="filter-icon" />
-          <input 
-            type="text" 
-            placeholder="Search customer or #BK-ID..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="filter-input"
-          />
-        </div>
-        
-        <div className="filter-group">
-          <Filter size={18} className="filter-icon" />
-          <select 
-            value={statusFilter} 
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="filter-input"
-          >
-            <option value="ALL">All Statuses</option>
-            <option value="CONFIRMED">Confirmed</option>
-            <option value="REJECTED">Rejected</option>
-          </select>
-        </div>
+      {/* REFINED FILTER HEADER */}
+      <div className="filters-container-premium" style={{ background: 'white', padding: '30px', borderRadius: '24px', border: '1px solid #edf2f7', marginBottom: '32px', boxShadow: '0 20px 40px rgba(0,0,0,0.03)' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1.5fr', gap: '20px' }}>
+          
+          <div className="search-box-luxury" style={{ position: 'relative' }}>
+            <Search size={20} style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+            <input 
+              type="text" 
+              placeholder="Search guest name, email, or #BK-ID..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ width: '100%', padding: '15px 15px 15px 54px', borderRadius: '16px', border: '1px solid #e2e8f0', fontSize: '15px', fontWeight: '600', outline: 'none', transition: 'all 0.3s', background: '#f8fafc' }}
+            />
+          </div>
 
-        <div className="filter-group date-group">
-          <Calendar size={18} className="filter-icon" />
-          <DatePicker
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
-            selectsStart
-            startDate={startDate}
-            endDate={endDate}
-            placeholderText="Start Date"
-            className="filter-input date-picker-sm"
-          />
-          <span style={{ color: 'var(--text-muted)' }}>-</span>
-          <DatePicker
-            selected={endDate}
-            onChange={(date) => setEndDate(date)}
-            selectsEnd
-            startDate={startDate}
-            endDate={endDate}
-            minDate={startDate}
-            placeholderText="End Date"
-            className="filter-input date-picker-sm"
-          />
+          <div style={{ position: 'relative' }}>
+            <Filter size={20} style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', color: '#003580' }} />
+            <select 
+              value={statusFilter} 
+              onChange={(e) => setStatusFilter(e.target.value)}
+              style={{ width: '100%', padding: '15px 15px 15px 54px', borderRadius: '16px', border: '1px solid #e2e8f0', fontSize: '14px', fontWeight: '800', outline: 'none', appearance: 'none', background: '#f8fafc', color: '#003580' }}
+            >
+              <option value="ALL">All Statuses</option>
+              <option value="CONFIRMED">Confirmed</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: '#f8fafc', padding: '0 15px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+            <Calendar size={20} color="#003580" />
+            <DatePicker
+              selected={startDate}
+              onChange={(date) => setStartDate(date)}
+              selectsStart
+              startDate={startDate}
+              endDate={endDate}
+              placeholderText="Check-in Range"
+              className="luxury-date-input"
+              style={{ border: 'none', background: 'transparent', padding: '15px 5px', fontSize: '14px', fontWeight: '700', width: '100%', outline: 'none' }}
+            />
+          </div>
         </div>
       </div>
 
       {loading ? (
-        <p style={{ color: "var(--text-muted)" }}>Loading bookings...</p>
+        <div style={{ textAlign: 'center', padding: '100px' }}>
+          <div className="premium-spinner"></div>
+          <p style={{ marginTop: '20px', color: '#94a3b8', fontWeight: 700 }}>Whispering to the server...</p>
+        </div>
       ) : filteredBookings.length === 0 ? (
-        <div style={{ textAlign: "center", padding: "40px", background: "var(--surface-card)", borderRadius: "24px", border: "1px solid var(--border-light)" }}>
-          <Calendar size={48} color="var(--border-light)" style={{ marginBottom: "16px" }} />
-          <p style={{ color: "var(--text-muted)" }}>No bookings match your filters.</p>
+        <div style={{ textAlign: "center", padding: "80px 40px", background: "white", borderRadius: "32px", border: "1px solid #edf2f7", boxShadow: '0 20px 40px rgba(0,0,0,0.02)' }}>
+          <Calendar size={64} color="#e2e8f0" style={{ marginBottom: "24px" }} />
+          <h3 style={{ color: '#1e293b', fontSize: '1.5rem', fontWeight: 900 }}>No Booking Legends Found</h3>
+          <p style={{ color: "#94a3b8", maxWidth: '400px', margin: '10px auto 0' }}>It seems there are no stays matching your criteria yet. New bookings will appear here instantly.</p>
         </div>
       ) : (
         <motion.div 
-          className="table-container"
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
+          className="table-wrapper-luxury"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{ background: 'white', borderRadius: '32px', overflow: 'hidden', border: '1px solid #edf2f7', boxShadow: '0 30px 60px rgba(0,0,0,0.04)' }}
         >
-          <table className="bookings-table">
-            <thead>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <thead style={{ background: '#f8fafc', borderBottom: '1px solid #edf2f7' }}>
               <tr>
-                <th>ID</th>
-                <th>Place & Room</th>
-                <th>Customer</th>
-                <th>Dates</th>
-                <th>Total Price</th>
-                <th>Status</th>
+                <th style={{ padding: '24px 30px', color: '#64748b', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Booking Details</th>
+                <th style={{ padding: '24px 30px', color: '#64748b', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Guest</th>
+                <th style={{ padding: '24px 30px', color: '#64748b', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Stay Dates</th>
+                <th style={{ padding: '24px 30px', color: '#64748b', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Revenue</th>
+                <th style={{ padding: '24px 30px', color: '#64748b', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</th>
+                <th style={{ padding: '24px 30px', color: '#64748b', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredBookings.map((b) => {
-                const statusClass = (b.status || "").toLowerCase();
-                const isPending = statusClass === "pending";
-                
+                const status = (b.status || "").toLowerCase();
                 return (
-                  <tr key={b.id}>
-                    <td style={{ fontWeight: 800, color: 'var(--brand-primary)', fontSize: '0.85rem' }}>
-                      #BK-{b.id}
+                  <tr key={b.id} style={{ borderBottom: '1px solid #f1f5f9', background: 'white', transition: 'all 0.3s' }} className="hover-row-luxury">
+                    <td style={{ padding: '28px 30px', verticalAlign: 'middle' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ fontSize: '11px', fontWeight: '900', color: '#003580', background: '#e0e7ff', padding: '4px 10px', borderRadius: '8px', width: 'fit-content', textTransform: 'uppercase' }}>
+                          #BK-{b.id.toString().padStart(5, '0')}
+                        </div>
+                        <div style={{ fontWeight: '800', color: '#1e293b', fontSize: '15px' }}>{b.place_name}</div>
+                        <div style={{ fontSize: '12px', color: '#64748b', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <Home size={13} /> {b.room_name || 'Standard Unit'}
+                        </div>
+                      </div>
                     </td>
-                    <td>
-                      <div style={{ fontWeight: 600 }}>{b.place_name}</div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{b.room_name || 'Standard'}</div>
+                    
+                    <td style={{ padding: '28px 30px', verticalAlign: 'middle' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#003580', flexShrink: 0 }}>
+                          <User size={20} />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                          <span style={{ fontWeight: '800', color: '#1e293b', fontSize: '15px' }}>{b.full_name || b.customer_name}</span>
+                          <span style={{ fontSize: '13px', color: '#64748b', fontWeight: '500' }}>{b.phone || b.email || 'No Contact'}</span>
+                        </div>
+                      </div>
                     </td>
-                    <td>
-                      <div style={{ fontWeight: 600 }}>{b.full_name || b.customer_name || "-"}</div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{b.phone || ''}</div>
+
+                    <td style={{ padding: '28px 30px', verticalAlign: 'middle' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '14px', border: '1px solid #edf2f7', textAlign: 'center' }}>
+                          <div style={{ fontSize: '10px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase' }}>Check-in</div>
+                          <div style={{ fontSize: '13px', fontWeight: '900', color: '#1e293b' }}>{new Date(b.check_in).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</div>
+                        </div>
+                        <ArrowRight size={16} color="#cbd5e1" />
+                        <div style={{ background: '#f8fafc', padding: '10px 14px', borderRadius: '14px', border: '1px solid #edf2f7', textAlign: 'center' }}>
+                          <div style={{ fontSize: '10px', fontWeight: '800', color: '#94a3b8', textTransform: 'uppercase' }}>Check-out</div>
+                          <div style={{ fontSize: '13px', fontWeight: '900', color: '#1e293b' }}>{new Date(b.check_out).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</div>
+                        </div>
+                      </div>
                     </td>
-                    <td>
-                      <div style={{ fontSize: '0.9rem' }}>{new Date(b.check_in).toLocaleDateString()}</div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>to {new Date(b.check_out).toLocaleDateString()}</div>
+
+                    <td style={{ padding: '28px 30px', verticalAlign: 'middle' }}>
+                      <div style={{ fontSize: '1.2rem', fontWeight: '900', color: '#003580' }}>
+                        Rs. {Number(b.total_price || 0).toLocaleString()}
+                      </div>
+                      <div style={{ fontSize: '11px', fontWeight: '700', color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                         <CheckCircle size={10} /> Payment Success
+                      </div>
                     </td>
-                    <td style={{ fontWeight: 700, color: '#003580' }}>
-                      Rs. {Number(b.total_price || 0).toLocaleString()}
-                    </td>
-                    <td>
-                      <span className={`status-badge ${statusClass}`}>
-                        {getStatusLabel(b.status)}
+
+                    <td style={{ padding: '28px 30px', verticalAlign: 'middle' }}>
+                      <span style={{
+                        padding: '8px 16px', borderRadius: '12px', fontSize: '11px', fontWeight: '900', textTransform: 'uppercase',
+                        background: status === 'confirmed' || status === 'approved' ? '#ecfdf5' : status === 'pending' ? '#fffbeb' : '#fff1f2',
+                        color: status === 'confirmed' || status === 'approved' ? '#059669' : status === 'pending' ? '#d97706' : '#e11d48',
+                        border: '1px solid currentColor',
+                        letterSpacing: '0.05em'
+                      }}>
+                        {b.status}
                       </span>
+                    </td>
+
+                    <td style={{ padding: '28px 30px', verticalAlign: 'middle' }}>
+                      <div style={{ display: 'flex', gap: '10px' }}>
+                         {status === 'confirmed' && (
+                           <button 
+                             onClick={() => handleUpdateStatus(b.id, 'completed')}
+                             style={{ background: '#003580', border: 'none', color: 'white', padding: '8px 16px', borderRadius: '10px', fontWeight: '800', fontSize: '12px', cursor: 'pointer', transition: 'all 0.2s' }}
+                           >
+                              Check-out
+                           </button>
+                         )}
+                         <button 
+                           className="btn-more-luxury"
+                           style={{ height: '36px', width: '36px', borderRadius: '10px', background: '#f8fafc', border: '1px solid #e2e8f0', color: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                         >
+                            <MoreVertical size={18} />
+                         </button>
+                      </div>
                     </td>
                   </tr>
                 );

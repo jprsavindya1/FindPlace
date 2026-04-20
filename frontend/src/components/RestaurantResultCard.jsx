@@ -4,12 +4,10 @@ import {
   Star, 
   MapPin, 
   UtensilsCrossed, 
-  Clock, 
   CheckCircle2, 
   ChevronRight,
   ShieldCheck,
   Coffee,
-  Wine,
   Leaf
 } from 'lucide-react';
 import { API_BASE_URL } from "../apiConfig";
@@ -40,15 +38,13 @@ const RestaurantResultCard = ({ restaurant, viewMode }) => {
 
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4, boxShadow: "0 12px 30px rgba(0,0,0,0.08)" }}
-      className={`restaurant-result-card ${viewMode === 'grid' ? 'grid-mode' : ''}`}
+      className={`restaurant-card-modern ${viewMode === 'grid' ? 'grid-mode' : ''}`}
       onClick={() => navigate(`/places/${restaurant.id}`)}
     >
-      <div className="result-card-inner">
-        {/* Left: Image */}
-        <div className="result-card-image">
+      <div className="res-card-container">
+        <div className="res-card-gallery">
           <img 
             src={restaurant.image 
               ? `${API_BASE_URL}/uploads/places/${restaurant.image}` 
@@ -57,68 +53,62 @@ const RestaurantResultCard = ({ restaurant, viewMode }) => {
             alt={restaurant.name} 
           />
           {restaurant.avg_rating >= 4.5 && (
-            <div className="result-badge">Top Rated</div>
+            <div className="premium-badge-res">Top Rated Experience</div>
           )}
         </div>
 
-        {/* Right: Content */}
-        <div className="result-card-content">
-          <div className="result-main-info">
-            <div className="result-header">
-              <div className="result-title-group">
-                <div className="result-title-row">
-                  <h3 className="result-name">{restaurant.name}</h3>
-                  <div className="result-stars">
-                    {renderStars(restaurant.stars || 0)}
-                  </div>
+        <div className="res-card-body">
+          <div className="res-card-main">
+            <div className="res-header-row">
+              <div className="res-title-block">
+                <div className="res-stars-row">
+                  {renderStars(restaurant.stars || 0)}
                 </div>
-                <div className="result-location">
-                  <MapPin size={14} />
+                <h3 className="res-name-title">{restaurant.name}</h3>
+                <div className="res-location-row">
+                  <MapPin size={14} className="icon-map" />
                   <span>{restaurant.area}, {restaurant.district}</span>
-                  <span className="location-action">Show on map</span>
+                  <button className="map-link-btn" onClick={(e) => { e.stopPropagation(); }}>Show on map</button>
                 </div>
               </div>
 
-              <div className="result-rating-group">
-                <div className="rating-text">
-                  <span className="rating-label">{getRatingLabel(restaurant.avg_rating)}</span>
-                  <span className="review-count">{restaurant.review_count || 0} reviews</span>
+              <div className="res-rating-block">
+                <div className="rating-info-mini">
+                  <span className="rating-word">{getRatingLabel(restaurant.avg_rating)}</span>
+                  <span className="rating-count">{restaurant.review_count || 0} reviews</span>
                 </div>
-                <div className="rating-badge">
+                <div className="rating-score-box">
                   {Number(restaurant.avg_rating || 0).toFixed(1)}
                 </div>
               </div>
             </div>
 
-            <div className="result-amenities-summary">
-              <div className="amenity-tag"><UtensilsCrossed size={14} /> {restaurant.cuisine_type || 'Multi-Cuisine'}</div>
-              {restaurant.wifi && <div className="amenity-tag"><Coffee size={14} /> WiFi</div>}
-              {restaurant.parking && <div className="amenity-tag">Parking</div>}
+            <div className="res-tags-container">
+               <div className="res-tag cuisine-tag">
+                 <UtensilsCrossed size={14} /> 
+                 <span>{restaurant.cuisine_type || 'Multi-Cuisine'}</span>
+               </div>
+               {!!restaurant.wifi && <div className="res-tag"><Coffee size={14} /> WiFi</div>}
             </div>
 
-            <div className="result-description">
-              <CheckCircle2 size={16} className="text-success" />
-              <span>Dine-in • Takeaway • {restaurant.category}</span>
-            </div>
-
-            <div className="result-selling-point">
-              <ShieldCheck size={16} className="text-primary" />
-              <span>Instant Confirmation • Best Price Guaranteed</span>
+            <div className="res-highlights">
+              <div className="highlight-item">
+                <CheckCircle2 size={16} className="text-success-res" />
+                <span>Dine-in • Takeaway • {restaurant.category}</span>
+              </div>
+              <div className="highlight-item">
+                <ShieldCheck size={16} className="text-benefit-res" />
+                <span>Instant Confirmation • Best Price Guaranteed</span>
+              </div>
             </div>
           </div>
 
-          <div className="result-pricing-section">
-            <div className="pricing-info">
-              <span className="price-label">Avg. price per person</span>
-              <div className="price-value">
-                <span className="currency">LKR</span>
-                <span className="amount">{(restaurant.price || 2500).toLocaleString()}</span>
-              </div>
-              <span className="tax-label">No booking fees</span>
+          <div className="res-card-action-bar">
+            <div className="action-benefit-text">
+               <Leaf size={14} color="#10b981" /> No booking fees
             </div>
-            
             <button 
-              className="book-table-btn"
+              className="res-book-now-btn"
               onClick={(e) => {
                 e.stopPropagation();
                 navigate(`/places/${restaurant.id}`);

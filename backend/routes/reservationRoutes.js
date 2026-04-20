@@ -8,9 +8,10 @@ console.log("🚀 RESERVATION SYSTEM V3 (FIXED) LOADED");
 
 /* ================= CREATE RESERVATION (PRO VERSION) ================= */
 router.post("/", verifyToken, async (req, res) => {
-  const { place_id, customer_name, customer_email, res_date, res_time, people_count, table_id, phone, customer_phone, special_requests, food_order_items } = req.body;
+  const { place_id, customer_name, customer_email, res_date, res_time, duration_minutes, people_count, table_id, table_ids, phone, customer_phone, special_requests, food_order_items } = req.body;
   const userId = req.user.id;
-  const DURATION_MINUTES = 120;
+  const BUFFER = 15;
+  const DURATION = duration_minutes || 120;
   
   const finalPhone = customer_phone || phone;
 
@@ -21,7 +22,7 @@ router.post("/", verifyToken, async (req, res) => {
     res_time, 
     people_count, 
     table_id, 
-    table_id_type: typeof table_id,
+    table_ids,
     food_order_items 
   });
 
@@ -42,83 +43,77 @@ router.post("/", verifyToken, async (req, res) => {
       console.log("✅ Transaction started");
 
       try {
-        let final_table_id = table_id;
+        // Handle both single table_id and multiple table_ids
+        let final_table_ids = table_ids || (table_id ? [table_id] : []);
 
-        // 1. Availability check logic
-        const checkAvailability = (tid) => {
-          return new Promise((resolve, reject) => {
-            const sql = `
-              SELECT id FROM reservations 
-              WHERE table_id = ? AND res_date = ? 
-              AND status = 'confirmed'
-              AND (
-                (res_time <= ? AND ADDTIME(res_time, '02:00:00') > ?) OR
-                (res_time < ADDTIME(?, '02:00:00') AND ADDTIME(res_time, '02:00:00') >= ADDTIME(?, '02:00:00')) OR
-                (? >= res_time AND ? < ADDTIME(res_time, '02:00:00'))
-              )
-            `;
-            // Simplified overlap: (start1 < end2) AND (end1 > start2)
-            const overlapSql = `
-              SELECT id FROM reservations 
-              WHERE table_id = ? AND res_date = ? 
-              AND status = 'confirmed'
-              AND res_time < ADDTIME(?, '02:00:00') 
-              AND ADDTIME(res_time, '02:00:00') > ?
-            `;
-            connection.query(overlapSql, [tid, res_date, res_time, res_time], (err, results) => {
-              if (err) {
-                console.error("❌ Availability Check SQL Error:", err);
-                return reject(err);
-              }
-              resolve(results.length === 0);
+        // 1. Availability check logic (RACE CONDITION PREVENTION)
+        if (final_table_ids.length > 0) {
+          console.log("STEP 1: Checking specific Table IDs:", final_table_ids);
+          
+          const checkAvailability = (tids) => {
+            return new Promise((resolve, reject) => {
+                const overlapSql = `
+                    SELECT rt.table_id FROM reservation_tables rt
+                    JOIN reservations r ON rt.reservation_id = r.id
+                    WHERE rt.table_id IN (?) AND r.res_date = ? 
+                    AND r.status = 'confirmed'
+                    AND r.res_time < ADDTIME(?, SEC_TO_TIME((? + ?) * 60)) 
+                    AND ADDTIME(r.res_time, SEC_TO_TIME((r.duration_minutes + r.buffer_minutes) * 60)) > ?
+                `;
+                connection.query(overlapSql, [tids, res_date, res_time, DURATION, BUFFER, res_time], (err, results) => {
+                    if (err) return reject(err);
+                    resolve(results.length === 0);
+                });
             });
-          });
-        };
+          };
 
-        // 1. Availability check logic - Explicit ID must be a positive number/string
-        const hasExplicitTable = table_id && String(table_id).trim() !== "" && !isNaN(table_id);
-
-        if (hasExplicitTable) {
-          console.log("STEP 1: Checking specific Table ID:", table_id);
-          const isAvailable = await checkAvailability(table_id);
+          const isAvailable = await checkAvailability(final_table_ids);
           if (!isAvailable) {
-            console.log("❌ Table busy for ID:", table_id);
             connection.rollback(() => connection.release());
-            return res.status(400).json({ message: "This table is already booked for the selected time." });
+            return res.status(400).json({ message: "One or more selected tables are already booked for this time." });
           }
         } else {
-          console.log("STEP 1B: Smart Table Allocation (No table_id provided)");
+          // Smart Allocation (Fallback)
+          console.log("STEP 1B: Smart Table Allocation");
           const findBestTable = () => {
             return new Promise((resolve, reject) => {
               const sql = `
-                SELECT id, capacity FROM restaurant_tables 
+                SELECT id FROM restaurant_tables 
                 WHERE place_id = ? AND capacity >= ? AND status = 'available'
                 AND id NOT IN (
-                  SELECT table_id FROM reservations 
-                  WHERE res_date = ? AND status = 'confirmed'
-                  AND res_time < ADDTIME(?, '02:00:00') 
-                  AND ADDTIME(res_time, '02:00:00') > ?
+                    SELECT rt.table_id FROM reservation_tables rt
+                    JOIN reservations r ON rt.reservation_id = r.id
+                    WHERE r.res_date = ? AND r.status = 'confirmed'
+                    AND r.res_time < ADDTIME(?, SEC_TO_TIME((? + ?) * 60)) 
+                    AND ADDTIME(r.res_time, SEC_TO_TIME((r.duration_minutes + r.buffer_minutes) * 60)) > ?
                 )
-                ORDER BY capacity ASC
-                LIMIT 1
+                ORDER BY capacity ASC LIMIT 1
               `;
-              connection.query(sql, [place_id, people_count, res_date, res_time, res_time], (err, results) => {
-                if (err) {
-                  console.error("❌ Smart Allocation SQL Error:", err);
-                  return reject(err);
-                }
-                resolve(results.length > 0 ? results[0].id : null);
+              connection.query(sql, [place_id, people_count, res_date, res_time, DURATION, BUFFER, res_time], (err, results) => {
+                if (err) return reject(err);
+                resolve(results.length > 0 ? [results[0].id] : []);
               });
             });
           };
 
-          final_table_id = await findBestTable();
-          if (!final_table_id) {
-            console.log("❌ No tables available");
+          final_table_ids = await findBestTable();
+          if (final_table_ids.length === 0) {
             connection.rollback(() => connection.release());
-            return res.status(400).json({ message: "No tables available." });
+            return res.status(400).json({ message: "No tables available for your group size." });
           }
         }
+
+        // 1C. Calculate Minimum Spend Requirement
+        const getMinSpend = (tids) => {
+            return new Promise((resolve, reject) => {
+                connection.query('SELECT SUM(min_spend) as total_min FROM restaurant_tables WHERE id IN (?)', [tids], (err, results) => {
+                    if (err) return reject(err);
+                    resolve(Number(results[0].total_min) || 0);
+                });
+            });
+        };
+        const total_min_spend = await getMinSpend(final_table_ids);
+        console.log("💎 Total Minimum Spend Required:", total_min_spend);
 
         // 2. Calculate total_price from food_order_items if present
         console.log("STEP 2: Menu Price Fetching");
@@ -129,21 +124,15 @@ router.post("/", verifyToken, async (req, res) => {
           try {
             const itemsObj = typeof food_order_items === 'string' ? JSON.parse(food_order_items) : food_order_items;
             const itemIds = Object.keys(itemsObj);
-            console.log("🔍 Pre-order item IDs:", itemIds);
             
             if (itemIds.length > 0) {
               const fetchItemPrices = () => {
                 return new Promise((resolve, reject) => {
-                  console.log("🔍 Executing item prices query...");
                   connection.query(
                     'SELECT id, name, price FROM menu WHERE id IN (?)', 
                     [itemIds], 
                     (err, menuResults) => {
-                      if (err) {
-                        console.error("❌ fetchItemPrices SQL Error:", err);
-                        return reject(err);
-                      }
-                      console.log("✅ fetchItemPrices results count:", menuResults.length);
+                      if (err) return reject(err);
                       resolve(menuResults);
                     }
                   );
@@ -156,7 +145,6 @@ router.post("/", verifyToken, async (req, res) => {
                 total_price += Number(item.price) * qty;
                 finalItemsArray.push({ id: item.id, name: item.name, price: item.price, quantity: qty });
               });
-              console.log("💰 Calculated Total Price:", total_price);
             }
           } catch (e) {
             console.error("❌ STEP 2 FAILED:", e);
@@ -168,42 +156,53 @@ router.post("/", verifyToken, async (req, res) => {
         console.log("STEP 3: Database Insert");
         const insertSql = `
           INSERT INTO reservations 
-          (place_id, user_id, customer_name, customer_email, customer_phone, res_date, res_time, people_count, table_id, status, food_order_items, total_price)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', ?, ?)
+          (place_id, user_id, customer_name, customer_email, customer_phone, res_date, res_time, duration_minutes, buffer_minutes, people_count, table_id, status, food_order_items, total_price)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'confirmed', ?, ?)
         `;
         const values = [
           place_id, userId, customer_name, customer_email, finalPhone, 
-          res_date, res_time, people_count, final_table_id, 
-          JSON.stringify(finalItemsArray), total_price
+          res_date, res_time, DURATION, BUFFER, people_count, final_table_ids[0], 
+          JSON.stringify(finalItemsArray), Math.max(total_price, total_min_spend)
         ];
 
         connection.query(insertSql, values, (err, result) => {
           if (err) {
             console.error("❌ STEP 3 SQL ERROR:", err);
-            return connection.rollback(() => {
-              connection.release();
-              res.status(500).json({ message: "Reservation insertion failed" });
-            });
+            connection.rollback(() => connection.release());
+            return res.status(500).json({ message: "Reservation insertion failed" });
           }
-          console.log("✅ Reservation inserted, ID:", result.insertId);
+          
+          const reservationId = result.insertId;
+          console.log("✅ Reservation inserted, ID:", reservationId);
 
-          console.log("STEP 4: Commit Transaction");
-          connection.commit((err) => {
+          // 3B. Insert into Join Table
+          const joinSql = 'INSERT INTO reservation_tables (reservation_id, table_id) VALUES ?';
+          const joinValues = final_table_ids.map(tid => [reservationId, tid]);
+
+          connection.query(joinSql, [joinValues], (err) => {
             if (err) {
-              console.error("❌ COMMIT FAILED:", err);
-              return connection.rollback(() => {
-                connection.release();
-                res.status(500).json({ message: "Commit failed" });
-              });
+              console.error("❌ JOIN TABLE INSERT FAILED:", err);
+              connection.rollback(() => connection.release());
+              return res.status(500).json({ message: "Join table failed" });
             }
-            console.log("🎉 ALL STEPS COMPLETED SUCCESSFULLY");
-            connection.release();
-            res.json({ 
-              message: "Table Reserved & Confirmed! 🎉", 
-              id: result.insertId,
-              order_id: `FP-DINE-${String(result.insertId).padStart(4, '0')}`,
-              status: 'confirmed',
-              table_id: final_table_id
+
+            console.log("STEP 4: Commit Transaction");
+            connection.commit((err) => {
+              if (err) {
+                console.error("❌ COMMIT FAILED:", err);
+                connection.rollback(() => connection.release());
+                return res.status(500).json({ message: "Commit failed" });
+              }
+              
+              console.log("🎉 ALL STEPS COMPLETED SUCCESSFULLY");
+              connection.release();
+              res.json({ 
+                message: "Table Reserved & Confirmed! 🎉", 
+                id: reservationId,
+                order_id: `FP-DINE-${reservationId}`,
+                status: 'confirmed',
+                table_ids: final_table_ids
+              });
             });
           });
         });
@@ -217,17 +216,51 @@ router.post("/", verifyToken, async (req, res) => {
   });
 });
 
+/* ================= GET VISUAL AVAILABILITY (CUSTOMER PICKER) ================= */
+router.get("/availability/visual", (req, res) => {
+  const { placeId, res_date, res_time, duration_minutes } = req.query;
+
+  if (!placeId || !res_date || !res_time) {
+    return res.status(400).json({ message: "placeId, res_date, and res_time are required." });
+  }
+
+  const requestedDuration = duration_minutes || 120;
+  const BUFFER = 15;
+
+  const overlapSql = `
+    SELECT DISTINCT rt.table_id 
+    FROM reservation_tables rt
+    JOIN reservations r ON rt.reservation_id = r.id
+    WHERE r.place_id = ? AND r.res_date = ? 
+    AND r.status = 'confirmed'
+    AND r.res_time < ADDTIME(?, SEC_TO_TIME((? + ?) * 60)) 
+    AND ADDTIME(r.res_time, SEC_TO_TIME((r.duration_minutes + r.buffer_minutes) * 60)) > ?
+  `;
+
+  db.query(overlapSql, [placeId, res_date, res_time, requestedDuration, BUFFER, res_time], (err, results) => {
+    if (err) {
+      console.error("❌ VISUAL AVAILABILITY CHECK FAILED:", err);
+      return res.status(500).json({ message: "Failed to check availability" });
+    }
+    const occupiedIds = results.map(r => r.table_id);
+    res.json(occupiedIds);
+  });
+});
+
 /* ================= GET RESERVATIONS FOR OWNER ================= */
 router.get("/owner/all", verifyToken, (req, res) => {
   const { placeId } = req.query;
   const ownerId = req.user.id;
 
   let sql = `
-    SELECT r.*, rt.table_no, p.name as place_name,
-           CONCAT('FP-DINE-', LPAD(r.id, 4, '0')) as order_id,
-           r.total_price as total_price
+    SELECT 
+      r.*, 
+      GROUP_CONCAT(rt.table_no ORDER BY rt.table_no SEPARATOR ', ') as table_numbers,
+      p.name as place_name,
+      CONCAT('FP-DINE-', r.id) as order_id
     FROM reservations r
-    LEFT JOIN restaurant_tables rt ON r.table_id = rt.id
+    LEFT JOIN reservation_tables res_t ON r.id = res_t.reservation_id
+    LEFT JOIN restaurant_tables rt ON res_t.table_id = rt.id
     JOIN places p ON r.place_id = p.id
     WHERE p.owner_id = ?
   `;
@@ -238,11 +271,11 @@ router.get("/owner/all", verifyToken, (req, res) => {
     params.push(placeId);
   }
 
-  sql += " ORDER BY r.id DESC";
+  sql += " GROUP BY r.id ORDER BY r.id DESC";
 
   db.query(sql, params, (err, results) => {
     if (err) {
-      console.error(err);
+      console.error("❌ OWNER FETCH ERROR:", err);
       return res.status(500).json({ message: "Failed to fetch reservations" });
     }
     res.json(results);
@@ -254,7 +287,7 @@ router.get("/customer", verifyToken, (req, res) => {
 
   const sql = `
     SELECT r.*, p.name as place_name, rt.table_no,
-           CONCAT('FP-DINE-', LPAD(r.id, 4, '0')) as order_id
+           CONCAT('FP-DINE-', r.id) as order_id
     FROM reservations r
     JOIN places p ON r.place_id = p.id
     LEFT JOIN restaurant_tables rt ON r.table_id = rt.id
@@ -306,7 +339,7 @@ router.get("/invoice/:id", verifyToken, (req, res) => {
       p.location,
       rt.table_no,
       u.email AS user_email,
-      CONCAT('FP-DINE-', LPAD(r.id, 4, '0')) as order_id
+      CONCAT('FP-DINE-', r.id) as order_id
     FROM reservations r
     JOIN places p ON r.place_id = p.id
     LEFT JOIN restaurant_tables rt ON r.table_id = rt.id
@@ -315,7 +348,13 @@ router.get("/invoice/:id", verifyToken, (req, res) => {
   `;
 
   db.query(sql, [reservationId, userId, userId], async (err, results) => {
-    if (err) return res.status(500).json({ message: "Database error" });
+    if (err) {
+      console.error("❌ DINING SQL ERROR:", err);
+      const fs = require('fs');
+      const errorMsg = `[${new Date().toISOString()}] DINING SQL ERROR for /invoice/${reservationId}: ${err.message}\n`;
+      fs.appendFileSync('sql_error_log.txt', errorMsg);
+      return res.status(500).json({ message: "Database error" });
+    }
     if (results.length === 0) return res.status(404).json({ message: "Reservation not found" });
 
     const b = results[0];

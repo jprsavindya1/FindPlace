@@ -14,7 +14,10 @@ import {
   Check,
   X,
   MessageSquare,
-  Utensils
+  Utensils,
+  ArrowUpRight,
+  ArrowRight,
+  ArrowDownLeft
 } from "lucide-react";
 
 function OwnerReservations({ filterPlaceId, places }) {
@@ -26,6 +29,19 @@ function OwnerReservations({ filterPlaceId, places }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRes, setSelectedRes] = useState(null); // For Modal
   const [allMenuItems, setAllMenuItems] = useState([]); // ID -> Details mapping
+
+  // Helper to calculate end time
+  const getEndTime = (timeStr, duration) => {
+    if (!timeStr) return "N/A";
+    const [h, m] = timeStr.split(':').map(Number);
+    const date = new Date();
+    date.setHours(h, m + (duration || 120), 0, 0);
+    const endH = date.getHours();
+    const endM = date.getMinutes();
+    const hour12 = endH % 12 || 12;
+    const ampm = endH >= 12 ? 'PM' : 'AM';
+    return `${hour12}:${String(endM).padStart(2, '0')} ${ampm}`;
+  };
 
   const fetchReservations = async () => {
     setLoading(true);
@@ -99,81 +115,77 @@ function OwnerReservations({ filterPlaceId, places }) {
         <p>Manage upcoming dining bookings and guest seatings.</p>
       </div>
 
-      <div className="reservation-controls-wrapper" style={{ marginBottom: '25px' }}>
-        <div className="main-filters" style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          background: 'white', padding: '15px 25px', borderRadius: '15px 15px 0 0',
-          border: '1px solid #edf2f7', borderBottom: 'none'
+      <div className="reservation-controls-wrapper" style={{ marginBottom: '30px' }}>
+        {/* Tier 1: Status Filters */}
+        <div className="status-filter-row" style={{
+          background: 'white', padding: '10px 25px', borderRadius: '15px 15px 0 0',
+          border: '1px solid #edf2f7', borderBottom: '1px solid #f1f5f9',
+          display: 'flex', alignItems: 'center'
         }}>
-          <div className="filter-tabs" style={{ display: 'flex', gap: '10px' }}>
+          <div className="filter-tabs" style={{ display: 'flex', gap: '8px' }}>
             {["all", "confirmed", "completed", "cancelled"].map(f => (
               <button
                 key={f}
                 onClick={() => setActiveFilter(f)}
                 style={{
-                  padding: '8px 16px', borderRadius: '10px', border: 'none',
+                  padding: '10px 20px', borderRadius: '12px', border: 'none',
                   background: activeFilter === f ? '#003580' : 'transparent',
-                  color: activeFilter === f ? 'white' : '#718096',
-                  fontWeight: '600', fontSize: '13px', cursor: 'pointer',
-                  transition: 'all 0.3s ease', textTransform: 'capitalize'
+                  color: activeFilter === f ? 'white' : '#64748b',
+                  fontWeight: '700', fontSize: '13px', cursor: 'pointer',
+                  transition: 'all 0.2s ease', textTransform: 'capitalize'
                 }}
               >
                 {f}
               </button>
             ))}
           </div>
-          <div className="search-box" style={{ marginLeft: '20px', flex: 1, maxWidth: '300px' }}>
+        </div>
+
+        {/* Tier 2: Utility Row (Search & Sub-filters) */}
+        <div className="utility-filter-row" style={{
+          background: '#fcfdfe', padding: '15px 25px', borderRadius: '0 0 15px 15px',
+          border: '1px solid #edf2f7', borderTop: 'none',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '20px'
+        }}>
+          <div className="search-box" style={{ flex: 1, maxWidth: '400px' }}>
             <div style={{ position: 'relative' }}>
-               <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+               <Search size={18} style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                <input 
                 type="text" 
-                placeholder="Search by Order ID or Name..." 
+                placeholder="Search name, email, or order ID..." 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 style={{ 
-                  width: '100%', padding: '10px 15px 10px 38px', borderRadius: '12px', border: '1px solid #edf2f7',
-                  fontSize: '13px', fontWeight: '600', outline: 'none', transition: 'all 0.3s'
+                  width: '100%', padding: '12px 15px 12px 48px', borderRadius: '14px', border: '1px solid #edf2f7',
+                  fontSize: '14px', fontWeight: '600', outline: 'none', transition: 'all 0.3s',
+                  background: 'white', boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)'
                 }}
                />
             </div>
           </div>
-          <div className="stats-mini" style={{ color: '#718096', fontSize: '14px', fontWeight: '500' }}>
-            Total: {filtered.length} Results
-          </div>
-        </div>
 
-        <div className="sub-filters" style={{
-          display: 'flex', gap: '15px', background: '#f8fafc',
-          padding: '10px 25px', borderRadius: '0 0 15px 15px',
-          border: '1px solid #edf2f7'
-        }}>
-          <button 
-            onClick={() => setTimeFilter("all")}
-            style={{ 
-              background: 'none', border: 'none', color: timeFilter === 'all' ? '#003580' : '#94a3b8',
-              fontSize: '12px', fontWeight: '700', cursor: 'pointer', borderBottom: timeFilter === 'all' ? '2px solid #003580' : 'none'
-            }}
-          >
-            All Dates
-          </button>
-          <button 
-            onClick={() => setTimeFilter("today")}
-            style={{ 
-              background: 'none', border: 'none', color: timeFilter === 'today' ? '#003580' : '#94a3b8',
-              fontSize: '12px', fontWeight: '700', cursor: 'pointer', borderBottom: timeFilter === 'today' ? '2px solid #003580' : 'none'
-            }}
-          >
-            Today
-          </button>
-          <button 
-            onClick={() => setTimeFilter("upcoming")}
-            style={{ 
-              background: 'none', border: 'none', color: timeFilter === 'upcoming' ? '#003580' : '#94a3b8',
-              fontSize: '12px', fontWeight: '700', cursor: 'pointer', borderBottom: timeFilter === 'upcoming' ? '2px solid #003580' : 'none'
-            }}
-          >
-            Upcoming
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '25px' }}>
+            <div className="sub-filters" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+              {["all", "today", "upcoming"].map(t => (
+                <button 
+                  key={t}
+                  onClick={() => setTimeFilter(t)}
+                  style={{ 
+                    background: 'none', border: 'none', color: timeFilter === t ? '#003580' : '#94a3b8',
+                    fontSize: '13px', fontWeight: '700', cursor: 'pointer', 
+                    padding: '6px 0', borderBottom: timeFilter === t ? '3px solid #003580' : '3px solid transparent',
+                    transition: 'all 0.2s', textTransform: 'capitalize'
+                  }}
+                >
+                  {t === 'all' ? 'All Dates' : t}
+                </button>
+              ))}
+            </div>
+
+            <div className="stats-mini" style={{ paddingLeft: '20px', borderLeft: '1px solid #e2e8f0', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>
+              {filtered.length} Results
+            </div>
+          </div>
         </div>
       </div>
 
@@ -201,87 +213,103 @@ function OwnerReservations({ filterPlaceId, places }) {
               </thead>
               <tbody>
                 {filtered.map(r => (
-                  <tr key={r.id} style={{ borderBottom: '1px solid #f1f5f9', transition: 'background 0.2s' }} className="hover-row">
-                    <td style={{ padding: '20px 25px' }}>
-                      <div style={{ fontWeight: '800', color: '#1e293b', fontSize: '15px' }}>{r.customer_name}</div>
-                      <div style={{ marginTop: '4px', fontSize: '11px', fontWeight: '800', color: '#003580', background: '#e0e7ff', padding: '2px 6px', borderRadius: '4px', width: 'fit-content' }}>
-                        {r.order_id}
-                      </div>
-                      {r.food_order_items && (() => {
-                        try {
-                          const order = JSON.parse(r.food_order_items);
-                          const summary = Object.entries(order).map(([id, qty]) => {
-                            const item = allMenuItems.find(m => String(m.id) === String(id));
-                            return item ? `${item.name} x${qty}` : `Item #${id} x${qty}`;
-                          }).join(", ");
-                          
-                          return (
-                            <div 
-                              onClick={() => setSelectedRes(r)}
-                              title="Click to view full reservation details"
-                              style={{ 
-                                marginTop: '6px', fontSize: '12px', color: '#c2410c', 
-                                background: '#fff7ed', padding: '6px 10px', borderRadius: '8px',
-                                border: '1px solid #ffedd5', display: 'flex', alignItems: 'center', gap: '6px',
-                                lineHeight: '1.4', maxWidth: '250px', cursor: 'pointer'
-                              }}
-                            >
-                              <Utensils size={12} />
-                              <span style={{ fontWeight: '600' }}>{summary}</span>
-                            </div>
-                          );
-                        } catch (e) { return null; }
-                      })()}
-                    </td>
-                    <td style={{ padding: '20px 25px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#334155', fontWeight: '600' }}>
-                        <Calendar size={14} color="#64748b" />
-                        <span>{new Date(r.res_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#64748b', fontSize: '13px', marginTop: '4px' }}>
-                        <Clock size={14} />
-                        <span>{r.res_time.slice(0, 5)}</span>
+                  <tr key={r.id} style={{ borderBottom: '1px solid #f1f5f9', background: 'white', transition: 'all 0.2s' }} className="hover-row">
+                    <td style={{ padding: '25px', verticalAlign: 'middle' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        <div style={{ fontWeight: '800', color: '#1e293b', fontSize: '15px' }}>{r.customer_name}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '10px', fontWeight: '900', color: '#003580', background: '#e0e7ff', padding: '3px 8px', borderRadius: '6px', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+                            {r.order_id}
+                          </span>
+                          {r.food_order_items && (() => {
+                            try {
+                              const order = JSON.parse(r.food_order_items);
+                              const summary = Array.isArray(order) 
+                                ? order.map(item => `${item.name} x${item.quantity}`).join(", ")
+                                : "";
+                              
+                              if (!summary) return null;
+
+                              return (
+                                <div 
+                                  onClick={() => setSelectedRes(r)}
+                                  style={{ 
+                                    fontSize: '11px', color: '#c2410c', background: '#fff7ed', 
+                                    padding: '3px 8px', borderRadius: '6px', border: '1px solid #ffedd5',
+                                    display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer',
+                                    fontWeight: '700'
+                                  }}
+                                >
+                                  <Utensils size={12} /> Pre-order
+                                </div>
+                              );
+                            } catch (e) { return null; }
+                          })()}
+                        </div>
                       </div>
                     </td>
-                    <td style={{ padding: '20px 25px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#f1f5f9', padding: '5px 12px', borderRadius: '20px', width: 'fit-content' }}>
-                        <Users size={14} color="#475569" />
-                        <span style={{ fontWeight: '700', color: '#475569' }}>{r.people_count}</span>
+                    <td style={{ padding: '25px', verticalAlign: 'middle' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b', fontWeight: '800', fontSize: '14px' }}>
+                          <Calendar size={14} color="#003580" />
+                          <span>{new Date(r.res_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 'x-small', color: '#64748b', fontSize: '12px', fontWeight: '600' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#f8fafc', padding: '2px 8px', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                            <ArrowUpRight size={12} color="#059669" />
+                            <span>{r.res_time.slice(0, 5)}</span>
+                          </div>
+                          <ArrowRight size={12} color="#cbd5e1" />
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: '#00358008', padding: '2px 8px', borderRadius: '6px', border: '1px solid #00358015', color: '#003580' }}>
+                            <ArrowDownLeft size={12} color="#003580" />
+                            <span>{getEndTime(r.res_time, r.duration_minutes)}</span>
+                          </div>
+                        </div>
                       </div>
                     </td>
-                    <td style={{ padding: '20px 25px' }}>
-                      {r.table_no ? (
-                        <span style={{ background: '#ebf4ff', color: '#1a56db', padding: '6px 12px', borderRadius: '8px', fontWeight: '800', fontSize: '12px', border: '1px solid #d1e9ff' }}>
-                          Table {r.table_no}
-                        </span>
-                      ) : (
-                        <span style={{ color: '#94a3b8', fontSize: '12px', fontStyle: 'italic' }}>Auto-assign failed</span>
-                      )}
+                    <td style={{ padding: '25px', verticalAlign: 'middle' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f8fafc', padding: '10px 16px', borderRadius: '14px', width: 'fit-content', border: '1px solid #edf2f7' }}>
+                        <Users size={16} color="#003580" />
+                        <span style={{ fontWeight: '900', color: '#1e293b' }}>{r.people_count}</span>
+                      </div>
                     </td>
-                    <td style={{ padding: '20px 25px' }}>
+                    <td style={{ padding: '25px', verticalAlign: 'middle' }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                        {(r.table_numbers || r.table_no || "").split(',').map((t, idx) => (
+                           <div key={idx} style={{ background: '#003580', color: 'white', padding: '6px 12px', borderRadius: '8px', fontWeight: '800', fontSize: '11px', boxShadow: '0 4px 6px rgba(0,53,128,0.15)', whiteSpace: 'nowrap' }}>
+                             Table {t.trim()}
+                           </div>
+                        ))}
+                        {!(r.table_numbers || r.table_no) && (
+                          <span style={{ color: '#94a3b8', fontSize: '12px', fontStyle: 'italic' }}>Auto-assign</span>
+                        )}
+                      </div>
+                    </td>
+                    <td style={{ padding: '25px', verticalAlign: 'middle' }}>
                       <span style={{
-                        padding: '6px 14px', borderRadius: '20px', fontSize: '11px', fontWeight: '800', textTransform: 'uppercase',
-                        background: r.status === 'confirmed' ? '#dcfce7' : '#fee2e2',
-                        color: r.status === 'confirmed' ? '#166534' : '#991b1b',
-                        border: `1px solid ${r.status === 'confirmed' ? '#bbf7d0' : '#fecaca'}`
+                        padding: '8px 16px', borderRadius: '12px', fontSize: '11px', fontWeight: '900', textTransform: 'uppercase',
+                        background: r.status === 'confirmed' ? '#ecfdf5' : '#fff1f2',
+                        color: r.status === 'confirmed' ? '#059669' : '#e11d48',
+                        border: `1px solid ${r.status === 'confirmed' ? '#d1fae5' : '#ffe4e6'}`,
+                        letterSpacing: '0.05em'
                       }}>
                         {r.status}
                       </span>
                     </td>
-                    <td style={{ padding: '20px 25px' }}>
-                      <div style={{ display: 'flex', gap: '10px' }}>
+                    <td style={{ padding: '25px', verticalAlign: 'middle' }}>
+                      <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                         {r.status === 'confirmed' && (
                           <>
-                            <button onClick={() => handleStatusUpdate(r.id, 'completed')} style={{ padding: '8px 16px', borderRadius: '10px', background: '#003580', border: 'none', color: 'white', fontSize: '12px', fontWeight: '700', cursor: 'pointer' }}>Mark Arrived</button>
-                            <button onClick={() => handleStatusUpdate(r.id, 'cancelled')} style={{ padding: '8px', borderRadius: '10px', background: '#f1f5f9', border: 'none', color: '#ef4444', cursor: 'pointer' }} title="Cancel"><X size={16} /></button>
+                            <button onClick={() => handleStatusUpdate(r.id, 'completed')} style={{ height: '42px', padding: '0 20px', borderRadius: '14px', background: '#003580', border: 'none', color: 'white', fontSize: '12px', fontWeight: '800', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 6px rgba(0,53,128,0.2)' }}>Mark Arrived</button>
+                            <button onClick={() => handleStatusUpdate(r.id, 'cancelled')} style={{ height: '42px', width: '42px', borderRadius: '14px', background: 'white', border: '1px solid #ffe4e6', color: '#e11d48', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }} title="Cancel"><X size={20} /></button>
                           </>
                         )}
                         <button 
                           onClick={() => setSelectedRes(r)}
-                          style={{ padding: '8px', borderRadius: '10px', background: r.food_order_items ? '#ebf4ff' : '#f8fafc', border: `1px solid ${r.food_order_items ? '#d1e9ff' : '#edf2f7'}`, color: r.food_order_items ? '#1a56db' : '#64748b', cursor: 'pointer' }}
+                          style={{ height: '42px', width: '42px', borderRadius: '14px', background: 'white', border: '1px solid #edf2f7', color: '#64748b', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s' }}
                           title="View Full Details"
                         >
-                          <MoreVertical size={16} />
+                          <MoreVertical size={20} />
                         </button>
                       </div>
                     </td>
@@ -342,6 +370,21 @@ function OwnerReservations({ filterPlaceId, places }) {
                   </div>
                 </div>
 
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                  <div style={{ background: '#00358005', padding: '15px', borderRadius: '16px', border: '1px solid #00358010' }}>
+                    <label style={{ fontSize: '10px', fontWeight: '800', color: '#003580', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Duration</label>
+                    <div style={{ fontWeight: '800', color: '#003580', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Clock size={14} /> {selectedRes.duration_minutes} Minutes
+                    </div>
+                  </div>
+                  <div style={{ background: '#10b98105', padding: '15px', borderRadius: '16px', border: '1px solid #10b98110' }}>
+                    <label style={{ fontSize: '10px', fontWeight: '800', color: '#10b981', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>End Time</label>
+                    <div style={{ fontWeight: '800', color: '#10b981', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <CheckCircle size={14} /> {getEndTime(selectedRes.res_time, selectedRes.duration_minutes)}
+                    </div>
+                  </div>
+                </div>
+
                 <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '20px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '15px' }}>
                     <h4 style={{ margin: 0, fontSize: '1rem', color: '#1e293b', fontWeight: '900', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -356,23 +399,31 @@ function OwnerReservations({ filterPlaceId, places }) {
                       let total = 0;
                       return (
                         <>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            {Object.entries(order).map(([id, qty]) => {
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                            {Array.isArray(order) ? order.map((item, idx) => {
+                              total += Number(item.price) * item.quantity;
+                              return (
+                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 18px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #edf2f7' }}>
+                                  <div style={{ fontWeight: '800', fontSize: '0.95rem', color: '#1e293b' }}>{item.name} <span style={{ color: '#64748b', fontWeight: '600', marginLeft: '8px', fontSize: '0.85rem' }}>x {item.quantity}</span></div>
+                                  <div style={{ fontWeight: '900', color: '#003580' }}>Rs. {(Number(item.price) * item.quantity).toLocaleString()}</div>
+                                </div>
+                              );
+                            }) : Object.entries(order).map(([id, qty]) => {
                               const item = allMenuItems.find(m => String(m.id) === String(id));
                               const price = item ? Number(item.price) : 0;
                               const name = item ? item.name : `Unknown Item (ID: ${id})`;
                               total += price * qty;
                               return (
-                                <div key={id} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 15px', background: '#f1f5f9', borderRadius: '12px' }}>
-                                  <div style={{ fontWeight: '700', fontSize: '0.9rem', color: '#334155' }}>{name} <span style={{ color: '#64748b', fontWeight: '500', marginLeft: '5px' }}>x {qty}</span></div>
-                                  <div style={{ fontWeight: '800', color: '#1e293b' }}>Rs. {(price * qty).toLocaleString()}</div>
+                                <div key={id} style={{ display: 'flex', justifyContent: 'space-between', padding: '14px 18px', background: '#f8fafc', borderRadius: '16px', border: '1px solid #edf2f7' }}>
+                                  <div style={{ fontWeight: '800', fontSize: '0.95rem', color: '#1e293b' }}>{name} <span style={{ color: '#64748b', fontWeight: '600', marginLeft: '8px', fontSize: '0.85rem' }}>x {qty}</span></div>
+                                  <div style={{ fontWeight: '900', color: '#003580' }}>Rs. {(price * qty).toLocaleString()}</div>
                                 </div>
                               );
                             })}
                           </div>
-                          <div style={{ marginTop: '20px', padding: '15px', background: '#003580', borderRadius: '16px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span style={{ fontWeight: '600', opacity: 0.9 }}>Total Food Value</span>
-                            <span style={{ fontSize: '1.2rem', fontWeight: '900' }}>Rs. {total.toLocaleString()}</span>
+                          <div style={{ marginTop: '20px', padding: '18px 22px', background: '#003580', borderRadius: '20px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 10px 20px rgba(0, 53, 128, 0.2)' }}>
+                            <span style={{ fontWeight: '700', fontSize: '0.95rem', opacity: 0.9 }}>Estimated Food Total</span>
+                            <span style={{ fontSize: '1.4rem', fontWeight: '900' }}>Rs. {total.toLocaleString()}</span>
                           </div>
                         </>
                       );

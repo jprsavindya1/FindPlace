@@ -158,7 +158,7 @@ router.post("/", verifyToken, (req, res) => {
                 message: "Booking confirmed successfully!", 
                 status: "CONFIRMED", 
                 booking_id: result.insertId, 
-                order_id: `FP-STAY-${String(result.insertId).padStart(4, '0')}`,
+                order_id: `FP-STAY-${result.insertId}`,
                 total_price, 
                 payment_status: payment_status || 'UNPAID' 
               });
@@ -332,7 +332,7 @@ router.get("/customer", verifyToken, (req, res) => {
       b.full_name,
       b.email,
       b.phone,
-      CONCAT('FP-STAY-', LPAD(b.id, 4, '0')) as order_id
+      CONCAT('FP-STAY-', b.id) as order_id
     FROM bookings b
     JOIN places p ON b.place_id = p.id
     LEFT JOIN rooms r ON b.room_id = r.id
@@ -355,32 +355,34 @@ router.get("/invoice/:id", verifyToken, (req, res) => {
 
   const sql = `
     SELECT 
-      b.id,
-      b.transaction_id,
+      b.*,
       p.name AS place_name,
+      p.location AS place_location,
       r.name AS room_name,
       u.name AS customer_name,
-      b.check_in,
-      b.check_out,
-      b.total_price,
-      b.payment_status,
-      b.status,
-      b.adults,
-      b.children,
-      CONCAT('FP-STAY-', LPAD(b.id, 4, '0')) as order_id
+      u.email AS user_email,
+      CONCAT('FP-STAY-', b.id) as order_id
     FROM bookings b
     JOIN places p ON b.place_id = p.id
     LEFT JOIN rooms r ON b.room_id = r.id
     JOIN users u ON b.customer_id = u.id
-    JOIN users u ON b.customer_id = u.id
-    WHERE b.id = ? 
-    ${req.user.role === 'admin' ? '' : 'AND (b.customer_id = ? OR b.owner_id = ?)'}
+    WHERE b.id = ? AND (b.customer_id = ? OR b.owner_id = ? OR ? = 'admin')
   `;
 
-  const queryParams = req.user.role === 'admin' ? [bookingId] : [bookingId, userId, userId];
+  const queryParams = [bookingId, userId, userId, req.user.role];
+
+  console.log("🔍 RUNNING SYNCED SQL:", sql);
+  console.log("📊 WITH PARAMS:", queryParams);
 
   db.query(sql, queryParams, async (err, results) => {
-    if (err) return res.status(500).json({ message: "Database error" });
+    if (err) {
+      console.error("❌ SQL ERROR:", err);
+      // Log to file for AI investigation
+      const fs = require('fs');
+      const errorMsg = `[${new Date().toISOString()}] SQL ERROR for /invoice/${bookingId}: ${err.message}\nSQL: ${sql}\nParams: ${JSON.stringify(queryParams)}\n\n`;
+      fs.appendFileSync('sql_error_log.txt', errorMsg);
+      return res.status(500).json({ message: "Database error" });
+    }
     if (results.length === 0) return res.status(404).json({ message: "Booking not found" });
 
     const b = results[0];
@@ -423,8 +425,8 @@ router.get("/invoice/:id", verifyToken, (req, res) => {
 
       // 4. QR Code Section (Digital Proof for Stays)
       y += 40;
-      const orderId = `FP-RES-${String(b.id).padStart(4, '0')}`;
-      const qrData = JSON.stringify({ order_id: orderId, type: "stay", customer: b.customer_name, check_in: b.check_in });
+      const orderIdString = `FP-STAY-${b.id}`; // Stay ID
+      const qrData = JSON.stringify({ order_id: orderIdString, type: "stay", customer: b.customer_name, check_in: b.check_in });
       const qrBuffer = await QRCode.toBuffer(qrData, { 
         margin: 1, 
         width: 170,
@@ -436,7 +438,7 @@ router.get("/invoice/:id", verifyToken, (req, res) => {
       y += 180;
       doc.fillColor(colors.blue).fontSize(10).font("Helvetica-Bold").text("ORDER CONFIRMATION ID", 0, y, { align: 'center' });
       y += 15;
-      doc.fillColor(colors.blue).fontSize(32).text(orderId, 0, y, { align: 'center' });
+      doc.fillColor(colors.blue).fontSize(32).text(orderIdString, 0, y, { align: 'center' });
 
       // 5. Details Cards
       y += 45;

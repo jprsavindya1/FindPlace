@@ -39,8 +39,9 @@ function PlaceDetails() {
   // Dining States
   const [resDate, setResDate] = useState(null);
   const [resTime, setResTime] = useState("");
+  const [resDuration, setResDuration] = useState(120);
   const [resGuests, setResGuests] = useState(2);
-  const [resTable, setResTable] = useState("");
+  const [resTables, setResTables] = useState([]);
   const [wantsPreOrder, setWantsPreOrder] = useState(false);
   const [preOrderQuantities, setPreOrderQuantities] = useState({});
 
@@ -71,6 +72,19 @@ function PlaceDetails() {
   const [pendingBookingData, setPendingBookingData] = useState(null);
   const [showAllMenu, setShowAllMenu] = useState(false);
   const [activeCategory, setActiveCategory] = useState("Breakfast");
+  const [occupiedTableIds, setOccupiedTableIds] = useState([]);
+
+  // Fetch occupied tables for specific time slot
+  useEffect(() => {
+    if (place?.type === 'dine' && resDate && resTime) {
+      const d = formatDate(resDate);
+      axios.get(`${API_BASE_URL}/api/reservations/availability/visual`, {
+        params: { placeId: id, res_date: d, res_time: resTime, duration_minutes: resDuration }
+      }).then(res => setOccupiedTableIds(res.data)).catch(console.error);
+    } else {
+      setOccupiedTableIds([]);
+    }
+  }, [resDate, resTime, resDuration, id, place?.type]);
 
   // Helper to format date without timezone shift
   const formatDate = (date) => {
@@ -190,11 +204,11 @@ function PlaceDetails() {
       const formattedDate = formatDate(resDate);
       const res = await axios.post(`${API_BASE_URL}/api/reservations`, {
         place_id: place.id, customer_name: fullName, customer_email: email, customer_phone: phone,
-        res_date: formattedDate, res_time: resTime, people_count: resGuests,
-        table_id: resTable, food_order_items: wantsPreOrder ? JSON.stringify(preOrderQuantities) : null
+        res_date: formattedDate, res_time: resTime, duration_minutes: resDuration, people_count: resGuests,
+        table_ids: resTables, food_order_items: wantsPreOrder ? JSON.stringify(preOrderQuantities) : null
       }, { headers: { Authorization: `Bearer ${token}` } });
       setCurrentProof({ ...res.data, place_name: place.name, res_date: formattedDate, res_time: resTime, people_count: resGuests, customer_name: fullName, customer_phone: phone });
-      setResDate(null); setResTime(""); setResGuests(2);
+      setResDate(null); setResTime(""); setResGuests(2); setResTables([]);
     } catch (err) { 
       const errMsg = err.response?.data?.message || "Reservation failed. Please try again.";
       alert(errMsg); 
@@ -289,7 +303,8 @@ function PlaceDetails() {
       {place.type === 'dine' ? (
         <PlaceDetailsDining 
           {...sharedProps} resDate={resDate} setResDate={setResDate} resTime={resTime} setResTime={setResTime}
-          resGuests={resGuests} setResGuests={setResGuests} resTable={resTable} setResTable={setResTable} tables={tables}
+          resDuration={resDuration} setResDuration={setResDuration}
+          resGuests={resGuests} setResGuests={setResGuests} resTables={resTables} setResTables={setResTables} tables={tables}
           wantsPreOrder={wantsPreOrder} setWantsPreOrder={setWantsPreOrder} preOrderQuantities={preOrderQuantities}
           updatePreOrderQty={(itemId, delta) => setPreOrderQuantities(prev => {
             const next = { ...prev, [itemId]: (prev[itemId] || 0) + delta };
@@ -299,6 +314,7 @@ function PlaceDetails() {
           handleDinnerBookingSubmit={handleDinnerBookingSubmit} isBooking={isBooking}
           fullName={fullName} setFullName={setFullName} email={email} setEmail={setEmail} phone={phone} setPhone={setPhone}
           avgRating={avgRating} totalReviews={totalReviews}
+          occupiedTableIds={occupiedTableIds}
         />
       ) : (
         <PlaceDetailsStay 

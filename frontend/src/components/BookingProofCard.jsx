@@ -16,7 +16,7 @@ const BookingProofCard = ({ booking, onClose }) => {
   const pdfRef = useRef(null);
   const [copied, setCopied] = React.useState(false);
 
-  const orderId = booking.order_id || `FP-RES-${String(booking.id).padStart(4, '0')}`;
+  const orderId = booking.order_id || `FP-RES-${booking.id}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(orderId);
@@ -241,73 +241,160 @@ const BookingProofCard = ({ booking, onClose }) => {
       >
         <div 
           ref={cardRef}
-          className="bg-white rounded-[28px] overflow-hidden"
+          className="bg-white rounded-[32px] overflow-hidden"
           style={{ 
             background: 'white', 
-            borderRadius: '28px', 
-            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)',
-            maxHeight: '85vh',
-            overflowY: 'auto'
+            borderRadius: '32px', 
+            boxShadow: '0 25px 50px -12px rgba(0,0,0,0.6)',
+            maxHeight: '90vh',
+            width: '100%',
+            maxWidth: '400px',
+            overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column'
           }}
         >
           {/* UI Header */}
-          <div style={{ background: '#003580', padding: '20px 24px', color: 'white', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ 
+            background: 'linear-gradient(135deg, #003580 0%, #001a40 100%)', 
+            padding: '24px 20px', 
+            color: 'white', 
+            position: 'relative', 
+            overflow: 'hidden' 
+          }}>
              <div style={{ position: 'relative', zIndex: 2 }}>
-                <div style={{ fontSize: '0.65rem', fontWeight: 800, opacity: 0.7, textTransform: 'uppercase', letterSpacing: '1.5px' }}>Digital Booking Proof</div>
-                <h2 style={{ margin: '4px 0 0 0', fontSize: '1.3rem', fontWeight: 900 }}>FindPlace Confirmation</h2>
+                <div style={{ fontSize: '0.6rem', fontWeight: 900, opacity: 0.8, textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '4px' }}>FindPlace Digital Pass</div>
+                <h2 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 900, letterSpacing: '-0.5px' }}>Booking Confirmation</h2>
              </div>
+             {/* Subtle decorative circles */}
+             <div style={{ position: 'absolute', top: '-20px', right: '-20px', width: '100px', height: '100px', borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }}></div>
           </div>
 
-          <div style={{ padding: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-              <div style={{ background: '#f0f4f8', padding: '12px', borderRadius: '24px', border: '1px solid #e2e8f0' }}>
-                <QRCodeSVG value={qrPayload} size={130} level="H" includeMargin={true} />
+          <div style={{ padding: '20px', flex: 1 }}>
+            {/* QR Code Container */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
+              <div style={{ 
+                background: '#ffffff', 
+                padding: '10px', 
+                borderRadius: '24px', 
+                boxShadow: '0 10px 25px rgba(0,0,0,0.05)',
+                border: '1px solid #f1f5f9'
+              }}>
+                <QRCodeSVG value={qrPayload} size={140} level="H" includeMargin={true} />
               </div>
             </div>
 
-            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-               <div style={{ fontSize: '0.75rem', color: '#475569', fontWeight: 900, textTransform: 'uppercase', marginBottom: '4px' }}>Order Confirmation ID</div>
+            {/* ID Section */}
+            <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+               <div style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>Confirmation ID</div>
                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '1.6rem', fontWeight: 900, color: '#003580' }}>{orderId}</span>
-                  <button onClick={handleCopy} style={{ background: '#f1f5f9', border: 'none', cursor: 'pointer', color: copied ? '#059669' : '#003580', padding: '10px', borderRadius: '10px' }}>
-                    {copied ? <Check size={18} /> : <Copy size={18} />}
+                  <span style={{ fontSize: '1.75rem', fontWeight: 900, color: '#0f172a', letterSpacing: '-0.5px' }}>{orderId}</span>
+                  <button 
+                    onClick={handleCopy} 
+                    style={{ 
+                      background: copied ? '#ecfdf5' : '#f8fafc', 
+                      border: '1px solid #e2e8f0', 
+                      cursor: 'pointer', 
+                      color: copied ? '#10b981' : '#003580', 
+                      padding: '8px', 
+                      borderRadius: '12px',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    {copied ? <Check size={16} /> : <Copy size={16} />}
                   </button>
                </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
-              <div style={{ background: '#f1f5f9', padding: '12px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-                <div style={{ fontSize: '10px', color: '#475569', fontWeight: 900, marginBottom: '3px' }}>PROPERTY</div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f172a' }}>{booking.place_name}</div>
+            {/* Stats Grid - Responsive Column Count */}
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', 
+              gap: '12px', 
+              marginBottom: '24px' 
+            }}>
+              <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '18px', border: '1px solid #f1f5f9' }}>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>PROPERTY</div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0f172a', lineHeight: '1.2' }}>{booking.place_name}</div>
               </div>
-              <div style={{ background: '#f1f5f9', padding: '12px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-                <div style={{ fontSize: '10px', color: '#475569', fontWeight: 900, marginBottom: '3px' }}>BOOKING TYPE</div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#003580', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '18px', border: '1px solid #f1f5f9' }}>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>TYPE</div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#003580', display: 'flex', alignItems: 'center', gap: '6px' }}>
                    {isDine ? <Utensils size={14} /> : <Bed size={14} />}
-                   {isDine ? 'Dining' : (booking.room_name || 'Stay')}
+                   <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {isDine ? 'Dining' : (booking.room_name || 'Stay')}
+                   </span>
                 </div>
               </div>
-              <div style={{ background: '#f1f5f9', padding: '12px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-                <div style={{ fontSize: '10px', color: '#475569', fontWeight: 900, marginBottom: '3px' }}>RESERVATION DATE</div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f172a' }}>{new Date(booking.res_date || booking.check_in).toLocaleDateString('en-GB')}</div>
+              <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '18px', border: '1px solid #f1f5f9' }}>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>CHECK-IN</div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0f172a' }}>{new Date(booking.res_date || booking.check_in).toLocaleDateString('en-GB')}</div>
               </div>
-              <div style={{ background: '#f1f5f9', padding: '12px', borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-                <div style={{ fontSize: '10px', color: '#475569', fontWeight: 900, marginBottom: '3px' }}>ARRIVAL TIME</div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 800, color: '#0f172a' }}>{isDine ? (booking.res_time ? booking.res_time.slice(0, 5) : "TBD") : "Check-in after 2PM"}</div>
+              <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '18px', border: '1px solid #f1f5f9' }}>
+                <div style={{ fontSize: '10px', color: '#64748b', fontWeight: 800, textTransform: 'uppercase', marginBottom: '4px' }}>ARRIVAL</div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 800, color: '#0f172a' }}>{isDine ? (booking.res_time ? booking.res_time.slice(0, 5) : "TBD") : "2:00 PM"}</div>
               </div>
             </div>
 
-            <div style={{ background: '#00358010', padding: '14px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '10px', color: '#003580' }}>
-               <MapPin size={18} />
-               <span style={{ fontSize: '0.8rem', fontWeight: 800 }}>Scan QR at reception for instant check-in.</span>
+            <div style={{ 
+              background: '#00358008', 
+              padding: '16px', 
+              borderRadius: '20px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '12px', 
+              color: '#003580',
+              border: '1px dashed #00358033' 
+            }}>
+               <div style={{ background: '#003580', color: 'white', padding: '8px', borderRadius: '10px' }}>
+                <MapPin size={16} />
+               </div>
+               <span style={{ fontSize: '0.75rem', fontWeight: 700, lineHeight: '1.4' }}>Present this QR at reception for instant check-in.</span>
             </div>
           </div>
 
-          <div style={{ padding: '0 24px 24px 24px', display: 'flex', gap: '10px' }}>
-             <button onClick={handleDownload} style={{ flex: 1, padding: '14px', borderRadius: '14px', background: '#003580', color: 'white', border: 'none', fontWeight: 900, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                <Download size={18} /> Download
+          {/* Footer Actions */}
+          <div style={{ 
+            padding: '16px 20px 24px 20px', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: '12px',
+            background: '#ffffff',
+            borderTop: '1px solid #f1f5f9'
+          }}>
+             <button 
+               onClick={handleDownload} 
+               style={{ 
+                 width: '100%', 
+                 padding: '16px', 
+                 borderRadius: '16px', 
+                 background: '#003580', 
+                 color: 'white', 
+                 border: 'none', 
+                 fontWeight: 800, 
+                 cursor: 'pointer', 
+                 display: 'flex', 
+                 alignItems: 'center', 
+                 justifyContent: 'center', 
+                 gap: '10px',
+                 boxShadow: '0 4px 12px rgba(0,53,128,0.2)'
+               }}
+             >
+                <Download size={20} /> Download PDF
              </button>
-             <button onClick={onClose} style={{ padding: '14px 20px', borderRadius: '14px', background: '#f1f5f9', color: '#1e293b', border: '1px solid #cbd5e1', fontWeight: 900, cursor: 'pointer' }}>
+             <button 
+               onClick={onClose} 
+               style={{ 
+                 width: '100%', 
+                 padding: '14px', 
+                 borderRadius: '16px', 
+                 background: 'transparent', 
+                 color: '#64748b', 
+                 border: '1px solid #e2e8f0', 
+                 fontWeight: 800, 
+                 cursor: 'pointer' 
+               }}
+             >
                 Close
              </button>
           </div>

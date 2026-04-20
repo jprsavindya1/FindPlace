@@ -30,7 +30,8 @@ import {
 import "./OwnerDashboard.css";
 import OwnerBookings from "./OwnerBookings";
 import OwnerRevenue from "./OwnerRevenue";
-import OwnerReservations from "./OwnerReservations"; // ⭐ NEW component
+import OwnerReservations from "./OwnerReservations";
+import FloorPlanDesigner from "../components/Booking/FloorPlanDesigner"; // ⭐ NEW
 
 /* ================= ANIMATION VARIANTS ================= */
 const staggerContainer = {
@@ -105,6 +106,7 @@ function OwnerDashboard() {
   });
   const [editingTable, setEditingTable] = useState(null);
   const [tablePlaceId, setTablePlaceId] = useState("");
+  const [isDesignerMode, setIsDesignerMode] = useState(false); // ⭐ NEW
   
   /* ================= INTEGRATED MENU STATES ================= */
   const [tempMenuItems, setTempMenuItems] = useState([]);
@@ -819,7 +821,7 @@ function OwnerDashboard() {
                </h4>
                <p className="helper-text" style={{ marginBottom: '20px' }}>Add some initial food items that customers can pre-order when booking.</p>
                
-               <div className="quick-item-entry" style={{ display: 'grid', gridTemplateColumns: '1fr 120px 140px auto', gap: '12px', alignItems: 'end' }}>
+               <div className="quick-item-entry" style={{ display: 'grid', gridTemplateColumns: '1fr 120px 140px', gap: '12px', alignItems: 'end' }}>
                   <div className="form-group">
                     <label>ITEM NAME</label>
                     <input type="text" placeholder="Sea Food Rice" value={quickItem.name} onChange={(e) => setQuickItem({...quickItem, name: e.target.value})} />
@@ -838,9 +840,6 @@ function OwnerDashboard() {
                       <option value="Snacks">Snacks</option>
                     </select>
                   </div>
-                  <button type="button" onClick={addQuickItem} className="btn-primary" style={{ height: '44px', width: '44px', padding: 0, borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Plus size={20} />
-                  </button>
                </div>
 
                {tempMenuItems.length > 0 && (
@@ -1158,156 +1157,231 @@ function OwnerDashboard() {
                        Rs. {Number(item.price).toLocaleString()} 
                        {item.category && <span style={{fontSize:'11px', color:'#64748b', fontWeight:'normal', marginLeft:'6px'}}>{item.category}</span>}
                     </p>
-                    {item.prep_time && <p style={{fontSize:'11px', color:'#ef4444', fontWeight:'600', marginBottom:'4px'}}>⏱️ {item.prep_time}</p>}
-                    <p className="menu-desc-muted">{item.description}</p>
-                 </div>
-              </motion.div>
-           ))}
-        </motion.div>
+                     {item.prep_time && <p style={{fontSize:'11px', color:'#ef4444', fontWeight:'600', marginBottom:'4px'}}>⏱️ {item.prep_time}</p>}
+                     <p className="menu-desc-muted">{item.description}</p>
+                  </div>
+               </motion.div>
+            ))}
+         </motion.div>
       )}
     </motion.div>
   );
 
   const renderTablesTab = () => (
     <motion.div variants={staggerContainer} initial="hidden" animate="show" exit="hidden" key="tables">
-      <motion.div variants={fadeUp} className="content-header">
-        <h2>Table Management</h2>
-        <p>Define your restaurant floor plan and manage table availability in real-time.</p>
-      </motion.div>
-
-      <motion.div variants={fadeUp} className="dashboard-card shadow-premium table-form-card">
-           <h3 className="card-title-navy" style={{marginBottom:'20px'}}>{editingTable ? "Edit Table" : "Add New Table"}</h3>
-           <form onSubmit={handleTableSubmit} className="owner-form">
-              <div className="form-group full-width">
-                 <label>SELECT RESTAURANT</label>
-                 <select className="glass-select" value={tablePlaceId} onChange={(e)=>setTablePlaceId(e.target.value)} required>
-                    <option value="">Select Restaurant</option>
-                    {places.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
-                 </select>
-              </div>
-
-              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'15px', marginTop:'15px'}}>
-                 <div className="form-group">
-                   <label>TABLE NO / NAME</label>
-                   <input type="text" placeholder="e.g. T-01" value={tableForm.table_no} onChange={(e)=>setTableForm({...tableForm, table_no:e.target.value})} required/>
-                 </div>
-                 <div className="form-group">
-                   <label>MAX CAPACITY</label>
-                   <input type="number" placeholder="4" value={tableForm.capacity} onChange={(e)=>setTableForm({...tableForm, capacity:e.target.value})} required/>
-                 </div>
-              </div>
-
-              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'15px', marginTop:'15px'}}>
-                 <div className="form-group">
-                    <label>MIN PEOPLE</label>
-                    <input type="number" placeholder="1" value={tableForm.min_capacity} onChange={(e)=>setTableForm({...tableForm, min_capacity:e.target.value})} />
-                 </div>
-                 <div className="form-group">
-                    <label>INITIAL STATUS</label>
-                    <select className="glass-select" value={tableForm.status} onChange={(e)=>setTableForm({...tableForm, status:e.target.value})}>
-                       <option value="available">Available</option>
-                       <option value="occupied">Occupied</option>
-                       <option value="maintenance">Maintenance</option>
-                    </select>
-                 </div>
-              </div>
-
-              <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'15px', marginTop:'15px'}}>
-                 <div className="form-group">
-                    <label>LOCATION / AREA</label>
-                    <select className="glass-select" value={tableForm.location_area} onChange={(e)=>setTableForm({...tableForm, location_area:e.target.value})}>
-                       <option value="Indoor">Indoor</option>
-                       <option value="Rooftop">Rooftop</option>
-                       <option value="Balcony">Balcony</option>
-                       <option value="Poolside">Poolside</option>
-                       <option value="Garden">Garden</option>
-                    </select>
-                 </div>
-                 <div className="form-group">
-                    <label>TABLE TYPE</label>
-                    <select className="glass-select" value={tableForm.table_type} onChange={(e)=>setTableForm({...tableForm, table_type:e.target.value})}>
-                       <option value="Standard">Standard</option>
-                       <option value="Booth">Booth</option>
-                       <option value="Bar Table">Bar Table</option>
-                       <option value="Outdoor">Outdoor</option>
-                    </select>
-                 </div>
-              </div>
-
-              <div className="form-group full-width" style={{marginTop:'20px'}}>
-                 <label style={{marginBottom: "10px", display: "block"}}>TABLE SETTINGS</label>
-                 <div style={{ display: 'flex', gap: '15px', background: 'rgba(0,0,0,0.02)', padding: '15px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.05)' }}>
-                    <label className="checkbox-label" style={{margin: 0, flex: 1, padding: "8px 12px", background: "white", borderRadius: "8px", border: "1px solid #e2e8f0"}}>
-                       <input type="checkbox" checked={tableForm.is_smoking} onChange={(e)=>setTableForm({...tableForm, is_smoking: e.target.checked})} />
-                       <span style={{fontWeight: 600}}>Smoking 🚬</span>
-                    </label>
-                    <label className="checkbox-label" style={{margin: 0, flex: 1, padding: "8px 12px", background: "white", borderRadius: "8px", border: "1px solid #e2e8f0"}}>
-                       <input type="checkbox" checked={tableForm.is_combineable} onChange={(e)=>setTableForm({...tableForm, is_combineable: e.target.checked})} />
-                       <span style={{fontWeight: 600}}>Combineable 🔗</span>
-                    </label>
-                 </div>
-              </div>
-
-              <button type="submit" className="btn-primary full-width" style={{marginTop:'25px'}}>{editingTable ? "Update Table" : "Add Table"}</button>
-              {editingTable && <button type="button" className="btn-secondary full-width" style={{marginTop:'10px'}} onClick={()=>{
-                 setEditingTable(null); 
-                 setTableForm({ table_no:"", capacity:"", status:"available", location_area: "Indoor", table_type: "Standard", min_capacity: 1, is_smoking: false, is_combineable: false });
-              }}>Cancel Editing</button>}
-           </form>
+      {!isDesignerMode && (
+        <motion.div variants={fadeUp} className="content-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h2>Table Management</h2>
+            <p>Define your restaurant floor plan and manage table availability in real-time.</p>
+          </div>
+          <div className="tab-mode-toggle">
+            <button 
+              className={`toggle-btn ${!isDesignerMode ? 'active' : ''}`} 
+              onClick={() => setIsDesignerMode(false)}
+            >
+              <FileText size={16} /> List View
+            </button>
+            <button 
+              className={`toggle-btn ${isDesignerMode ? 'active' : ''}`} 
+              onClick={() => setIsDesignerMode(true)}
+            >
+              <Maximize size={16} /> Visual Designer
+            </button>
+          </div>
         </motion.div>
+      )}
 
-        {/* Right Panel: Current Tables Grid */}
-        <motion.div variants={fadeUp}>
-           <h3 className="section-title-navy" style={{marginBottom:'20px'}}>Current Tables</h3>
-           {tables.length === 0 ? (
-              <p style={{color:'#718096'}}>No tables added yet. Create your floor plan.</p>
-           ) : (
-             <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(240px, 1fr))', gap:'20px'}}>
-                {tables.map(t => (
-                   <div key={t.id} style={{
-                      background: 'white', borderRadius: '15px', padding: '20px', border: '1px solid #e2e8f0',
-                      boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', display:'flex', flexDirection:'column', gap:'15px',
-                      position: 'relative'
-                   }}>
-                      <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start'}}>
-                         <div>
-                           <span style={{fontWeight:'900', color:'#1e293b', fontSize:'22px', display:'block'}}>{t.table_no}</span>
-                           <span style={{fontSize:'12px', color:'#64748b', fontWeight:'600'}}>{t.table_type} • {t.location_area}</span>
-                         </div>
-                         <button 
-                            onClick={() => handleUpdateTableStatus(t.id, t.status === 'available' ? 'occupied' : 'available')}
-                            style={{
-                              fontSize:'11px', fontWeight:'800', textTransform:'uppercase', cursor: 'pointer',
-                              padding:'6px 10px', borderRadius:'99px', border: 'none',
-                              background: t.status === 'available' ? '#dcfce7' : (t.status === 'maintenance' ? '#fef08a' : '#fee2e2'),
-                              color: t.status === 'available' ? '#166534' : (t.status === 'maintenance' ? '#854d0e' : '#991b1b'),
-                              boxShadow: '0 2px 4px rgba(0,0,0,0.05)', transition: 'transform 0.1s'
-                            }}
-                            onMouseDown={(e)=>e.currentTarget.style.transform='scale(0.95)'}
-                            onMouseUp={(e)=>e.currentTarget.style.transform='scale(1)'}
-                            title="Click to toggle status"
-                         >
-                            {t.status}
-                         </button>
-                      </div>
-                      
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                         <span style={{background:'#f1f5f9', color:'#475569', fontSize:'11px', padding:'3px 8px', borderRadius:'6px', fontWeight:'600'}}>
-                            👥 Min {t.min_capacity || 1} - Max {t.capacity}
-                         </span>
-                         {t.is_smoking ? <span style={{background:'#fef2f2', color:'#991b1b', fontSize:'11px', padding:'3px 8px', borderRadius:'6px', fontWeight:'600'}}>🚬 Smoking</span> : null}
-                         {t.is_combineable ? <span style={{background:'#e0e7ff', color:'#3730a3', fontSize:'11px', padding:'3px 8px', borderRadius:'6px', fontWeight:'600'}}>🔗 Combineable</span> : null}
-                      </div>
-
-                      <div style={{display:'flex', gap:'10px', borderTop:'1px solid #f1f5f9', paddingTop:'15px'}}>
-                         <button onClick={()=>startEditTable(t)} style={{flex: 1, padding:'8px', borderRadius:'8px', background:'#ebf4ff', color:'#3182ce', border:'none', cursor:'pointer'}}><Edit3 size={14} style={{verticalAlign:'middle'}}/> Edit</button>
-                         <button onClick={async () => { if(window.confirm("Remove table from floor plan?")) { await axios.delete(`${API_BASE_URL}/api/tables/${t.id}`, { headers:{Authorization:"Bearer "+token} }); fetchTables(tablePlaceId); } }} style={{flex: 1, padding:'8px', borderRadius:'8px', background:'#fff5f5', color:'#e53e3e', border:'none', cursor:'pointer'}}><Trash2 size={14} style={{verticalAlign:'middle'}}/> Delete</button>
-                      </div>
-                   </div>
-                ))}
-             </div>
-           )}
+      {isDesignerMode ? (
+        <motion.div variants={fadeUp} key="designer-view">
+          {tablePlaceId ? (
+            <FloorPlanDesigner 
+              placeId={tablePlaceId} 
+              onSaveSuccess={() => fetchTables(tablePlaceId)} 
+              setIsDesignerMode={setIsDesignerMode}
+            />
+          ) : (
+            <div className="dashboard-card shadow-premium" style={{ textAlign: 'center', padding: '50px' }}>
+               <h3 className="card-title-navy">Please select a restaurant first</h3>
+               <select className="glass-select" style={{ maxWidth: '300px', margin: '20px auto' }} value={tablePlaceId} onChange={(e)=>setTablePlaceId(e.target.value)}>
+                  <option value="">Select Restaurant</option>
+                  {places.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
+               </select>
+            </div>
+          )}
         </motion.div>
+      ) : (
+        <div key="list-view">
+          <motion.div variants={fadeUp} className="dashboard-card shadow-premium table-form-card">
+               <h3 className="card-title-navy" style={{marginBottom:'20px'}}>{editingTable ? "Edit Table" : "Add New Table"}</h3>
+               <form onSubmit={handleTableSubmit} className="owner-form">
+                  <div className="form-group full-width">
+                     <label>SELECT RESTAURANT</label>
+                     <select className="glass-select" value={tablePlaceId} onChange={(e)=>setTablePlaceId(e.target.value)} required>
+                        <option value="">Select Restaurant</option>
+                        {places.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
+                     </select>
+                  </div>
+    
+                  <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'15px', marginTop:'15px'}}>
+                     <div className="form-group">
+                       <label>TABLE NO / NAME</label>
+                       <input type="text" placeholder="e.g. T-01" value={tableForm.table_no} onChange={(e)=>setTableForm({...tableForm, table_no:e.target.value})} required/>
+                     </div>
+                     <div className="form-group">
+                       <label>MAX CAPACITY</label>
+                       <input type="number" placeholder="4" value={tableForm.capacity} onChange={(e)=>setTableForm({...tableForm, capacity:e.target.value})} required/>
+                     </div>
+                  </div>
+    
+                  <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'15px', marginTop:'15px'}}>
+                     <div className="form-group">
+                        <label>MIN PEOPLE</label>
+                        <input type="number" placeholder="1" value={tableForm.min_capacity} onChange={(e)=>setTableForm({...tableForm, min_capacity:e.target.value})} />
+                     </div>
+                     <div className="form-group">
+                        <label>INITIAL STATUS</label>
+                        <select className="glass-select" value={tableForm.status} onChange={(e)=>setTableForm({...tableForm, status:e.target.value})}>
+                           <option value="available">Available</option>
+                           <option value="occupied">Occupied</option>
+                           <option value="maintenance">Maintenance</option>
+                        </select>
+                     </div>
+                  </div>
+    
+                  <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:'15px', marginTop:'15px'}}>
+                     <div className="form-group">
+                        <label>LOCATION / AREA</label>
+                        <select className="glass-select" value={tableForm.location_area} onChange={(e)=>setTableForm({...tableForm, location_area:e.target.value})}>
+                           <option value="Indoor">Indoor</option>
+                           <option value="Rooftop">Rooftop</option>
+                           <option value="Balcony">Balcony</option>
+                           <option value="Poolside">Poolside</option>
+                           <option value="Garden">Garden</option>
+                        </select>
+                     </div>
+                     <div className="form-group">
+                        <label>TABLE TYPE</label>
+                        <select className="glass-select" value={tableForm.table_type} onChange={(e)=>setTableForm({...tableForm, table_type:e.target.value})}>
+                           <option value="Standard">Standard</option>
+                           <option value="Booth">Booth</option>
+                           <option value="Bar Table">Bar Table</option>
+                           <option value="Outdoor">Outdoor</option>
+                        </select>
+                     </div>
+                  </div>
+    
+                  <div className="form-group full-width" style={{marginTop:'20px'}}>
+                     <label style={{marginBottom: "10px", display: "block"}}>TABLE SETTINGS</label>
+                     <div style={{ display: 'flex', gap: '15px', background: 'rgba(0,0,0,0.02)', padding: '15px', borderRadius: '10px', border: '1px solid rgba(0,0,0,0.05)' }}>
+                        <label className="checkbox-label" style={{margin: 0, flex: 1, padding: "8px 12px", background: "white", borderRadius: "8px", border: "1px solid #e2e8f0"}}>
+                           <input type="checkbox" checked={tableForm.is_smoking} onChange={(e)=>setTableForm({...tableForm, is_smoking: e.target.checked})} />
+                           <span style={{fontWeight: 600}}>Smoking 🚬</span>
+                        </label>
+                        <label className="checkbox-label" style={{margin: 0, flex: 1, padding: "8px 12px", background: "white", borderRadius: "8px", border: "1px solid #e2e8f0"}}>
+                           <input type="checkbox" checked={tableForm.is_combineable} onChange={(e)=>setTableForm({...tableForm, is_combineable: e.target.checked})} />
+                           <span style={{fontWeight: 600}}>Combineable 🔗</span>
+                        </label>
+                     </div>
+                  </div>
+    
+                  <button 
+                     type="submit" 
+                     className="btn-primary full-width" 
+                     style={{
+                        marginTop: '25px',
+                        background: 'linear-gradient(135deg, #002147 0%, #003580 100%)',
+                        color: '#ffffff',
+                        border: 'none',
+                        padding: '12px',
+                        borderRadius: '12px',
+                        fontWeight: '800',
+                        boxShadow: '0 10px 20px rgba(0, 33, 71, 0.2)',
+                        cursor: 'pointer'
+                     }}
+                  >
+                     {editingTable ? "Update Table" : "Add Table"}
+                  </button>
+
+                  {editingTable && (
+                     <button 
+                        type="button" 
+                        className="btn-secondary full-width" 
+                        style={{
+                           marginTop: '10px',
+                           background: '#f1f5f9',
+                           color: '#003580',
+                           border: '1px solid rgba(0, 53, 128, 0.1)',
+                           padding: '10px',
+                           borderRadius: '12px',
+                           fontWeight: '700',
+                           cursor: 'pointer'
+                        }} 
+                        onClick={()=>{
+                           setEditingTable(null); 
+                           setTableForm({ table_no:"", capacity:"", status:"available", location_area: "Indoor", table_type: "Standard", min_capacity: 1, is_smoking: false, is_combineable: false });
+                        }}
+                     >
+                        Cancel Editing
+                     </button>
+                  )}
+               </form>
+          </motion.div>
+    
+          {/* Right Panel: Current Tables Grid */}
+          <motion.div variants={fadeUp}>
+               <h3 className="section-title-navy" style={{marginBottom:'20px'}}>Current Tables</h3>
+               {tables.length === 0 ? (
+                  <p style={{color:'#718096'}}>No tables added yet. Create your floor plan.</p>
+               ) : (
+                 <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(240px, 1fr))', gap:'20px'}}>
+                    {tables.map(t => (
+                       <div key={t.id} style={{
+                          background: 'white', borderRadius: '15px', padding: '20px', border: '1px solid #e2e8f0',
+                          boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', display:'flex', flexDirection:'column', gap:'15px',
+                          position: 'relative'
+                       }}>
+                          <div style={{display:'flex', justifyContent:'space-between', alignItems:'flex-start'}}>
+                             <div>
+                               <span style={{fontWeight:'900', color:'#1e293b', fontSize:'22px', display:'block'}}>{t.table_no}</span>
+                               <span style={{fontSize:'12px', color:'#64748b', fontWeight:'600'}}>{t.table_type} • {t.location_area}</span>
+                             </div>
+                             <button 
+                                onClick={() => handleUpdateTableStatus(t.id, t.status === 'available' ? 'occupied' : 'available')}
+                                style={{
+                                  fontSize:'11px', fontWeight:'800', textTransform:'uppercase', cursor: 'pointer',
+                                  padding:'6px 10px', borderRadius:'99px', border: 'none',
+                                  background: t.status === 'available' ? '#dcfce7' : (t.status === 'maintenance' ? '#fef08a' : '#fee2e2'),
+                                  color: t.status === 'available' ? '#166534' : (t.status === 'maintenance' ? '#854d0e' : '#991b1b'),
+                                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)', transition: 'transform 0.1s'
+                                }}
+                                onMouseDown={(e)=>e.currentTarget.style.transform='scale(0.95)'}
+                                onMouseUp={(e)=>e.currentTarget.style.transform='scale(1)'}
+                                title="Click to toggle status"
+                             >
+                                {t.status}
+                             </button>
+                          </div>
+                          
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                             <span style={{background:'#f1f5f9', color:'#475569', fontSize:'11px', padding:'3px 8px', borderRadius:'6px', fontWeight:'600'}}>
+                                👥 Min {t.min_capacity || 1} - Max {t.capacity}
+                             </span>
+                             {t.is_smoking ? <span style={{background:'#fef2f2', color:'#991b1b', fontSize:'11px', padding:'3px 8px', borderRadius:'6px', fontWeight:'600'}}>🚬 Smoking</span> : null}
+                             {t.is_combineable ? <span style={{background:'#e0e7ff', color:'#3730a3', fontSize:'11px', padding:'3px 8px', borderRadius:'6px', fontWeight:'600'}}>🔗 Combineable</span> : null}
+                          </div>
+    
+                          <div style={{display:'flex', gap:'10px', borderTop:'1px solid #f1f5f9', paddingTop:'15px'}}>
+                             <button onClick={()=>startEditTable(t)} style={{flex: 1, padding:'8px', borderRadius:'8px', background:'#ebf4ff', color:'#3182ce', border:'none', cursor:'pointer'}}><Edit3 size={14} style={{verticalAlign:'middle'}}/> Edit</button>
+                             <button onClick={async () => { if(window.confirm("Remove table from floor plan?")) { await axios.delete(`${API_BASE_URL}/api/tables/${t.id}`, { headers:{Authorization:"Bearer "+token} }); fetchTables(tablePlaceId); } }} style={{flex: 1, padding:'8px', borderRadius:'8px', background:'#fff5f5', color:'#e53e3e', border:'none', cursor:'pointer'}}><Trash2 size={14} style={{verticalAlign:'middle'}}/> Delete</button>
+                          </div>
+                       </div>
+                    ))}
+                 </div>
+               )}
+          </motion.div>
+        </div>
+      )}
     </motion.div>
   );
 
@@ -1317,9 +1391,12 @@ function OwnerDashboard() {
     </motion.div>
   );
 
+  const isFullDesigner = activeTab === "tables" && isDesignerMode;
+
   return (
-    <div className="owner-dashboard">
-      <div className="owner-sidebar">
+    <div className={`owner-dashboard ${isFullDesigner ? 'full-page-mode' : ''}`}>
+      {!isFullDesigner && (
+        <div className="owner-sidebar">
         <div className="sidebar-section-title">MANAGEMENT</div>
         <nav className="sidebar-nav">
           <button className={`sidebar-btn ${activeTab === "places" ? "active" : ""}`} onClick={() => setActiveTab("places")}>
@@ -1348,6 +1425,7 @@ function OwnerDashboard() {
           <button className={`sidebar-btn ${activeTab === "revenue" ? "active" : ""}`} onClick={() => setActiveTab("revenue")}><TrendingUp size={20}/> Revenue</button>
         </nav>
       </div>
+      )}
 
       <main className="owner-content">
 

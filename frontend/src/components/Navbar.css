@@ -321,23 +321,56 @@
 
 @media (max-width: 768px) {
   .navbar {
-    height: 60px;
+    height: 70px;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
   .navbar-container {
     padding: 0 16px;
-  }
-  .navbar-links {
     gap: 12px;
   }
+  .navbar-links {
+    gap: 8px;
+    overflow-x: auto;
+    flex: 1;
+    justify-content: flex-start;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  }
+  .navbar-links::-webkit-scrollbar {
+    display: none;
+  }
   .nav-btn {
-    padding: 6px 14px;
-    font-size: 0.85rem;
+    padding: 8px 16px;
+    font-size: 0.8rem;
+    white-space: nowrap;
   }
   .navbar-logo {
-    font-size: 20px;
+    font-size: 22px;
+    flex-shrink: 0;
   }
   .nav-link {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    padding: 6px 10px;
+    white-space: nowrap;
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+  }
+  .nav-link svg {
+    width: 16px;
+    height: 16px;
+  }
+  .profile-trigger {
     padding: 4px 8px;
+    flex-shrink: 0;
+  }
+  .profile-name-mini {
+    display: none; /* Hide name on mobile to save space */
+  }
+  .contact-host-btn {
+    display: none; /* Hide sticky contact btn in navbar on mobile */
   }
 }
