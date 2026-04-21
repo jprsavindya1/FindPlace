@@ -3,7 +3,25 @@ const db = require('../db');
 
 exports.generateItinerary = async (req, res) => {
     try {
-        const { baseLocation, endLocation, durationDays, departureDate, departureTime, companions, vibe, transport, diet, wheelchair, budget, mustVisitPlaces, partySize } = req.body;
+    const { baseLocation, endLocation, durationDays, departureDate, departureTime, companions, vibe, transport, diet, wheelchair, budget, mustVisitPlaces, partySize } = req.body;
+    
+    // ⭐ EXTRACT TOKEN IF PRESENT (OPTIONAL)
+    const jwt = require("jsonwebtoken");
+    const authHeader = req.headers.authorization;
+    let userId = null;
+
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+        const token = authHeader.split(" ")[1];
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || "findplace_secret");
+            userId = decoded.id;
+            console.log("✅ USER IDENTIFIED FOR PERSISTENCE:", userId);
+        } catch (e) {
+            console.warn("❌ Invalid token provided in optional-auth route:", e.message);
+        }
+    } else {
+        console.warn("⚠️ No Auth header found for itinerary generation");
+    }
 
         console.log("--- AI ITINERARY GENERATOR (MULTI-DAY) ---");
         
@@ -104,6 +122,26 @@ exports.generateItinerary = async (req, res) => {
                 event.imageUrl = imageMap[cat.toLowerCase()] || imageMap["landmark"];
             });
         });
+
+        // ⭐ PERSIST TO DATABASE (ONLY IF LOGGED IN)
+        if (userId) {
+            console.log("💾 ATTEMPTING TO PERSIST ITINERARY FOR USER:", userId);
+            const tripTitle = generatedPlan.tripTitle || `${baseLocation} to ${endLocation} Trip`;
+            const jsonData = JSON.stringify(generatedPlan);
+
+            const deleteOld = "DELETE FROM itineraries WHERE user_id = ?";
+            const insertNew = "INSERT INTO itineraries (user_id, title, data) VALUES (?, ?, ?)";
+
+            db.query(deleteOld, [userId], (err) => {
+                if (err) console.error("❌ Error deleting old itinerary:", err);
+                else console.log("🗑️ Old itinerary deleted for user:", userId);
+
+                db.query(insertNew, [userId, tripTitle, jsonData], (insErr) => {
+                    if (insErr) console.error("❌ Error saving itinerary:", insErr);
+                    else console.log("✅ ITINERARY SAVED SUCCESSFULLY TO DB");
+                });
+            });
+        }
         
         res.status(200).json({
             success: true,
@@ -113,5 +151,32 @@ exports.generateItinerary = async (req, res) => {
     } catch (err) {
         console.error("AI Gen Error:", err);
         res.status(500).json({ success: false, message: "AI generation failed." });
+    }
+};
+
+exports.getLatestItinerary = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const query = "SELECT * FROM itineraries WHERE user_id = ? ORDER BY created_at DESC LIMIT 1";
+
+        db.query(query, [userId], (err, results) => {
+            if (err) {
+                console.error("Error fetching itinerary:", err);
+                return res.status(500).json({ success: false, message: "Database error." });
+            }
+
+            if (results.length === 0) {
+                return res.status(404).json({ success: false, message: "No active itinerary found." });
+            }
+
+            const itinerary = results[0];
+            res.status(200).json({
+                success: true,
+                data: JSON.parse(itinerary.data)
+            });
+        });
+    } catch (err) {
+        console.error("Fetch Itinerary Error:", err);
+        res.status(500).json({ success: false, message: "Server error." });
     }
 };

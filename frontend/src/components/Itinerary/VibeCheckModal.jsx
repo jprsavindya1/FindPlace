@@ -29,7 +29,7 @@ const VibeCheckModal = ({ onClose, onSubmit }) => {
   const handleSubmit = () => onSubmit(preferences);
 
   const updatePref = (key, val) => {
-    setPreferences({ ...preferences, [key]: val });
+    setPreferences(prev => ({ ...prev, [key]: val }));
   };
 
   const handleDurationChange = (delta) => {

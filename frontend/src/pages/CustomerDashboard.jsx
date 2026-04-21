@@ -12,6 +12,7 @@ function CustomerDashboard() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [personalizedData, setPersonalizedData] = useState({ lastBooking: null, suggestions: [] });
+  const [activeTrip, setActiveTrip] = useState(null);
   const [userName, setUserName] = useState(localStorage.getItem("userName") || "Guest");
   const [places, setPlaces] = useState([]);
   const [recommended, setRecommended] = useState([]);
@@ -209,6 +210,37 @@ function CustomerDashboard() {
       .then((data) => setPersonalizedData(data))
       .catch((err) => console.error("Error fetching personalized data:", err));
 
+    // ⭐ FETCH ACTIVE TRIP ITINERARY
+    fetch(`${API_BASE_URL}/api/itinerary/latest`, {
+      headers: { Authorization: "Bearer " + token },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+          if (data.success) {
+              const trip = data.data;
+              
+              // LOGIC: Hide card if currrent date is past the trip's end date
+              if (trip.baseDate && trip.dailyPlans) {
+                  const baseDate = new Date(trip.baseDate);
+                  const duration = trip.dailyPlans.length;
+                  const endDate = new Date(baseDate);
+                  endDate.setDate(baseDate.getDate() + duration);
+                  
+                  const today = new Date();
+                  today.setHours(0,0,0,0); // compare only dates
+                  
+                  if (today <= endDate) {
+                      setActiveTrip(trip);
+                  } else {
+                      console.log("Trip expired, hiding from active slot.");
+                  }
+              } else {
+                  setActiveTrip(trip);
+              }
+          }
+      })
+      .catch((err) => console.warn("No active trip found."));
+
     // Add listener for storage changes
     const handleStorageChange = (e) => {
       if (e.key === "userName" && e.newValue) {
@@ -322,6 +354,36 @@ function CustomerDashboard() {
               </motion.div>
             ))}
           </div>
+
+          {/* ⭐ ACTIVE TRIP SECTION ⭐ */}
+          <AnimatePresence>
+            {activeTrip && (
+              <motion.div 
+                className="active-trip-section"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+              >
+                <div className="active-trip-card" onClick={() => navigate('/smart-planner')}>
+                   <div className="active-trip-info">
+                      <div className="trip-badge">ACTIVE TRIP ✨</div>
+                      <h2>{activeTrip.tripTitle}</h2>
+                      <p>Your AI-crafted journey is ready. Pick up where you left off!</p>
+                      <div className="trip-meta">
+                         <span>{activeTrip.dailyPlans.length} Days</span>
+                         <span>•</span>
+                         <span>{activeTrip.totalDistanceKm} km Total</span>
+                      </div>
+                   </div>
+                   <div className="active-trip-visual">
+                      <div className="pulse-icon">📍</div>
+                      <button className="resume-btn">Resume Journey</button>
+                   </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <p className="need-place-text">Need a place? Check out our <span onClick={() => navigate('/search')}>Stays</span></p>
         </div>
       </section>

@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LayoutDashboard, Plane, Settings, User, AlertCircle } from 'lucide-react';
+import { LayoutDashboard, Plane, Settings, User, AlertCircle, Trash2 } from 'lucide-react';
 import VibeCheckModal from '../../components/Itinerary/VibeCheckModal';
 import Timeline from '../../components/Itinerary/Timeline';
 import InteractiveMap from '../../components/Itinerary/InteractiveMap';
+import { API_BASE_URL } from '../../apiConfig';
 import './SmartPlanner.css';
 
 const SmartPlanner = () => {
@@ -14,12 +15,37 @@ const SmartPlanner = () => {
   const [itineraryData, setItineraryData] = useState(null);
   const [activeDayIndex, setActiveDayIndex] = useState(0);
   const [loading, setLoading] = useState(false);
+  const token = localStorage.getItem('token');
+
+  // ⭐ LOAD PERSISTED ITINERARY ON MOUNT
+  useEffect(() => {
+    const fetchLatest = async () => {
+      if (!token) return;
+      try {
+        setLoading(true);
+        const res = await axios.get(`${API_BASE_URL}/api/itinerary/latest`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.data.success && res.data.data) {
+          setItineraryData(res.data.data);
+          setShowVibeCheck(false);
+        }
+      } catch (err) {
+        console.warn("No active itinerary found or error fetching:", err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLatest();
+  }, [token]);
 
   const generatePlan = async (preferences) => {
     setLoading(true);
     setShowVibeCheck(false);
     try {
-      const res = await axios.post('http://localhost:5007/api/itinerary/generate', preferences);
+      const res = await axios.post(`${API_BASE_URL}/api/itinerary/generate`, preferences, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
       setItineraryData(res.data.data);
       setActiveDayIndex(0);
     } catch (err) {
