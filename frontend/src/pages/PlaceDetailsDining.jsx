@@ -129,8 +129,28 @@ const PlaceDetailsDining = ({
     return result;
   }, [timeSlots]);
 
-  const placeholderImg = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80"; // Reliable restaurant placeholder
-  
+  const galleryItems = React.useMemo(() => {
+    const items = [];
+    if (place.image) {
+      items.push(`${API_BASE_URL}/uploads/places/${place.image}`);
+    }
+    if (Array.isArray(gallery)) {
+      gallery.forEach(img => {
+        items.push(`${API_BASE_URL}/uploads/places/${img.image_path}`);
+      });
+    }
+    return items;
+  }, [place.image, gallery, API_BASE_URL]);
+
+  const gridClass = React.useMemo(() => {
+    const count = galleryItems.length;
+    if (count <= 1) return "count-1";
+    if (count === 2) return "count-2";
+    if (count === 3) return "count-3";
+    if (count === 4) return "count-4";
+    return "count-5";
+  }, [galleryItems]);
+
   const totalPreOrderPrice = Object.entries(preOrderQuantities).reduce((sum, [itemId, qty]) => {
     const item = menuItems.find(i => String(i.id) === String(itemId));
     return sum + (item ? item.price * qty : 0);
@@ -140,14 +160,6 @@ const PlaceDetailsDining = ({
   // Ensure the current activeCategory is valid or default to first one if possible
   const currentTab = activeCategory || (availableCategories.includes("Main Course") ? "Main Course" : availableCategories[0]);
   
-  const galleryItems = [
-    place.image ? `${API_BASE_URL}/uploads/places/${place.image}` : placeholderImg,
-    gallery?.[0] ? `${API_BASE_URL}/uploads/places/${gallery[0].image_path}` : placeholderImg,
-    gallery?.[1] ? `${API_BASE_URL}/uploads/places/${gallery[1].image_path}` : placeholderImg,
-    gallery?.[2] ? `${API_BASE_URL}/uploads/places/${gallery[2].image_path}` : placeholderImg,
-    gallery?.[3] ? `${API_BASE_URL}/uploads/places/${gallery[3].image_path}` : placeholderImg
-  ];
-
   const scrollTabs = () => {
     if (tabsRef.current) {
       tabsRef.current.scrollBy({ left: 150, behavior: 'smooth' });
@@ -159,12 +171,16 @@ const PlaceDetailsDining = ({
         <div className="pd-container" style={{paddingTop: '20px'}}>
           
           {/* GALLERY GRID */}
-          <div className="res-gallery-grid">
-            <img src={galleryItems[0]} alt="Gallery 1" className="gallery-main" />
+          <div className={`res-gallery-grid ${gridClass}`}>
+            {galleryItems[0] && (
+              <img src={galleryItems[0]} alt="Main" className="gallery-main" />
+            )}
             
-            <div className="gallery-sub top-mid">
-               <img src={galleryItems[1]} alt="Gallery 2" />
-            </div>
+            {galleryItems[1] && (
+              <div className="gallery-sub top-mid">
+                 <img src={galleryItems[1]} alt="Gallery 2" />
+              </div>
+            )}
             
             <div className="res-info-card-cell">
               <div className="res-info-top-group">
@@ -224,14 +240,29 @@ const PlaceDetailsDining = ({
               </div>
             </div>
 
-            <div className="gallery-sub bot-mid">
-               <img src={galleryItems[2]} alt="Gallery 3" />
-            </div>
+            {galleryItems[2] && (
+              <div className="gallery-sub bot-mid">
+                 <img src={galleryItems[2]} alt="Gallery 3" />
+              </div>
+            )}
             
-            <div className="bot-right-group">
-               <img src={galleryItems[3]} alt="Gallery 4" />
-               <img src={galleryItems[4]} alt="Gallery 5" />
-            </div>
+            {galleryItems[3] && (
+              <div className="bot-right-group">
+                <img src={galleryItems[3]} alt="Gallery 4" />
+                {galleryItems[4] && (
+                  <div style={{ position: 'relative', height: 'calc(50% - 6px)' }}>
+                    <img src={galleryItems[4]} alt="Gallery 5" style={{ height: '100%', width: '100%', objectFit: 'cover' }} />
+                    {galleryItems.length > 5 && (
+                      <div className="gallery-more-overlay">
+                        <span style={{ color: 'white', fontWeight: '900', fontSize: '1.2rem', background: 'rgba(0,0,0,0.5)', padding: '8px 16px', borderRadius: '12px' }}>
+                          +{galleryItems.length - 5} More
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="pd-main-layout">

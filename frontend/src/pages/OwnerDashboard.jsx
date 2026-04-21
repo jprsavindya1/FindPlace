@@ -237,6 +237,15 @@ function OwnerDashboard() {
     setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   };
 
+  const handleGalleryChange = (e) => {
+    const newFiles = Array.from(e.target.files);
+    setGalleryFiles(prev => [...prev, ...newFiles]);
+  };
+
+  const handleRemovePendingGallery = (index) => {
+    setGalleryFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
   const resetPlaceForm = () => {
     setForm({
       name: "", location: "", whatsapp: "", price: "",
@@ -621,34 +630,37 @@ function OwnerDashboard() {
           </div>
           
           <div className="form-row-multi">
-             <div className="form-group">
-                <label>{businessType === 'dining' ? 'RESTAURANT TYPE' : 'CATEGORY'}</label>
-                <select className="glass-select" name="category" value={form.category} onChange={handlePlaceChange} required>
-                  <option value="">Select Category</option>
-                  {businessType === 'dining' ? (
-                    <>
-                      <option value="Fine Dining">Fine Dining</option>
-                      <option value="Cafe">Cafe</option>
-                      <option value="Fast Food">Fast Food</option>
-                      <option value="Family Restaurant">Family Restaurant</option>
-                      <option value="Pub/Bar">Pub/Bar</option>
-                    </>
-                  ) : (
-                    <>
-                      <option value="Hotel">Hotel</option>
-                      <option value="Villa">Villa</option>
-                      <option value="Cabana">Cabana</option>
-                      <option value="Resort">Resort</option>
-                      <option value="Boarding House">Boarding House</option>
-                    </>
-                  )}
-                </select>
-             </div>
-             <div className="form-group">
-                <label>{businessType === 'dining' ? 'AVG. PRICE / PERSON (RS.)' : 'BASE PRICE / NIGHT (RS.)'}</label>
-                <input name="price" type="text" inputMode="decimal" placeholder={businessType === 'dining' ? "1500" : "4500"} value={form.price} onChange={handlePlaceChange} required />
-             </div>
-          </div>
+              <div className="form-group" style={{ gridColumn: businessType === 'dining' ? '1 / -1' : 'auto' }}>
+                 <label>{businessType === 'dining' ? 'RESTAURANT TYPE' : 'CATEGORY'}</label>
+                 <select className="glass-select glass-input" name="category" value={form.category} onChange={handlePlaceChange} required>
+                   <option value="">Select Category</option>
+                   {businessType === 'dining' ? (
+                     <>
+                       <option value="Fine Dining">Fine Dining</option>
+                       <option value="Cafe">Cafe</option>
+                       <option value="Fast Food">Fast Food</option>
+                       <option value="Family Restaurant">Family Restaurant</option>
+                       <option value="Pub/Bar">Pub/Bar</option>
+                     </>
+                   ) : (
+                     <>
+                       <option value="Hotel">Hotel</option>
+                       <option value="Villa">Villa</option>
+                       <option value="Cabana">Cabana</option>
+                       <option value="Resort">Resort</option>
+                       <option value="Boarding House">Boarding House</option>
+                     </>
+                   )}
+                 </select>
+              </div>
+              
+              {businessType !== 'dining' && (
+                <div className="form-group">
+                   <label>BASE PRICE / NIGHT (RS.)</label>
+                   <input name="price" className="glass-input" type="text" inputMode="decimal" placeholder="4500" value={form.price} onChange={handlePlaceChange} required />
+                </div>
+              )}
+           </div>
 
           {businessType === 'dining' && (
             <div className="form-row-multi">
@@ -677,11 +689,11 @@ function OwnerDashboard() {
             <div className="form-row-multi">
                <div className="form-group">
                   <label>OPENING HOURS</label>
-                  <input name="opening_hours" type="time" value={form.opening_hours} onChange={handlePlaceChange} required />
+                  <input name="opening_hours" className="glass-input" type="time" value={form.opening_hours} onChange={handlePlaceChange} required />
                </div>
                <div className="form-group">
                   <label>CLOSING HOURS</label>
-                  <input name="closing_hours" type="time" value={form.closing_hours} onChange={handlePlaceChange} required />
+                  <input name="closing_hours" className="glass-input" type="time" value={form.closing_hours} onChange={handlePlaceChange} required />
                </div>
             </div>
           )}
@@ -709,20 +721,20 @@ function OwnerDashboard() {
                 <ImageIcon size={20} color="#003580" />
              </div>
              {editingPlace && places.find(p => p.id === editingPlace)?.image && (
-               <div className="existing-image-management" style={{ marginTop: '10px' }}>
-                 <p className="helper-text">Current Cover Image:</p>
+               <div className="existing-image-management" style={{ marginTop: '12px', background: 'rgba(255,255,255,0.5)', padding: '12px', borderRadius: '16px', border: '1px solid rgba(0,0,0,0.05)' }}>
+                 <p className="helper-text" style={{ marginBottom: '8px', fontWeight: 'bold', fontSize: '0.75rem' }}>Current Cover Image:</p>
                  <div style={{ position: 'relative', width: 'fit-content' }}>
                    <img 
                     src={`${API_BASE_URL}/uploads/places/${places.find(p => p.id === editingPlace).image}`} 
                     alt="Current cover" 
-                    style={{ width: '120px', height: '80px', objectFit: 'cover', borderRadius: '8px', border: '1px solid #e2e8f0' }} 
+                    style={{ width: '120px', height: '80px', objectFit: 'cover', borderRadius: '12px', border: '2px solid white', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} 
                    />
                    <button 
                     type="button" 
                     className="btn-delete-mini" 
                     title="Remove Cover"
                     onClick={() => handleRemoveCoverImage(editingPlace)}
-                    style={{ position: 'absolute', top: '-8px', right: '-8px', background: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '50%', padding: '4px', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}
+                    style={{ position: 'absolute', top: '-8px', right: '-8px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
                    >
                      <Trash2 size={12} />
                    </button>
@@ -734,7 +746,7 @@ function OwnerDashboard() {
           <div className="form-group full-width">
              <label>GALLERY IMAGES {editingPlace ? '(ADD MORE)' : '(UP TO 10)'}</label>
              <div className="upload-wrapper glass-input">
-                <input type="file" multiple onChange={(e) => setGalleryFiles(e.target.files)} />
+                <input type="file" multiple onChange={handleGalleryChange} />
                 <Upload size={20} color="#003580" />
              </div>
              
@@ -765,11 +777,15 @@ function OwnerDashboard() {
              )}
 
              {galleryFiles.length > 0 && (
-               <div className="new-uploads-list" style={{ display: 'flex', gap: '8px', marginTop: '15px', flexWrap: 'wrap' }}>
-                 <p className="helper-text" style={{ flexBasis: '100%', marginBottom: '4px' }}>Queueing to upload:</p>
-                 {Array.from(galleryFiles).map((f, i) => (
-                   <div key={i} style={{ padding: '4px 10px', background: '#e0e7ff', borderRadius: '8px', fontSize: '11px', color: '#3730a3', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                     <CheckCircle size={10} /> {f.name}
+               <div className="new-uploads-list">
+                 <p className="helper-text">Queueing to upload:</p>
+                 {galleryFiles.map((f, i) => (
+                   <div key={i} className="pending-file-chip">
+                     <CheckCircle size={10} /> 
+                     <span className="file-name-truncate">{f.name}</span>
+                     <button type="button" onClick={() => handleRemovePendingGallery(i)} className="remove-file-btn">
+                       <Trash2 size={10} />
+                     </button>
                    </div>
                  ))}
                </div>
@@ -822,17 +838,17 @@ function OwnerDashboard() {
                <p className="helper-text" style={{ marginBottom: '20px' }}>Add some initial food items that customers can pre-order when booking.</p>
                
                <div className="quick-item-entry" style={{ display: 'grid', gridTemplateColumns: '1fr 120px 140px', gap: '12px', alignItems: 'end' }}>
-                  <div className="form-group">
+                  <div className="form-group" style={{ marginBottom: 0 }}>
                     <label>ITEM NAME</label>
-                    <input type="text" placeholder="Sea Food Rice" value={quickItem.name} onChange={(e) => setQuickItem({...quickItem, name: e.target.value})} />
+                    <input type="text" className="glass-input" placeholder="Sea Food Rice" value={quickItem.name} onChange={(e) => setQuickItem({...quickItem, name: e.target.value})} />
                   </div>
-                  <div className="form-group">
+                  <div className="form-group" style={{ marginBottom: 0 }}>
                     <label>PRICE (RS)</label>
-                    <input type="text" placeholder="1500" value={quickItem.price} onChange={(e) => setQuickItem({...quickItem, price: e.target.value})} />
+                    <input type="text" className="glass-input" placeholder="1500" value={quickItem.price} onChange={(e) => setQuickItem({...quickItem, price: e.target.value})} />
                   </div>
-                  <div className="form-group">
+                  <div className="form-group" style={{ marginBottom: 0 }}>
                     <label>CATEGORY</label>
-                    <select className="glass-select" value={quickItem.category} onChange={(e) => setQuickItem({...quickItem, category: e.target.value})}>
+                    <select className="glass-select glass-input" value={quickItem.category} onChange={(e) => setQuickItem({...quickItem, category: e.target.value})}>
                       <option value="Appetizers">Appetizers</option>
                       <option value="Main Course">Main Course</option>
                       <option value="Desserts">Desserts</option>
@@ -845,12 +861,12 @@ function OwnerDashboard() {
                {tempMenuItems.length > 0 && (
                  <div className="temp-items-list" style={{ marginTop: '20px', display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
                    {tempMenuItems.map(item => (
-                     <div key={item.id} style={{ background: 'white', border: '1px solid #e2e8f0', padding: '8px 12px', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: '10px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                     <div key={item.id} style={{ background: 'white', border: '1px solid rgba(0, 53, 128, 0.1)', padding: '10px 14px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', boxShadow: '0 4px 10px rgba(0,0,0,0.03)' }}>
                         <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#1e293b' }}>{item.name}</span>
-                          <span style={{ fontSize: '0.7rem', color: '#64748b' }}>Rs. {item.price} • {item.category}</span>
+                           <span style={{ fontSize: '0.85rem', fontWeight: '800', color: '#002147' }}>{item.name}</span>
+                           <span style={{ fontSize: '0.7rem', color: '#64748b', fontWeight: '600' }}>Rs. {item.price} • {item.category}</span>
                         </div>
-                        <button type="button" onClick={() => removeQuickItem(item.id)} style={{ border: 'none', background: '#fee2e2', color: '#ef4444', borderRadius: '8px', padding: '4px', cursor: 'pointer' }}>
+                        <button type="button" onClick={() => removeQuickItem(item.id)} style={{ border: 'none', background: '#fee2e2', color: '#ef4444', borderRadius: '10px', width: '26px', height: '26px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.2s ease' }}>
                           <Trash2 size={12} />
                         </button>
                      </div>
@@ -892,7 +908,13 @@ function OwnerDashboard() {
                <div className="item-content">
                  <h4 className="item-title-navy">{place.name}</h4>
                  <p className="item-location-muted"><MapPin size={14}/> {place.location}</p>
-                 <p className="item-price-premium">Rs. {Number(place.price).toLocaleString()}</p>
+                  <p className="item-price-premium">
+                    {place.type === 'dine' || place.type === 'dining' ? (
+                      <span style={{ fontSize: '0.85rem', color: '#64748b' }}>{place.category}</span>
+                    ) : (
+                      <>Rs. {Number(place.price).toLocaleString()}</>
+                    )}
+                  </p>
                </div>
 
                <div className="item-card-actions">

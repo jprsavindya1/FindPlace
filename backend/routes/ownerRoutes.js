@@ -166,7 +166,7 @@ router.put(
 );
 
 /* ======================================================
-   OWNER – UPLOAD / UPDATE GALLERY IMAGES (REPLACE MODE)
+   OWNER – UPLOAD / UPDATE GALLERY IMAGES (APPEND MODE)
 ====================================================== */
 router.put(
   "/places/:id/gallery",
@@ -182,47 +182,22 @@ router.put(
       return res.status(400).json({ message: "No images provided" });
     }
 
-    // 1. Verify ownership first
+    // 1. Verify ownership
     db.query("SELECT id FROM places WHERE id = ? AND owner_id = ?", [placeId, ownerId], (err, results) => {
       if (err) return res.status(500).json({ message: "Database error" });
       if (results.length === 0) return res.status(403).json({ message: "Not your place" });
 
-      // 2. Get old gallery images to delete from disk
-      db.query("SELECT image_path FROM place_gallery WHERE place_id = ?", [placeId], (err, oldImages) => {
-        if (err) console.error("Fetch old gallery error:", err);
+      // 2. Insert new entries (Strictly APPEND)
+      const gallerySql = "INSERT INTO place_gallery (place_id, image_path) VALUES ?";
+      const galleryValues = newFiles.map(file => [placeId, file.filename]);
 
-        // 3. Delete old entries from DB
-        db.query("DELETE FROM place_gallery WHERE place_id = ?", [placeId], (err) => {
-          if (err) {
-            console.error("Gallery clear error:", err);
-            return res.status(500).json({ message: "Failed to clear old gallery" });
-          }
+      db.query(gallerySql, [galleryValues], (err) => {
+        if (err) {
+          console.error("Gallery insert error:", err);
+          return res.status(500).json({ message: "Failed to add new gallery images" });
+        }
 
-          // 4. Insert new entries
-          const gallerySql = "INSERT INTO place_gallery (place_id, image_path) VALUES ?";
-          const galleryValues = newFiles.map(file => [placeId, file.filename]);
-
-          db.query(gallerySql, [galleryValues], (err) => {
-            if (err) {
-              console.error("Gallery insert error:", err);
-              return res.status(500).json({ message: "Failed to add new gallery images" });
-            }
-
-            // 5. Cleanup old files from disk
-            if (oldImages && oldImages.length > 0) {
-              oldImages.forEach(img => {
-                if (img.image_path) {
-                  const oldPath = path.join("uploads/places", img.image_path);
-                  if (fs.existsSync(oldPath)) {
-                    fs.unlinkSync(oldPath);
-                  }
-                }
-              });
-            }
-
-            res.json({ message: "Gallery updated successfully (Replaced old photos)" });
-          });
-        });
+        res.json({ message: "Gallery images appended successfully ✨" });
       });
     });
   }
