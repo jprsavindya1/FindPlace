@@ -166,22 +166,32 @@ html {
 
 .modern-auth-card {
   width: 100%;
-  max-width: 360px; /* Reduced from 400px */
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 24px; /* Slightly tighter radius */
-  padding: 24px 22px; /* Reduced from 32px 28px */
+  max-width: 330px; /* Significantly reduced */
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 24px;
+  padding: 24px 20px; /* Compact padding */
   display: flex;
   flex-direction: column;
   box-shadow: 
-    0 20px 40px -10px rgba(0, 0, 0, 0.08),
-    0 0 15px rgba(0, 108, 228, 0.04),
-    inset 0 0 10px rgba(255, 255, 255, 0.6);
+    0 15px 30px -10px rgba(0, 0, 0, 0.1),
+    0 0 15px rgba(0, 108, 228, 0.03);
   position: relative;
   overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+
+.modern-auth-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 30px 60px -15px rgba(0, 0, 0, 0.15),
+    0 0 30px rgba(0, 108, 228, 0.08);
+}
+
+
 
 .modern-auth-card::before {
   content: '';
@@ -194,38 +204,38 @@ html {
 }
 
 .card-header {
-  margin-bottom: 20px; /* Reduced margin */
-  text-align: center;
+  margin-bottom: 20px;
+  text-align: left;
 }
 
 .card-header h2 {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.6rem; /* Slightly smaller */
-  font-weight: 900;
-  background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 1.4rem; /* Compact header */
+  font-weight: 800;
+  color: #0f172a;
   margin-bottom: 4px;
   letter-spacing: -0.02em;
 }
 
 .card-header p.subtitle {
   color: #64748b;
-  font-size: 0.85rem; /* Slightly smaller */
+  font-size: 0.8rem;
   font-weight: 500;
   margin: 0;
+  opacity: 0.8;
 }
 
-/* ROLE SELECT */
+
+
+
 .modern-role-select {
   display: flex;
-  gap: 8px;
-  margin: 16px 0; /* Reduced margin */
-  background: rgba(0, 0, 0, 0.03);
+  gap: 4px;
+  margin-bottom: 20px;
+  background: rgba(0, 0, 0, 0.05);
   padding: 4px;
   border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  position: relative;
 }
 
 .modern-role-select button {
@@ -233,57 +243,31 @@ html {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 10px 4px;
-  border: 1px solid transparent;
-  border-radius: 12px;
+  gap: 8px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
   background: transparent;
   color: #64748b;
   font-weight: 700;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
 }
 
-.modern-role-select button svg {
-  opacity: 0.7;
-  transition: all 0.3s ease;
-}
 
-.role-btn-text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-}
-
-.role-name {
-  font-size: 0.95rem;
-  line-height: 1.2;
-}
-
-.role-desc {
-  font-size: 0.7rem;
-  font-weight: 500;
-  opacity: 0.6;
-}
 
 .modern-role-select button.active {
-  background: white !important;
+  background: #ffffff !important;
   color: #006CE4 !important;
-  border-color: rgba(0, 108, 228, 0.1) !important;
-  box-shadow: 0 10px 25px rgba(0, 108, 228, 0.15) !important;
-}
-
-.modern-role-select button.active svg {
-  color: #006CE4 !important;
-  opacity: 1;
-  filter: drop-shadow(0 0 8px rgba(0, 108, 228, 0.3));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .modern-role-select button:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.5);
   color: #0f172a;
 }
+
 
 /* BUSINESS TYPE SELECT */
 .business-type-select-container {
@@ -368,15 +352,44 @@ html {
 .modern-auth-form input {
   width: 100%;
   box-sizing: border-box;
-  padding: 10px 14px; /* Reduced padding */
-  border-radius: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.8);
+  padding: 10px 14px 10px 40px; /* Compact padding */
+  border-radius: 10px;
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.9);
   color: #1e293b;
-  font-size: 0.85rem; /* Slightly smaller */
+  font-size: 0.9rem;
+  font-weight: 500;
   outline: none;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+
+.input-icon {
+  position: absolute;
+  left: 14px; /* Adjusted icon position */
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+
+.modern-auth-form input:focus + .input-icon,
+.modern-auth-form .input-icon:has(+ input:focus) {
+  /* This is a bit tricky in CSS, better to just target the sibling or use :focus-within on group */
+  color: #006CE4;
+}
+
+
+.modern-auth-form input:focus {
+  border-color: #006CE4;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(0, 108, 228, 0.1);
+  transform: translateY(-1px);
+}
+
 
 /* Chrome Autofill fix for white background */
 .modern-auth-form input:-webkit-autofill,
@@ -450,24 +463,31 @@ html {
 
 .primary-login-btn {
   width: 100%;
-  padding: 12px; /* Reduced from 14px */
-  border-radius: 12px;
+  padding: 12px;
+  border-radius: 10px;
   border: none;
-  background: linear-gradient(135deg, var(--luna-teal), var(--luna-steel));
+  background: linear-gradient(135deg, #006CE4 0%, #003580 100%);
   color: #ffffff;
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 4px;
-  box-shadow: 0 8px 20px rgba(0, 53, 128, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 6px;
+  box-shadow: 0 6px 12px -3px rgba(0, 108, 228, 0.3);
 }
+
+
 
 .primary-login-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 30px rgba(0, 53, 128, 0.3);
-  filter: brightness(1.1);
+  box-shadow: 0 15px 30px -5px rgba(0, 108, 228, 0.5);
+  filter: contrast(1.1);
 }
+
+.primary-login-btn:active {
+  transform: translateY(0);
+}
+
 
 .primary-login-btn:disabled {
   opacity: 0.7;
@@ -507,22 +527,25 @@ html {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 12px;
+  padding: 10px;
   border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  background: rgba(0, 0, 0, 0.05);
-  color: #262626;
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  color: #334155;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
+
 .custom-google-btn:hover {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
-  background: rgba(0, 0, 0, 0.1);
-  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
+
 
 .modern-auth-footer {
   margin-top: 20px; /* Reduced from 24px */

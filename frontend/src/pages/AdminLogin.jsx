@@ -4,7 +4,9 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { ShieldCheck, Mail, Lock, AlertCircle, ArrowRight } from "lucide-react";
 import { API_BASE_URL } from "../apiConfig";
+import InteractiveNetwork from "../components/InteractiveNetwork";
 import "./AdminLogin.css";
+
 
 function AdminLogin() {
   const navigate = useNavigate();
@@ -62,10 +64,8 @@ function AdminLogin() {
 
   return (
     <div className="admin-auth-page">
-      {/* GLOBAL Animated Background Elements (Synchronized with Luna Theme) */}
-      <div className="admin-bg-shape admin-bg-shape-1"></div>
-      <div className="admin-bg-shape admin-bg-shape-2"></div>
-      <div className="admin-bg-shape admin-bg-shape-3"></div>
+      <InteractiveNetwork />
+
 
       <motion.div 
         className="admin-auth-card"

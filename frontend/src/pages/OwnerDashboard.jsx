@@ -117,8 +117,8 @@ function OwnerDashboard() {
   /* ================= DASHBOARD FILTER ================= */
   const [dashboardFilterPlaceId, setDashboardFilterPlaceId] = useState("ALL");
   
-  const hasStay = places.some(p => p.type === 'stay');
-  const hasDine = places.some(p => p.type === 'dine');
+  const hasStay = places.some(p => p.type === 'stay' || p.type === 'accommodation');
+  const hasDine = places.some(p => p.type === 'dine' || p.type === 'dining');
 
   /* ================= FETCH DATA ================= */
   const fetchOwnerPlaces = async () => {
@@ -565,6 +565,17 @@ function OwnerDashboard() {
       const res = await axios.get(`${API_BASE_URL}/api/tables/place/${placeId}`);
       setTables(res.data);
     } catch (err) { console.error(err); }
+  };
+
+  const updateTableBookingMode = async (placeId, mode) => {
+    try {
+      await axios.put(`${API_BASE_URL}/api/places/owner/places/${placeId}/booking-mode`, { table_booking_mode: mode }, { headers: { Authorization: "Bearer " + token } });
+      setPlaces(places.map(p => p.id === placeId ? { ...p, table_booking_mode: mode } : p));
+      alert("Customer Booking Mode updated successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update booking mode.");
+    }
   };
 
   useEffect(() => { fetchTables(tablePlaceId); }, [tablePlaceId]);
@@ -1217,11 +1228,27 @@ function OwnerDashboard() {
       {isDesignerMode ? (
         <motion.div variants={fadeUp} key="designer-view">
           {tablePlaceId ? (
-            <FloorPlanDesigner 
-              placeId={tablePlaceId} 
-              onSaveSuccess={() => fetchTables(tablePlaceId)} 
-              setIsDesignerMode={setIsDesignerMode}
-            />
+            <div>
+               <div style={{ padding: '15px', background: 'rgba(0,53,128,0.05)', borderRadius: '12px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                 <div>
+                   <strong style={{color:'#003580'}}>Customer Booking Mode: {places.find(p=>p.id===Number(tablePlaceId))?.table_booking_mode === 'map' ? 'Visual 2D Map' : 'Standard List'}</strong>
+                   <p style={{fontSize: '12px', color: '#64748b', margin: 0}}>Set what your customers see when booking a table.</p>
+                 </div>
+                 <select 
+                   className="glass-select" 
+                   value={places.find(p=>p.id===Number(tablePlaceId))?.table_booking_mode || 'list'} 
+                   onChange={(e) => updateTableBookingMode(Number(tablePlaceId), e.target.value)}
+                 >
+                   <option value="list">Standard List</option>
+                   <option value="map">Visual 2D Map</option>
+                 </select>
+               </div>
+               <FloorPlanDesigner 
+                 placeId={tablePlaceId} 
+                 onSaveSuccess={() => fetchTables(tablePlaceId)} 
+                 setIsDesignerMode={setIsDesignerMode}
+               />
+            </div>
           ) : (
             <div className="dashboard-card shadow-premium" style={{ textAlign: 'center', padding: '50px' }}>
                <h3 className="card-title-navy">Please select a restaurant first</h3>
@@ -1235,6 +1262,23 @@ function OwnerDashboard() {
       ) : (
         <div key="list-view">
           <motion.div variants={fadeUp} className="dashboard-card shadow-premium table-form-card">
+               {tablePlaceId && (
+                 <div style={{ padding: '15px', background: 'rgba(0,53,128,0.05)', borderRadius: '12px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                   <div>
+                     <strong style={{color:'#003580'}}>Customer Booking Mode: {places.find(p=>p.id===Number(tablePlaceId))?.table_booking_mode === 'map' ? 'Visual 2D Map' : 'Standard List'}</strong>
+                     <p style={{fontSize: '12px', color: '#64748b', margin: 0}}>Set what your customers see when booking a table.</p>
+                   </div>
+                   <select 
+                     className="glass-select" 
+                     value={places.find(p=>p.id===Number(tablePlaceId))?.table_booking_mode || 'list'} 
+                     onChange={(e) => updateTableBookingMode(Number(tablePlaceId), e.target.value)}
+                   >
+                     <option value="list">Standard List</option>
+                     <option value="map">Visual 2D Map</option>
+                   </select>
+                 </div>
+               )}
+
                <h3 className="card-title-navy" style={{marginBottom:'20px'}}>{editingTable ? "Edit Table" : "Add New Table"}</h3>
                <form onSubmit={handleTableSubmit} className="owner-form">
                   <div className="form-group full-width">

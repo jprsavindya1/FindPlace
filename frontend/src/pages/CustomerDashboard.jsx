@@ -7,7 +7,6 @@ import PlaceCard from "../components/PlaceCard";
 import SkeletonCard from "../components/SkeletonCard";
 import Footer from "../components/Footer";
 
-
 function CustomerDashboard() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");

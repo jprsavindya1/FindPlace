@@ -320,10 +320,15 @@ const PlaceDetailsDining = ({
                         <div className="res-menu-info-row">
                           <h4>{item.name}</h4>
                           <span className="res-menu-price">LKR {Number(item.price).toLocaleString()}</span>
+                          {item.prep_time && (
+                            <div style={{ fontSize: '0.75rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
+                              <Clock size={12} /> {item.prep_time} prep time
+                            </div>
+                          )}
                         </div>
                         <div className="res-menu-pills">
-                          {item.is_veg && <span className="menu-pill pill-vegan">Vegan Option</span>}
-                          {item.is_special && <span className="menu-pill pill-special">Special</span>}
+                          {item.is_veg ? <span className="menu-pill pill-vegan">Vegan Option</span> : null}
+                          {item.is_special ? <span className="menu-pill pill-special">Special</span> : null}
                         </div>
                       </motion.div>
                     ))
@@ -661,7 +666,9 @@ const PlaceDetailsDining = ({
                         >
                           <div className="pd-modal-header" style={{ padding: '24px', borderBottom: '1px solid #e2e8f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                              <div>
-                               <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.25rem' }}>Floor Plan Layout</h3>
+                               <h3 style={{ margin: 0, color: '#1e293b', fontSize: '1.25rem' }}>
+                                 {place.table_booking_mode === 'map' ? 'Floor Plan Layout' : 'Select Tables'}
+                               </h3>
                                <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>Select up to 3 preferred tables</p>
                              </div>
                              <button onClick={() => setShowMapModal(false)} style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
@@ -670,15 +677,84 @@ const PlaceDetailsDining = ({
                           </div>
 
                           <div className="pd-modal-body" style={{ flex: 1, overflow: 'auto', padding: '10px' }}>
-                            <TableMap 
-                              placeId={place.id} 
-                              date={resDate} 
-                              time={resTime} 
-                              onSelect={setResTables} 
-                              selectedTables={resTables} 
-                              occupiedTableIds={occupiedTableIds}
-                              resDuration={resDuration}
-                            />
+                            {place.table_booking_mode === 'map' ? (
+                              <TableMap 
+                                placeId={place.id} 
+                                date={resDate} 
+                                time={resTime} 
+                                onSelect={setResTables} 
+                                selectedTables={resTables} 
+                                occupiedTableIds={occupiedTableIds}
+                                resDuration={resDuration}
+                              />
+                            ) : (
+                              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px', padding: '10px' }}>
+                                {tables.map(table => {
+                                  const isSelected = resTables.includes(table.id);
+                                  const isOccupied = occupiedTableIds.includes(table.id);
+                                  return (
+                                    <div 
+                                      key={table.id}
+                                      onClick={() => {
+                                        if (isOccupied) return;
+                                        setResTables(prev => {
+                                          if (prev.includes(table.id)) return prev.filter(id => id !== table.id);
+                                          if (prev.length >= 3) {
+                                            alert("You can select up to 3 tables maximum.");
+                                            return prev;
+                                          }
+                                          return [...prev, table.id];
+                                        });
+                                      }}
+                                      style={{
+                                        padding: '20px',
+                                        borderRadius: '20px',
+                                        border: `2px solid ${isSelected ? '#003580' : isOccupied ? '#ef4444' : '#e2e8f0'}`,
+                                        background: isSelected ? 'rgba(0, 53, 128, 0.05)' : isOccupied ? 'rgba(239, 68, 68, 0.05)' : 'white',
+                                        cursor: isOccupied ? 'not-allowed' : 'pointer',
+                                        opacity: isOccupied ? 0.6 : 1,
+                                        transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '12px',
+                                        position: 'relative',
+                                        boxShadow: isSelected ? '0 10px 15px -3px rgba(0, 53, 128, 0.1)' : '0 4px 6px -1px rgba(0,0,0,0.05)'
+                                      }}
+                                    >
+                                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                        <div>
+                                          <span style={{ fontWeight: 900, fontSize: '1.4rem', color: '#1e293b', display: 'block' }}>{table.table_no}</span>
+                                          <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{table.table_type}</span>
+                                        </div>
+                                        {isSelected ? (
+                                          <div style={{ background: '#003580', borderRadius: '50%', padding: '4px', display: 'flex' }}>
+                                            <Check size={16} color="white" strokeWidth={3} />
+                                          </div>
+                                        ) : isOccupied ? (
+                                          <div style={{ background: '#ef4444', borderRadius: '50%', padding: '4px', display: 'flex' }}>
+                                            <X size={16} color="white" strokeWidth={3} />
+                                          </div>
+                                        ) : null}
+                                      </div>
+                                      
+                                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                         <span style={{ background: '#f1f5f9', color: '#475569', fontSize: '0.75rem', padding: '4px 8px', borderRadius: '6px', fontWeight: 700 }}>
+                                            👥 Max {table.capacity}
+                                         </span>
+                                         <span style={{ background: '#f1f5f9', color: '#475569', fontSize: '0.75rem', padding: '4px 8px', borderRadius: '6px', fontWeight: 700 }}>
+                                            📍 {table.location_area}
+                                         </span>
+                                         {table.min_spend > 0 && (
+                                            <span style={{ background: '#ecfdf5', color: '#059669', fontSize: '0.75rem', padding: '4px 8px', borderRadius: '6px', fontWeight: 700 }}>
+                                               💰 Min LKR {Number(table.min_spend).toLocaleString()}
+                                            </span>
+                                         )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
                           </div>
 
                            <div className="pd-modal-footer" style={{ padding: '20px', background: 'white', borderTop: '1px solid #e2e8f0', display: 'flex', gap: '15px', alignItems: 'center' }}>

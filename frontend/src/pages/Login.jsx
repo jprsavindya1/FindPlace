@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import axios from "axios";
-import { Eye, EyeOff, Search, ArrowRightLeft, CalendarCheck, Home, Star, ShieldCheck } from "lucide-react";
+import { Eye, EyeOff, Search, ArrowRightLeft, CalendarCheck, Home, Star, ShieldCheck, Mail, Lock } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { motion } from "framer-motion";
 import { API_BASE_URL } from "../apiConfig";
+import InteractiveNetwork from "../components/InteractiveNetwork";
 import "./Login.css";
 
 const staggerContainer = {
@@ -109,6 +110,7 @@ function Login() {
 
   return (
     <div className="login-page-wrapper">
+      <InteractiveNetwork />
       {/* GLOBAL Animated Background Elements */}
       <div className="login-bg-shape login-bg-shape-1"></div>
       <div className="login-bg-shape login-bg-shape-2"></div>
@@ -153,10 +155,11 @@ function Login() {
           {/* RIGHT SIDE - Modern Login Card */}
           <motion.div 
             className="login-auth-wrapper"
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.2, type: "spring", stiffness: 80 }}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
           >
+
             <div className="modern-auth-card">
               <div className="card-header">
                 <h2>Welcome Back</h2>
@@ -183,8 +186,15 @@ function Login() {
               </div>
 
               {role && (
-                <form className="modern-auth-form" onSubmit={handleSubmit}>
-                  <div className="input-group">
+                <motion.form 
+                  className="modern-auth-form" 
+                  onSubmit={handleSubmit}
+                  variants={staggerContainer}
+                  initial="hidden"
+                  animate="show"
+                >
+                  <motion.div variants={fadeUp} className="input-group">
+                    <Mail className="input-icon" size={18} />
                     <input
                       type="email"
                       placeholder="Email address"
@@ -192,9 +202,11 @@ function Login() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                     />
-                  </div>
+                  </motion.div>
 
-                  <div className="input-group password-field">
+
+                  <motion.div variants={fadeUp} className="input-group password-field">
+                    <Lock className="input-icon" size={18} />
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="Password"
@@ -209,32 +221,33 @@ function Login() {
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
-                  </div>
+                  </motion.div>
+
 
                   {error && (
                     <motion.div 
-                      initial={{ opacity: 0, y: -10 }} 
-                      animate={{ opacity: 1, y: 0 }} 
+                      variants={fadeUp}
                       className="error-message"
                     >
                       {error}
                     </motion.div>
                   )}
 
-                  <div className="forgot-link-wrapper">
+                  <motion.div variants={fadeUp} className="forgot-link-wrapper">
                     <Link to="/forgot-password" className="forgot-link">Forgot password?</Link>
-                  </div>
+                  </motion.div>
 
-                  <button type="submit" className="primary-login-btn" disabled={isLoading}>
+                  <motion.button variants={fadeUp} type="submit" className="primary-login-btn" disabled={isLoading}>
                     {isLoading ? "Logging in..." : `Login as ${role.charAt(0).toUpperCase() + role.slice(1)}`}
-                  </button>
+                  </motion.button>
 
-                  <div className="modern-divider">
+                  <motion.div variants={fadeUp} className="modern-divider">
                     <span>Or continue with</span>
-                  </div>
+                  </motion.div>
 
-                  <div className="modern-google-login">
+                  <motion.div variants={fadeUp} className="modern-google-login">
                     <button type="button" className="custom-google-btn" onClick={() => handleGoogleLogin()}>
+                      {/* Google SVG */}
                       <svg width="20" height="20" viewBox="0 0 48 48">
                         <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
                         <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
@@ -243,8 +256,9 @@ function Login() {
                       </svg>
                       Sign in with Google
                     </button>
-                  </div>
-                </form>
+                  </motion.div>
+                </motion.form>
+
               )}
 
               <div className="modern-auth-footer">

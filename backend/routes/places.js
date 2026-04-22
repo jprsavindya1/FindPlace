@@ -968,4 +968,26 @@ router.put(
   }
 );
 
+/* ================= UPDATE TABLE BOOKING MODE ================= */
+router.put('/owner/places/:id/booking-mode', verifyToken, (req, res) => {
+  const placeId = req.params.id;
+  const { table_booking_mode } = req.body;
+
+  if (!['list', 'map'].includes(table_booking_mode)) {
+    return res.status(400).json({ message: "Invalid booking mode" });
+  }
+
+  const sql = "UPDATE places SET table_booking_mode = ? WHERE id = ? AND owner_id = ?";
+  db.query(sql, [table_booking_mode, placeId, req.user.id], (err, result) => {
+    if (err) {
+      console.error("Error updating booking mode:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Place not found or unauthorized" });
+    }
+    res.json({ message: "Booking mode updated successfully", table_booking_mode });
+  });
+});
+
 module.exports = router;

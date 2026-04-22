@@ -317,12 +317,19 @@ const PlaceDetailsStay = ({
                             <div className="pd-food-lux-content">
                               <div className="pd-food-lux-header">
                                 <h4 className="pd-food-lux-name">{item.name}</h4>
-                                <span className="pd-food-lux-price">LKR {Number(item.price).toLocaleString()}</span>
+                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                                  <span className="pd-food-lux-price">LKR {Number(item.price).toLocaleString()}</span>
+                                  {item.prep_time && (
+                                    <span style={{ fontSize: '0.75rem', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                                      <Clock size={12} /> {item.prep_time} prep
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                               <p className="pd-food-lux-desc">{item.description || "A delicious dish prepared with fresh ingredients."}</p>
                               <div className="pd-menu-pills" style={{ marginTop: '10px' }}>
-                                 {item.is_veg && <span className="menu-pill pill-vegan">Vegan</span>}
-                                 {item.is_special && <span className="menu-pill pill-special">Special</span>}
+                                 {item.is_veg ? <span className="menu-pill pill-vegan">Vegan</span> : null}
+                                 {item.is_special ? <span className="menu-pill pill-special">Special</span> : null}
                               </div>
                             </div>
                           </div>
