@@ -67,7 +67,24 @@ npm start
 ---
 
 ## 📸 Screenshots
-*(Coming Soon - Immersive UI Previews)*
+
+### 🏠 Home & Discovery
+| Login & Welcome | Search Experience |
+| :---: | :---: |
+| ![Login](./screenshots/login_page.png) | ![Search](./screenshots/search_page.png) |
+
+### 🤖 AI Smart Planner
+![AI Planner](./screenshots/ai_planner.png)
+
+### 📊 Dashboard & Analytics
+| Customer Dashboard | Owner Analytics |
+| :---: | :---: |
+| ![Customer](./screenshots/customer_dashboard.png) | ![Owner](./screenshots/owner_analytics.png) |
+
+### 🛠️ Advanced Tools
+| 2D Visual Designer | 360° Virtual Tour |
+| :---: | :---: |
+| ![Designer](./screenshots/visual_designer.png) | ![360 Tour](./screenshots/360_tour.png) |
 
 ---
 
