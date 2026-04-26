@@ -170,13 +170,49 @@ exports.getLatestItinerary = async (req, res) => {
             }
 
             const itinerary = results[0];
+            const planData = JSON.parse(itinerary.data);
+
+            // 🕒 EXPIRATION LOGIC: Check if the trip has already ended
+            if (planData.baseDate && planData.dailyPlans) {
+                const departure = new Date(planData.baseDate);
+                const duration = planData.dailyPlans.length;
+                const expiryDate = new Date(departure);
+                expiryDate.setDate(expiryDate.getDate() + duration); // Expire the day AFTER the trip ends
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (today >= expiryDate) {
+                    console.log("🕒 ITINERARY EXPIRED for user:", userId);
+                    return res.status(404).json({ success: false, message: "Previous plan has expired." });
+                }
+            }
+
             res.status(200).json({
                 success: true,
-                data: JSON.parse(itinerary.data)
+                data: planData
             });
         });
     } catch (err) {
         console.error("Fetch Itinerary Error:", err);
+        res.status(500).json({ success: false, message: "Server error." });
+    }
+};
+
+exports.resetItinerary = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const query = "DELETE FROM itineraries WHERE user_id = ?";
+
+        db.query(query, [userId], (err) => {
+            if (err) {
+                console.error("Error resetting itinerary:", err);
+                return res.status(500).json({ success: false, message: "Database error during reset." });
+            }
+            res.status(200).json({ success: true, message: "Itinerary reset successfully." });
+        });
+    } catch (err) {
+        console.error("Reset Itinerary Error:", err);
         res.status(500).json({ success: false, message: "Server error." });
     }
 };

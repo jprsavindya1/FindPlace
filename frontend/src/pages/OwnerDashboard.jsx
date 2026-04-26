@@ -1229,18 +1229,31 @@ function OwnerDashboard() {
         <motion.div variants={fadeUp} key="designer-view">
           {tablePlaceId ? (
             <div>
-               <div style={{ padding: '15px', background: 'rgba(0,53,128,0.05)', borderRadius: '12px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+               <div style={{ 
+                 padding: '20px 25px', 
+                 background: 'linear-gradient(135deg, rgba(0, 53, 128, 0.04) 0%, rgba(0, 108, 228, 0.04) 100%)', 
+                 borderRadius: '24px', 
+                 marginBottom: '30px', 
+                 display: 'flex', 
+                 justifyContent: 'space-between', 
+                 alignItems: 'center',
+                 border: '1px solid rgba(0, 53, 128, 0.08)',
+                 boxShadow: '0 10px 30px rgba(0, 0, 0, 0.02)'
+               }}>
                  <div>
-                   <strong style={{color:'#003580'}}>Customer Booking Mode: {places.find(p=>p.id===Number(tablePlaceId))?.table_booking_mode === 'map' ? 'Visual 2D Map' : 'Standard List'}</strong>
-                   <p style={{fontSize: '12px', color: '#64748b', margin: 0}}>Set what your customers see when booking a table.</p>
+                   <strong style={{color:'#003580', fontSize: '1.05rem', display: 'block', marginBottom: '4px'}}>
+                     <LayoutDashboard size={16} style={{verticalAlign: 'middle', marginRight: '8px'}}/>
+                     Customer Booking Mode: {places.find(p=>p.id===Number(tablePlaceId))?.table_booking_mode === 'map' ? 'Visual 2D Map' : 'Standard List'}
+                   </strong>
+                   <p style={{fontSize: '13px', color: '#64748b', margin: 0, fontWeight: '500'}}>Set what your customers see when booking a table at your restaurant.</p>
                  </div>
                  <select 
                    className="glass-select" 
                    value={places.find(p=>p.id===Number(tablePlaceId))?.table_booking_mode || 'list'} 
                    onChange={(e) => updateTableBookingMode(Number(tablePlaceId), e.target.value)}
                  >
-                   <option value="list">Standard List</option>
-                   <option value="map">Visual 2D Map</option>
+                   <option value="list">Standard List View</option>
+                   <option value="map">Visual 2D Map View</option>
                  </select>
                </div>
                <FloorPlanDesigner 
@@ -1263,18 +1276,31 @@ function OwnerDashboard() {
         <div key="list-view">
           <motion.div variants={fadeUp} className="dashboard-card shadow-premium table-form-card">
                {tablePlaceId && (
-                 <div style={{ padding: '15px', background: 'rgba(0,53,128,0.05)', borderRadius: '12px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                 <div style={{ 
+                   padding: '20px 25px', 
+                   background: 'linear-gradient(135deg, rgba(0, 53, 128, 0.04) 0%, rgba(0, 108, 228, 0.04) 100%)', 
+                   borderRadius: '24px', 
+                   marginBottom: '30px', 
+                   display: 'flex', 
+                   justifyContent: 'space-between', 
+                   alignItems: 'center',
+                   border: '1px solid rgba(0, 53, 128, 0.08)',
+                   boxShadow: '0 10px 30px rgba(0, 0, 0, 0.02)'
+                 }}>
                    <div>
-                     <strong style={{color:'#003580'}}>Customer Booking Mode: {places.find(p=>p.id===Number(tablePlaceId))?.table_booking_mode === 'map' ? 'Visual 2D Map' : 'Standard List'}</strong>
-                     <p style={{fontSize: '12px', color: '#64748b', margin: 0}}>Set what your customers see when booking a table.</p>
+                     <strong style={{color:'#003580', fontSize: '1.05rem', display: 'block', marginBottom: '4px'}}>
+                       <LayoutDashboard size={16} style={{verticalAlign: 'middle', marginRight: '8px'}}/>
+                       Customer Booking Mode: {places.find(p=>p.id===Number(tablePlaceId))?.table_booking_mode === 'map' ? 'Visual 2D Map' : 'Standard List'}
+                     </strong>
+                     <p style={{fontSize: '13px', color: '#64748b', margin: 0, fontWeight: '500'}}>Set what your customers see when booking a table at your restaurant.</p>
                    </div>
                    <select 
                      className="glass-select" 
                      value={places.find(p=>p.id===Number(tablePlaceId))?.table_booking_mode || 'list'} 
                      onChange={(e) => updateTableBookingMode(Number(tablePlaceId), e.target.value)}
                    >
-                     <option value="list">Standard List</option>
-                     <option value="map">Visual 2D Map</option>
+                     <option value="list">Standard List View</option>
+                     <option value="map">Visual 2D Map View</option>
                    </select>
                  </div>
                )}

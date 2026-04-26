@@ -73,16 +73,48 @@
   font-weight: 600;
 }
 
-.back-btn {
+.sidebar-footer {
   margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1rem;
+  gap: 0.5rem;
+}
+
+.reset-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 0.8rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.reset-btn:hover {
+  background: #ef4444;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.back-btn {
   background: transparent;
   color: #64748b;
   border: none;
-  padding: 1rem 2rem;
+  padding: 0.5rem 1rem;
   text-align: left;
   font-size: 0.85rem;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
+
 .back-btn:hover {
   color: #f8fafc;
 }

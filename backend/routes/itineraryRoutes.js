@@ -11,4 +11,8 @@ router.post('/generate', itineraryController.generateItinerary);
 // GET /api/itinerary/latest
 router.get('/latest', verifyToken, itineraryController.getLatestItinerary);
 
+// Route to reset/delete itinerary (Protected)
+// DELETE /api/itinerary/reset
+router.delete('/reset', verifyToken, itineraryController.resetItinerary);
+
 module.exports = router;

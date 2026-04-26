@@ -56,6 +56,25 @@ const SmartPlanner = () => {
     }
   };
 
+  const handleReset = async () => {
+    if (!window.confirm("Are you sure you want to delete this trip plan and start fresh?")) return;
+    try {
+      setLoading(true);
+      const res = await axios.delete(`${API_BASE_URL}/api/itinerary/reset`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.data.success) {
+        setItineraryData(null);
+        setShowVibeCheck(true);
+      }
+    } catch (err) {
+      console.error("Error resetting trip:", err);
+      alert("Failed to reset trip.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="smart-planner-container">
       
@@ -84,9 +103,15 @@ const SmartPlanner = () => {
                 <User size={18} /> Profile
               </button>
             </nav>
-            <button className="back-btn" onClick={() => window.location.href = '/customer'}>
-               Exit Planner
-            </button>
+
+            <div className="sidebar-footer">
+              <button className="reset-btn" onClick={handleReset}>
+                <Trash2 size={16} /> Reset Trip
+              </button>
+              <button className="back-btn" onClick={() => navigate('/customer')}>
+                 Exit Planner
+              </button>
+            </div>
           </div>
 
           <div className="planner-main-content">
