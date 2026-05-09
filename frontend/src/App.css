@@ -80,7 +80,7 @@ button, .btn {
 
 .btn-primary {
   background: var(--brand-primary);
-  color: white;
+  color: var(--text-on-brand);
   padding: 12px 24px;
   border-radius: 99px; /* Pill shape */
   font-weight: 500;

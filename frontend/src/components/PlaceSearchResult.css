@@ -1,9 +1,9 @@
 .accommodation-card-modern {
-  background: white;
+  background: var(--bg-card);
   border-radius: 20px;
   overflow: hidden;
   margin-bottom: 24px;
-  border: 1px solid #edf2f7;
+  border: 1px solid var(--border-light);
   transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
   cursor: pointer;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
@@ -86,7 +86,7 @@
 .acc-name-title {
   font-size: 1.5rem;
   font-weight: 900;
-  color: #1e293b;
+  color: var(--text-main);
   margin: 0 0 6px 0;
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -133,7 +133,7 @@
 
 .rating-word-acc {
   font-weight: 800;
-  color: #1e293b;
+  color: var(--text-main);
   font-size: 1rem;
 }
 
@@ -166,13 +166,13 @@
 }
 
 .acc-tag {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-main);
+  border: 1px solid var(--border-light);
   padding: 6px 12px;
   border-radius: 10px;
   font-size: 0.8rem;
   font-weight: 700;
-  color: #475569;
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -184,7 +184,7 @@
   flex-direction: column;
   gap: 6px;
   padding-top: 10px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border-light);
 }
 
 .highlight-item-acc {
@@ -193,7 +193,7 @@
   gap: 10px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-main);
 }
 
 .text-success-acc { color: #059669; }
@@ -206,7 +206,7 @@
   align-items: center;
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px dashed #e2e8f0;
+  border-top: 1px dashed var(--border-light);
 }
 
 .acc-pricing-info {
@@ -226,7 +226,7 @@
   display: flex;
   align-items: baseline;
   gap: 4px;
-  color: #1e293b;
+  color: var(--text-main);
 }
 
 .price-currency {
@@ -314,7 +314,7 @@
     width: 100%;
     justify-content: space-between;
     flex-direction: row;
-    background: #f1f5f9;
+    background: var(--bg-main);
     padding: 8px 12px;
     border-radius: 12px;
     box-sizing: border-box;

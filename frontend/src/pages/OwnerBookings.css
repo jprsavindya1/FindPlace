@@ -30,9 +30,9 @@
   align-items: center;
   gap: 8px;
   padding: 10px 20px;
-  background: white;
-  color: var(--brand-primary);
-  border: 1px solid var(--brand-primary);
+  background: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   font-weight: 700;
   cursor: pointer;

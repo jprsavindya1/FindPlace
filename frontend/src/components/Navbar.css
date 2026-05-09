@@ -319,7 +319,102 @@
   background-clip: text;
 }
 
+.theme-toggle-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  color: var(--text-main);
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-right: 8px;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--bg-main);
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle-btn svg {
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-toggle-btn:active svg {
+  transform: scale(0.8) rotate(45deg);
+}
+
+/* ================= Dark Mode Overrides ================= */
+[data-theme='dark'] .navbar {
+  background: rgba(10, 10, 10, 0.85);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 20px -10px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme='dark'] .nav-link {
+  color: #A1A1A1;
+}
+
+[data-theme='dark'] .nav-link:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='dark'] .profile-trigger {
+  background: #1A1A1A;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .profile-name-mini {
+  color: #EDEDED;
+}
+
+[data-theme='dark'] .dropdown-menu {
+  background: #141414;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .dropdown-item {
+  color: #A1A1A1;
+}
+
+[data-theme='dark'] .dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
+}
+
+[data-theme='dark'] .nav-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #EDEDED;
+}
+
+[data-theme='dark'] .nav-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+[data-theme='dark'] .avatar-mini {
+  background: #FFFFFF;
+  color: #000000;
+}
+
 @media (max-width: 768px) {
+  .theme-toggle-btn {
+    width: 34px;
+    height: 34px;
+    margin-right: 4px;
+  }
+  .theme-toggle-btn svg {
+    width: 16px;
+    height: 16px;
+  }
   .navbar {
     height: 70px;
     padding-top: 10px;
@@ -374,3 +469,4 @@
     display: none; /* Hide sticky contact btn in navbar on mobile */
   }
 }
+

@@ -4,12 +4,12 @@
 
 .place-card {
   width: 100%;
-  background: linear-gradient(135deg, rgba(250, 250, 250, 0.9), rgba(248, 249, 250, 0.9));
+  background: var(--bg-card);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
   border-radius: 24px;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-light);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
   transition: all 0.5s cubic-bezier(0.25, 1, 0.3, 1);
   position: relative;
@@ -42,7 +42,7 @@
   left: 0;
   width: 100%;
   height: 60%;
-  background: linear-gradient(to top, rgba(255, 255, 255, 1), transparent);
+  background: linear-gradient(to top, var(--bg-card), transparent);
   z-index: 1;
 }
 
@@ -75,7 +75,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 1.4rem;
   font-weight: 800;
-  color: #262626;
+  color: var(--text-main);
   line-height: 1.25;
   margin: 0;
   letter-spacing: -0.02em;
@@ -97,12 +97,12 @@
 
 .rating-val {
   font-weight: 800;
-  color: #262626;
+  color: var(--text-main);
   font-size: 1.1rem;
 }
 
 .rating-count {
-  color: #666666;
+  color: var(--text-muted);
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -120,7 +120,7 @@
   gap: 12px;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #262626;
+  color: var(--text-main);
 }
 
 .detail-item span {
@@ -131,7 +131,7 @@
 .place-card-footer {
   margin-top: auto;
   padding-top: 20px;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--border-light);
 }
 
 .pd-details-btn-v2 {
@@ -162,10 +162,10 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--bg-card);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--border-light);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -211,7 +211,7 @@
 }
 
 .place-card.horizontal .place-image::after {
-  background: linear-gradient(to right, rgba(255, 255, 255, 0.4), transparent);
+  background: linear-gradient(to right, var(--bg-card), transparent);
   width: 40%;
   height: 100%;
   bottom: 0;

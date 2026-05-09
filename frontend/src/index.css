@@ -11,6 +11,29 @@
   
   --brand-primary: #000000;
   --brand-accent: #0070F3;
+  --text-on-brand: #FFFFFF;
+  --surface-card: #FFFFFF;
+  --text-dark: #111111;
+  --bg-alt: #F3F4F6;
+
+  /* Transitions */
+  --theme-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme='dark'] {
+  --bg-main: #0A0A0A;
+  --bg-card: #141414;
+  --text-main: #EDEDED;
+  --text-muted: #A1A1A1;
+  --border-light: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(255, 255, 255, 0.15);
+  
+  --brand-primary: #FFFFFF;
+  --brand-accent: #0070F3;
+  --text-on-brand: #000000;
+  --surface-card: #141414;
+  --text-dark: #EDEDED;
+  --bg-alt: #1A1A1A;
 }
 
 body {
@@ -22,6 +45,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--bg-main);
   color: var(--text-main);
+  transition: var(--theme-transition);
   overflow-x: hidden; /* Prevent horizontal scroll shifts */
   width: 100vw;
 }

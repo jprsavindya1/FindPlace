@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { ThemeProvider } from "./context/ThemeContext";
 
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -30,89 +31,91 @@ import SmartPlanner from "./pages/SmartPlanner/SmartPlanner"; // ⭐ AI Smart It
 
 function App() {
   return (
-    <GoogleOAuthProvider clientId="593149822202-o648jt4p23lcistoh3q9n0ishss7kthj.apps.googleusercontent.com">
-      <BrowserRouter>
+    <ThemeProvider>
+      <GoogleOAuthProvider clientId="593149822202-o648jt4p23lcistoh3q9n0ishss7kthj.apps.googleusercontent.com">
+        <BrowserRouter>
 
-        {/* Global Navigation */}
-        <Navbar />
+          {/* Global Navigation */}
+          <Navbar />
 
-        <Routes>
+          <Routes>
 
-          {/* ================= PUBLIC ROUTES ================= */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/unauthorized" element={<Unauthorized />} />
+            {/* ================= PUBLIC ROUTES ================= */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/unauthorized" element={<Unauthorized />} />
 
-          {/* ================= ADMIN ================= */}
-          <Route path="/admin/login" element={<AdminLogin />} />
+            {/* ================= ADMIN ================= */}
+            <Route path="/admin/login" element={<AdminLogin />} />
 
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute allowedRole="admin">
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute allowedRole="admin">
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* ================= CUSTOMER / GUEST EXPLORER ================= */}
-          <Route path="/customer" element={<CustomerDashboard />} />
-          <Route path="/dine" element={<DiningPage />} />
-          {/* Landing pages bypassed per user request to streamline search journey */}
-          {/* <Route path="/category/:type" element={<CategoryPage />} /> */}
-          <Route path="/search" element={<SearchResultsPage />} />
-          <Route path="/smart-planner" element={<SmartPlanner />} />
-          <Route path="/places/:id" element={<PlaceDetails />} />
+            {/* ================= CUSTOMER / GUEST EXPLORER ================= */}
+            <Route path="/customer" element={<CustomerDashboard />} />
+            <Route path="/dine" element={<DiningPage />} />
+            {/* Landing pages bypassed per user request to streamline search journey */}
+            {/* <Route path="/category/:type" element={<CategoryPage />} /> */}
+            <Route path="/search" element={<SearchResultsPage />} />
+            <Route path="/smart-planner" element={<SmartPlanner />} />
+            <Route path="/places/:id" element={<PlaceDetails />} />
 
-          <Route
-            path="/customer/bookings"
-            element={
-              <ProtectedRoute allowedRoles={["customer", "admin"]}>
-                <CustomerBookings />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/customer/bookings"
+              element={
+                <ProtectedRoute allowedRoles={["customer", "admin"]}>
+                  <CustomerBookings />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/customer/favorites"
-            element={
-              <ProtectedRoute allowedRoles={["customer", "admin"]}>
-                <MyFavorites />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/customer/favorites"
+              element={
+                <ProtectedRoute allowedRoles={["customer", "admin"]}>
+                  <MyFavorites />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* ================= OWNER ================= */}
-          <Route
-            path="/owner"
-            element={
-              <ProtectedRoute allowedRoles={["owner", "admin"]}>
-                <OwnerDashboard />
-              </ProtectedRoute>
-            }
-          />
+            {/* ================= OWNER ================= */}
+            <Route
+              path="/owner"
+              element={
+                <ProtectedRoute allowedRoles={["owner", "admin"]}>
+                  <OwnerDashboard />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* ================= SHARED ROUTES (ALL AUTH USERS) ================= */}
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute allowedRoles={["customer", "owner", "admin"]}>
-                <Profile />
-              </ProtectedRoute>
-            }
-          />
+            {/* ================= SHARED ROUTES (ALL AUTH USERS) ================= */}
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute allowedRoles={["customer", "owner", "admin"]}>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* ================= DEFAULT REDIRECT ================= */}
-          <Route path="/" element={<Navigate to="/customer" replace />} />
+            {/* ================= DEFAULT REDIRECT ================= */}
+            <Route path="/" element={<Navigate to="/customer" replace />} />
 
-          {/* ================= UNKNOWN ROUTES ================= */}
-          <Route path="*" element={<Navigate to="/customer" replace />} />
+            {/* ================= UNKNOWN ROUTES ================= */}
+            <Route path="*" element={<Navigate to="/customer" replace />} />
 
-        </Routes>
+          </Routes>
 
-      </BrowserRouter>
-    </GoogleOAuthProvider>
+        </BrowserRouter>
+      </GoogleOAuthProvider>
+    </ThemeProvider>
   );
 }
 

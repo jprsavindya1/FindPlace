@@ -1,7 +1,7 @@
 .search-results-page {
   width: 100%;
   min-height: 100vh;
-  background: #f8fafc;
+  background: var(--bg-main);
   padding-top: 80px; /* To clear the fixed navbar */
   padding-bottom: 80px;
 }
@@ -129,7 +129,7 @@
 .results-title {
   font-size: 1.6rem;
   font-weight: 800;
-  color: #1e293b;
+  color: var(--text-main);
   margin: 0;
   letter-spacing: -0.03em;
 }
@@ -144,20 +144,20 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: white;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
   padding: 8px 16px;
   border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-main);
   cursor: pointer;
 }
 
 .view-toggle {
   display: flex;
-  background: white;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -180,7 +180,7 @@
 .results-tabs {
   display: flex;
   gap: 32px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--border-light);
   margin-bottom: 24px;
 }
 
@@ -251,7 +251,7 @@
 }
 
 .no-results-inner p {
-  color: #64748b;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
@@ -266,12 +266,12 @@
 }
 
 .page-nav-btn {
-  background: white;
-  border: 1px solid #e5eaf2;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   padding: 10px 16px;
   font-weight: 600;
-  color: #006CE4;
+  color: var(--brand-accent);
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.9rem;
@@ -288,11 +288,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
-  border: 1px solid #e5eaf2;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
   border-radius: 12px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-main);
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 1rem;

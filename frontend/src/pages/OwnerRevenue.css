@@ -11,8 +11,8 @@
 }
 
 .kpi-card {
-  background: #ffffff;
-  border: 1px solid #f1f5f9;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
   padding: 32px 24px;
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
@@ -30,11 +30,11 @@
 .kpi-icon {
   width: 56px;
   height: 56px;
-  background: #f8fafc;
+  background: var(--bg-main);
   border-radius: 14px;
   display: grid;
   place-items: center;
-  color: #64748b;
+  color: var(--text-muted);
   flex-shrink: 0;
 }
 
@@ -52,7 +52,7 @@
 
 .kpi-info h4 {
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--text-muted);
   margin: 0 0 8px 0;
   text-transform: uppercase;
   letter-spacing: 0.8px;
@@ -62,7 +62,7 @@
 .kpi-info p {
   font-size: 1.6rem;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-main);
   margin: 0;
 }
 
@@ -100,8 +100,8 @@
 }
 
 .chart-card {
-  background: #ffffff;
-  border: 1px solid #f1f5f9;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
   padding: 32px;
   border-radius: 24px;
   box-shadow: 0 4px 25px rgba(0, 0, 0, 0.02);
@@ -110,7 +110,7 @@
 .chart-card h3 {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-main);
   margin-top: 0;
   margin-bottom: 28px;
   display: flex;
@@ -139,7 +139,7 @@
   margin: 0 0 4px 0;
   font-size: 0.95rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--text-main);
 }
 
 .status-text p {
@@ -184,14 +184,14 @@
 /* TABLE SECTION */
 .revenue-table-container {
   overflow-x: auto;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   border-radius: 16px;
 }
 
 .revenue-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
+  background: var(--bg-card);
   text-align: left;
 }
 
@@ -201,16 +201,16 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
-  color: #64748b;
-  background: #f8fafc;
-  border-bottom: 1px solid #f1f5f9;
+  color: var(--text-muted);
+  background: var(--bg-main);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .revenue-table td {
   padding: 18px 20px;
   font-size: 0.9rem;
-  color: #334155;
-  border-bottom: 1px solid #f8fafc;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .revenue-table tr:last-child td {

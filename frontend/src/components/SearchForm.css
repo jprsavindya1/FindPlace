@@ -167,6 +167,43 @@
   opacity: 0;
 }
 
+/* ================= Dark Mode Overrides ================= */
+[data-theme='dark'] .search-form {
+  background: rgba(10, 10, 10, 0.6);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8);
+}
+
+[data-theme='dark'] .search-input-group:hover,
+[data-theme='dark'] .search-input-group:focus-within {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='dark'] .search-input-group select,
+[data-theme='dark'] .search-input-group input {
+  color: #EDEDED;
+}
+
+[data-theme='dark'] .search-icon {
+  color: #FFFFFF;
+}
+
+[data-theme='dark'] .search-input-group select option {
+  background: #141414;
+  color: #FFFFFF;
+}
+
+[data-theme='dark'] .search-input-group:not(:last-of-type)::after {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .search-input-group input:-webkit-autofill,
+[data-theme='dark'] .search-input-group input:-webkit-autofill:hover, 
+[data-theme='dark'] .search-input-group input:-webkit-autofill:focus, 
+[data-theme='dark'] .search-input-group input:-webkit-autofill:active {
+  -webkit-text-fill-color: #EDEDED !important;
+}
+
 /* =========================================================
    RESPONSIVE (Convert pill to stacked cards on mobile)
 ========================================================= */

@@ -5,8 +5,8 @@
 .owner-dashboard {
   display: flex;
   min-height: 100vh;
-  background: #FFFFFF;
-  color: #262626;
+  background: var(--bg-main);
+  color: var(--text-main);
   position: relative;
   overflow: hidden;
   padding-top: 80px; /* Offset for Navbar */
@@ -40,9 +40,9 @@
 /* ================= SIDEBAR ================= */
 .owner-sidebar {
   width: 240px;
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--bg-card);
   backdrop-filter: blur(40px);
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  border-right: 1px solid var(--border-light);
   padding: 40px 16px;
   display: flex;
   flex-direction: column;
@@ -73,7 +73,7 @@
   border-radius: 12px;
   border: 1px solid transparent;
   background: transparent;
-  color: #666666;
+  color: var(--text-muted);
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
@@ -144,7 +144,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 3rem;
   font-weight: 900;
-  color: #262626;
+  color: var(--text-main);
   letter-spacing: -0.04em;
   margin: 0 0 12px;
   line-height: 1;
@@ -210,13 +210,13 @@
 /* KPI CARDS */
 /* ================= FORMS & CARDS ================= */
 .dashboard-card {
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--bg-card);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-light);
   border-radius: 20px;
   padding: 16px 24px;
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   margin-bottom: 24px;
 }
 
@@ -224,7 +224,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 1.15rem;
   font-weight: 800;
-  color: #262626;
+  color: var(--text-main);
   margin-bottom: 16px;
   display: flex;
   align-items: center;
@@ -276,12 +276,12 @@
   box-sizing: border-box;
   padding: 12px 16px;
   border-radius: 14px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--border-light);
+  background: var(--bg-main);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   font-size: 0.9rem;
-  color: #1e293b;
+  color: var(--text-main);
   outline: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
@@ -386,12 +386,12 @@ select.glass-select:focus {
 }
 
 .item-card {
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--bg-card);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-light);
   border-radius: 20px;
   padding: 16px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   display: flex;
   flex-direction: column;
@@ -421,14 +421,14 @@ select.glass-select:focus {
   font-family: 'Outfit', sans-serif;
   font-size: 1.1rem;
   font-weight: 800;
-  color: #262626;
+  color: var(--text-main);
   margin-bottom: 8px;
   letter-spacing: -0.01em;
 }
 
 .item-subtitle {
   font-size: 0.85rem;
-  color: #666666;
+  color: var(--text-muted);
   margin-bottom: 12px;
   display: flex;
   align-items: center;

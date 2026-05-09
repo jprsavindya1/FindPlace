@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { LayoutDashboard, CalendarDays, LogOut, CodeSquare, Home, Contact, MessageSquare, Heart, User, ChevronDown, Settings, Sparkles } from "lucide-react";
+import { LayoutDashboard, CalendarDays, LogOut, CodeSquare, Home, Contact, MessageSquare, Heart, User, ChevronDown, Settings, Sparkles, Moon, Sun } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
 import axios from "axios";
 import { API_BASE_URL } from "../apiConfig";
 import "./Navbar.css";
@@ -11,6 +12,7 @@ function Navbar() {
 
   const location = useLocation();
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
@@ -155,6 +157,15 @@ function Navbar() {
               </NavLink>
             </>
           )}
+
+          {/* -------- THEME TOGGLE -------- */}
+          <button 
+            className="theme-toggle-btn" 
+            onClick={toggleTheme}
+            aria-label="Toggle Theme"
+          >
+            {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+          </button>
 
           {/* -------- PROFILE DROPDOWN -------- */}
           {token && (
