@@ -56,8 +56,8 @@ function MyFavorites() {
           <div className="empty-state modern-empty-state">Loading your favorite spots...</div>
         ) : favorites.length === 0 ? (
           <div className="empty-state modern-empty-state">
-            <h3 style={{fontSize: '1.4rem', color: '#262626', marginBottom: '8px'}}>No favorites yet</h3>
-            <p style={{color: '#666666'}}>Start exploring and click the ❤️ to save places you love.</p>
+            <h3 style={{fontSize: '1.4rem', color: 'var(--text-main)', marginBottom: '8px'}}>No favorites yet</h3>
+            <p style={{color: 'var(--text-muted)'}}>Start exploring and click the ❤️ to save places you love.</p>
           </div>
         ) : (
           <div className="favorites-list-wrapper" style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>

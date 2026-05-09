@@ -1,11 +1,4 @@
-:root {
-  --luna-light: #006CE4;
-  --luna-teal: #003580;
-  --luna-steel: #006CE4;
-  --luna-deep: #E9ECEF;
-  --luna-navy: #F8F9FA;
-  --luna-black: #FFFFFF;
-}
+/* Using global variables from index.css */
 
 .customer-page-wrapper {
   width: 100%;
@@ -29,7 +22,7 @@
 .blob-1 {
   width: 600px;
   height: 600px;
-  background: var(--luna-teal);
+  background: var(--brand-accent);
   top: -100px;
   right: -100px;
 }
@@ -37,7 +30,7 @@
 .blob-2 {
   width: 500px;
   height: 500px;
-  background: var(--luna-steel);
+  background: var(--brand-accent);
   bottom: 10%;
   left: -100px;
 }
@@ -45,7 +38,7 @@
 .blob-3 {
   width: 400px;
   height: 400px;
-  background: var(--luna-light);
+  background: var(--brand-accent);
   top: 40%;
   right: 15%;
 }
@@ -72,7 +65,8 @@
   max-width: 1200px;
   width: 100%;
   /* Bright center glow that fades out, Image 11 style */
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.6) 30%, rgba(255, 255, 255, 0) 75%);
+  /* Responsive glow that adapts to theme */
+  background: radial-gradient(circle at center, var(--bg-card) 0%, transparent 75%);
   padding: 40px 70px; /* Compact padding */
   display: flex;
   flex-direction: column;
@@ -160,10 +154,10 @@
 }
 
 .hero-badge {
-  background: rgba(255, 255, 255, 0.6); /* Lighter background like ref */
+  background: var(--bg-card);
   backdrop-filter: blur(4px);
-  color: #333;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: var(--text-main);
+  border: 1px solid var(--border-light);
   padding: 10px 24px;
   border-radius: 50px; /* Pill shape like ref */
   font-weight: 700;
@@ -197,10 +191,10 @@
 }
 
 .modern-section-title {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-heading) !important;
   font-size: 2.2rem;
   font-weight: 800;
-  color: var(--text-main);
+  color: var(--text-main) !important;
   margin: 0;
   letter-spacing: -0.03em;
   line-height: 1.2;
@@ -208,7 +202,7 @@
 }
 
 .modern-section-subtitle {
-  color: var(--text-muted);
+  color: var(--text-muted) !important;
   font-size: 1.1rem;
   margin-top: 6px;
   font-weight: 500;
@@ -451,11 +445,11 @@
 }
 
 .scroll-arrow-btn:hover {
-  background: white;
+  background: var(--brand-accent);
   transform: translateY(-2px) scale(1.05);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  border-color: var(--luna-light);
-  color: var(--luna-light);
+  border-color: var(--brand-accent);
+  color: white;
 }
 
 .scroll-arrow-btn:active {
@@ -599,7 +593,7 @@
 .category-info h3 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: var(--text-main);
+  color: var(--text-main) !important;
   margin: 0;
 }
 
@@ -669,7 +663,7 @@
 }
 
 .feature-heading {
-  font-family: 'Georgia', 'Playfair Display', serif; /* Serif font for Image 11 style */
+  font-family: var(--font-heading);
   font-size: 1.8rem;
   font-weight: 700;
   margin-bottom: 24px;
@@ -701,12 +695,12 @@
   text-align: right;
   margin-top: 16px;
   font-size: 0.95rem;
-  color: #666;
+  color: var(--text-muted) !important;
   font-weight: 500;
 }
 
 .need-place-text span {
-  color: var(--luna-teal);
+  color: var(--brand-accent) !important;
   font-weight: 700;
   text-decoration: underline;
   cursor: pointer;
@@ -724,7 +718,7 @@
 
 .category-card.compact .category-info {
   padding: 12px 16px;
-  background: white;
+  background: var(--bg-card);
 }
 
 .category-card.compact h3 {

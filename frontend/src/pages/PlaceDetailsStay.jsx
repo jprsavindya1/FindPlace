@@ -554,13 +554,13 @@ const PlaceDetailsStay = ({
                       </div>
                       
                       {nights > 0 && totalPrice > 0 && (
-                        <div className="pricing-summary" style={{ background: 'rgba(0, 53, 128, 0.05)', padding: '20px', borderRadius: '16px', border: '1px solid rgba(0, 53, 128, 0.1)', marginTop: '8px' }}>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', color: '#555555', fontSize: '0.9rem' }}>
+                        <div className="pricing-summary" style={{ background: 'var(--bg-alt)', padding: '20px', borderRadius: '16px', border: '1px solid var(--border-light)', marginTop: '8px' }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                               <span>{nights} Nights × {numRooms} {numRooms > 1 ? 'Rooms' : 'Room'}</span>
-                              <span style={{ fontWeight: 800, color: '#003580' }}>Rs. {totalPrice.toLocaleString()}</span>
+                              <span style={{ fontWeight: 800, color: 'var(--brand-accent)' }}>Rs. {totalPrice.toLocaleString()}</span>
                             </div>
-                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                               Guests: {adults} Adults, {children} Children
                             </div>
                           </div>
@@ -583,7 +583,7 @@ const PlaceDetailsStay = ({
                           className="pd-btn-pay-later" 
                           onClick={(e) => handleBookingSubmit(e, 'AT_HOTEL')}
                           disabled={isBooking || !selectedRoom || !checkIn || !checkOut}
-                          style={{ margin: 0, background: 'white', border: '2px solid #003580', color: '#003580', padding: '16px', borderRadius: '16px', fontWeight: '900', fontSize: '1.1rem' }}
+                          style={{ margin: 0, background: 'var(--bg-card)', border: '2px solid var(--brand-accent)', color: 'var(--brand-accent)', padding: '16px', borderRadius: '16px', fontWeight: '900', fontSize: '1.1rem' }}
                         >
                           Pay at Hotel
                         </motion.button>
@@ -622,20 +622,20 @@ const PlaceDetailsStay = ({
                 <div id="review-form-section" className="res-booking-widget" style={{ marginTop: '24px', padding: '24px' }}>
                   <h2 className="pd-section-title" style={{ marginBottom: '20px', fontSize: '1.4rem' }}>Share Your Experience</h2>
                   {token ? (
-                    <form onSubmit={handleAddReview} className="pd-form" style={{ background: 'rgba(0,0,0,0.03)', padding: '20px', borderRadius: '20px', border: '1px solid rgba(0, 53, 128, 0.05)' }}>
+                    <form onSubmit={handleAddReview} className="pd-form" style={{ background: 'var(--bg-alt)', padding: '20px', borderRadius: '20px', border: '1px solid var(--border-light)' }}>
                       <div className="pd-input-group">
                         <label className="pd-label">Your Rating</label>
-                        <div className="pd-stars-picker" style={{ display: 'flex', gap: '8px', padding: '10px', background: 'white', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
+                        <div className="pd-stars-picker" style={{ display: 'flex', gap: '8px', padding: '10px', background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border-light)' }}>
                           {[1, 2, 3, 4, 5].map((star) => (
-                            <Star key={star} size={18} style={{ cursor: 'pointer', transition: 'all 0.3s' }} className={`pd-star-icon ${star <= myRating ? 'active' : ''}`} fill={star <= myRating ? "#FFD700" : "none"} color={star <= myRating ? "#FFD700" : "#cbd5e1"} onClick={() => setMyRating(star)} />
+                            <Star key={star} size={18} style={{ cursor: 'pointer', transition: 'all 0.3s' }} className={`pd-star-icon ${star <= myRating ? 'active' : ''}`} fill={star <= myRating ? "#FFD700" : "none"} color={star <= myRating ? "#FFD700" : "var(--text-muted)"} onClick={() => setMyRating(star)} />
                           ))}
                         </div>
                       </div>
                       <div className="pd-input-group">
                         <label className="pd-label">Your Feedback</label>
-                        <textarea className="pd-input" style={{ minHeight: '100px', padding: '14px', resize: 'none', background: 'white', borderRadius: '12px', border: '1px solid #e2e8f0', width: '100%', fontSize: '0.9rem' }} placeholder="Tell us what you loved..." value={myComment} onChange={(e) => setMyComment(e.target.value)} required />
+                        <textarea className="pd-input" style={{ minHeight: '100px', padding: '14px', resize: 'none', background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border-light)', width: '100%', fontSize: '0.9rem', color: 'var(--text-main)' }} placeholder="Tell us what you loved..." value={myComment} onChange={(e) => setMyComment(e.target.value)} required />
                       </div>
-                      <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} type="submit" className="pd-btn-submit" disabled={isPostingReview} style={{ width: '100%', padding: '14px', borderRadius: '12px', background: '#003580', color: 'white', fontWeight: '800', marginTop: '12px', border: 'none', cursor: 'pointer' }}>
+                      <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} type="submit" className="pd-btn-submit" disabled={isPostingReview} style={{ width: '100%', padding: '14px', borderRadius: '12px', background: 'var(--brand-accent)', color: 'var(--text-on-brand)', fontWeight: '800', marginTop: '12px', border: 'none', cursor: 'pointer' }}>
                         {isPostingReview ? "Posting..." : "Post Review"}
                       </motion.button>
                     </form>
@@ -648,17 +648,17 @@ const PlaceDetailsStay = ({
                 </div>
 
                 {/* SIDEBAR FEEDBACK (STAY) */}
-                <div className="res-reviews-sidebar" style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid rgba(0, 53, 128, 0.1)', marginTop: '24px' }}>
+                <div className="res-reviews-sidebar" style={{ background: 'var(--bg-card)', padding: '24px', borderRadius: '24px', border: '1px solid var(--border-light)', marginTop: '24px' }}>
                   <h2 className="pd-section-title" style={{ marginBottom: '20px', fontSize: '1.4rem' }}>Guest Feedback</h2>
                   <div className="reviews-list-compact" style={{ maxHeight: '400px', overflowY: 'auto', paddingRight: '10px' }}>
                     {reviews.length > 0 ? reviews.map((r, i) => (
-                      <div key={i} style={{ background: '#f8fafc', padding: '16px', borderRadius: '16px', border: '1px solid #f1f5f9', marginBottom: '12px' }}>
+                      <div key={i} style={{ background: 'var(--bg-alt)', padding: '16px', borderRadius: '16px', border: '1px solid var(--border-light)', marginBottom: '12px' }}>
                         <div className="review-header" style={{ display: 'flex', gap: '10px', marginBottom: '8px', alignItems: 'center' }}>
-                          <div className="review-avatar" style={{ width: 32, height: 32, borderRadius: 10, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><User size={14} color="#003580" /></div>
-                          <div className="review-meta"><h4 style={{ margin: 0, color: '#1e293b', fontWeight: 800, fontSize: '0.85rem' }}>{r.user_name || "Guest"}</h4><div style={{ display: 'flex', gap: 1 }}>{[1,2,3,4,5].map(star => <Star key={star} size={8} fill={star <= r.rating ? "#FFD700" : "none"} color="#FFD700" />)}</div></div>
-                          <span style={{ marginLeft: 'auto', fontSize: '0.7rem', color: '#94a3b8' }}>{new Date(r.created_at).toLocaleDateString()}</span>
+                          <div className="review-avatar" style={{ width: 32, height: 32, borderRadius: 10, background: 'var(--bg-card)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><User size={14} color="var(--brand-accent)" /></div>
+                          <div className="review-meta"><h4 style={{ margin: 0, color: 'var(--text-main)', fontWeight: 800, fontSize: '0.85rem' }}>{r.user_name || "Guest"}</h4><div style={{ display: 'flex', gap: 1 }}>{[1,2,3,4,5].map(star => <Star key={star} size={8} fill={star <= r.rating ? "#FFD700" : "none"} color="#FFD700" />)}</div></div>
+                          <span style={{ marginLeft: 'auto', fontSize: '0.7rem', color: 'var(--text-muted)' }}>{new Date(r.created_at).toLocaleDateString()}</span>
                         </div>
-                        <p style={{ color: '#475569', lineHeight: 1.5, margin: 0, fontSize: '0.85rem' }}>{r.comment}</p>
+                        <p style={{ color: 'var(--text-muted)', lineHeight: 1.5, margin: 0, fontSize: '0.85rem' }}>{r.comment}</p>
                       </div>
                     )) : (<div className="res-menu-empty"><p>No reviews yet.</p></div>)}
                   </div>

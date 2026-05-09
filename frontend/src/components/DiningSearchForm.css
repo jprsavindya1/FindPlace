@@ -1,7 +1,7 @@
 .dining-search-container {
   width: 100%;
   max-width: 1100px;
-  background: white;
+  background: var(--bg-card);
   padding: 12px;
   border-radius: 20px;
   box-shadow: 0 15px 50px rgba(0,0,0,0.15);
@@ -17,7 +17,7 @@
 .search-group {
   flex: 1;
   position: relative;
-  border-right: 1px solid #eee;
+  border-right: 1px solid var(--border-light);
 }
 
 .search-group:last-of-type {
@@ -34,11 +34,11 @@
 }
 
 .input-wrapper:hover {
-  background: #f8f8f8;
+  background: var(--bg-alt);
 }
 
 .field-icon {
-  color: #c2410c;
+  color: var(--brand-accent);
   margin-right: 14px;
 }
 
@@ -51,7 +51,7 @@
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: #888;
+  color: var(--text-muted);
   margin-bottom: 2px;
 }
 
@@ -60,7 +60,7 @@
   background: transparent;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-main);
   outline: none;
   width: 100%;
 }
@@ -68,16 +68,16 @@
 .display-val {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--text-main);
 }
 
 .chevron {
   margin-left: auto;
-  color: #aaa;
+  color: var(--text-muted);
 }
 
 .dining-search-btn {
-  background: #1a1a1a;
+  background: var(--brand-accent);
   color: white;
   border: none;
   height: 60px;
@@ -93,8 +93,9 @@
 
 .dining-search-btn:hover {
   transform: scale(1.02);
-  background: #c2410c;
-  box-shadow: 0 10px 20px rgba(194, 65, 12, 0.3);
+  background: var(--brand-accent);
+  box-shadow: 0 10px 20px rgba(0, 112, 243, 0.3);
+  filter: brightness(1.1);
 }
 
 /* DROPDOWNS */
@@ -103,10 +104,10 @@
   top: calc(100% + 12px);
   left: 0;
   width: 250px;
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  border: 1px solid #eee;
+  border: 1px solid var(--border-light);
   padding: 8px;
   z-index: 100;
 }
@@ -119,13 +120,13 @@
   align-items: center;
   gap: 12px;
   font-weight: 600;
-  color: #444;
+  color: var(--text-main);
   transition: background 0.2s;
 }
 
 .dropdown-item:hover {
-  background: #fff8f0;
-  color: #c2410c;
+  background: var(--bg-alt);
+  color: var(--brand-accent);
 }
 
 .dropdown-item small {
@@ -136,6 +137,6 @@
 
 @media (max-width: 900px) {
   .dining-search-box { flex-direction: column; align-items: stretch; }
-  .search-group { border-right: none; border-bottom: 1px solid #eee; }
+  .search-group { border-right: none; border-bottom: 1px solid var(--border-light); }
   .dining-search-btn { height: 50px; margin-top: 10px; justify-content: center; }
 }

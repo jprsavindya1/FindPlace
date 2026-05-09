@@ -3,11 +3,11 @@
 ========================================================= */
 
 .place-details-wrapper {
-  background: #FFFFFF; /* Match dashboard base */
+  background: var(--bg-main);
   min-height: 100vh;
-  padding-top: 90px; /* Reduced top padding to 90px */
+  padding-top: 90px;
   padding-bottom: 120px;
-  color: #262626;
+  color: var(--text-main);
   position: relative;
   overflow: hidden;
 }
@@ -28,12 +28,12 @@
     display: flex;
     gap: 32px;
     align-items: stretch;
-    background: rgba(255, 255, 255, 0.4);
+    background: var(--bg-card);
     backdrop-filter: blur(20px);
     border-radius: 32px;
     padding: 24px;
     margin-bottom: 56px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-light);
 }
 
 .pd-hero-img-container {
@@ -53,10 +53,10 @@
 
 .pd-hero-info {
     flex: 1;
-    background: rgba(255, 255, 255, 0.6);
+    background: var(--bg-card);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-light);
     border-radius: 24px;
     padding: 24px 32px;
     display: flex;
@@ -70,10 +70,10 @@
 }
 
 .pd-title-refined {
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-heading);
     font-size: 2.6rem;
     font-weight: 900;
-    color: #262626;
+    color: var(--text-main);
     margin-bottom: 20px;
     line-height: 1.1;
     letter-spacing: -0.04em;
@@ -90,17 +90,17 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #666666;
+    color: var(--text-muted);
     font-weight: 700;
     font-size: 0.95rem;
 }
 
 .pd-meta-item svg {
-    color: #003580;
+    color: var(--brand-accent);
 }
 
 .pd-rating-refined {
-    color: #262626;
+    color: var(--text-main);
 }
 
 .pd-rating-val {
@@ -109,7 +109,7 @@
 }
 
 .pd-rating-count {
-    color: #555555;
+    color: var(--text-muted);
     font-weight: 600;
 }
 
@@ -119,7 +119,7 @@
     gap: 12px;
     padding: 12px 28px;
     background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-    color: #262626;
+    color: white;
     border-radius: 14px;
     text-decoration: none;
     font-weight: 800;
@@ -193,14 +193,14 @@
     justify-content: center;
     gap: 10px;
     padding: 12px 28px;
-    background: rgba(255, 255, 255, 0.7);
-    color: #262626;
+    background: var(--bg-card);
+    color: var(--text-main);
     border-radius: 14px;
     text-decoration: none;
     font-weight: 800;
     font-size: 0.95rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border-light);
     transition: all 0.3s ease;
     cursor: pointer;
 }
@@ -223,25 +223,25 @@
 }
 
 .pd-section-title {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-heading);
   font-size: 1.6rem;
   font-weight: 800;
-  color: #262626;
+  color: var(--text-main);
   margin-bottom: 20px;
   letter-spacing: -0.02em;
 }
 
 /* Glass Section Container */
 .pd-section {
-    background: rgba(255, 255, 255, 0.5);
+    background: var(--bg-card);
     backdrop-filter: blur(20px);
     border-radius: 28px;
     padding: 24px 32px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-light);
 }
 
 .pd-description {
-    color: #666666;
+    color: var(--text-muted);
     font-size: 1.1rem;
     line-height: 1.8;
     text-align: justify;
@@ -255,13 +255,13 @@
 }
 
 .pd-amenity-chip {
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--bg-alt);
+  border: 1px solid var(--border-light);
   padding: 12px 24px;
   border-radius: 14px;
   font-size: 0.9rem;
   font-weight: 700;
-  color: #262626;
+  color: var(--text-main);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -269,9 +269,9 @@
 }
 
 .pd-amenity-chip:hover {
-  background: rgba(0, 53, 128, 0.1);
-  border-color: #003580;
-  color: #003580;
+  background: var(--bg-alt);
+  border-color: var(--brand-accent);
+  color: var(--brand-accent);
   transform: translateY(-2px);
 }
 
@@ -281,16 +281,16 @@
   grid-template-columns: 120px 1fr;
   gap: 16px;
   padding: 12px 16px;
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--bg-alt);
+  border: 1px solid var(--border-light);
   border-radius: 16px;
   transition: all 0.4s ease;
   margin-bottom: 10px;
 }
 
 .pd-horizontal-card:hover {
-  background: rgba(0, 0, 0, 0.1);
-  border-color: #003580;
+  background: var(--bg-alt);
+  border-color: var(--brand-accent);
   transform: translateX(8px);
 }
 
@@ -312,18 +312,13 @@
   position: absolute;
   top: 8px;
   right: 8px;
-  background: rgba(0, 53, 128, 0.8);
+  background: var(--brand-accent);
   backdrop-filter: blur(4px);
   color: #fff;
   padding: 4px 8px;
   border-radius: 8px;
   font-size: 0.7rem;
   font-weight: 800;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-  z-index: 2;
 }
 
 .pd-card-img {
@@ -340,18 +335,18 @@
 .pd-card-name {
   font-size: 1.05rem;
   font-weight: 800;
-  color: #262626;
+  color: var(--text-main);
 }
 
 .pd-card-price {
   font-size: 1rem;
   font-weight: 800;
-  color: #003580;
+  color: var(--brand-accent);
 }
 
 .pd-card-desc {
   font-size: 0.85rem;
-  color: #666666;
+  color: var(--text-muted);
   line-height: 1.4;
   margin-bottom: 8px;
 }
@@ -377,15 +372,15 @@
 }
 
 .tag-high-demand {
-  background: rgba(0, 53, 128, 0.05);
-  color: #003580;
-  border: 1px solid rgba(0, 53, 128, 0.1);
+  background: var(--bg-alt);
+  color: var(--brand-accent);
+  border: 1px solid var(--border-light);
 }
 
 .tag-sold-out {
-  background: rgba(0, 0, 0, 0.05);
-  color: #666666;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--bg-alt);
+  color: var(--text-muted);
+  border: 1px solid var(--border-light);
 }
 
 /* Dining Tabs Scrollable */
@@ -425,10 +420,10 @@
   justify-content: center;
   width: 30px;
   height: 30px;
-  background: white;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
   border-radius: 50%;
-  color: #003580;
+  color: var(--brand-accent);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   flex-shrink: 0;
   cursor: pointer;
@@ -446,13 +441,13 @@
   border-radius: 10px;
   font-weight: 700;
   font-size: 0.85rem;
-  color: #555555;
+  color: var(--text-muted);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .pd-menu-tab.active {
-  background: #003580;
+  background: var(--brand-accent);
   color: #ffffff;
 }
 
@@ -465,17 +460,17 @@
 }
 
 .res-booking-widget {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--bg-card);
   backdrop-filter: blur(40px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-light);
   border-radius: 28px;
   padding: 32px;
   box-shadow: 0 40px 100px rgba(0, 0, 0, 0.1);
 }
 
 .pd-widget-title {
-    color: #262626 !important;
-    font-family: 'Outfit', sans-serif !important;
+    color: var(--text-main) !important;
+    font-family: var(--font-heading) !important;
     font-size: 1.5rem !important;
 }
 
@@ -494,7 +489,7 @@
 .pd-label {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #666666;
+  color: var(--text-muted);
   margin-left: 4px;
 }
 
@@ -507,18 +502,18 @@
 .pd-icon {
   position: absolute;
   left: 16px;
-  color: #003580;
+  color: var(--brand-accent);
   pointer-events: none;
   z-index: 2;
 }
 
 .pd-input {
   width: 100% !important;
-  background: rgba(0, 0, 0, 0.05) !important;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  background: var(--bg-main) !important;
+  border: 1px solid var(--border-light) !important;
   border-radius: 14px !important;
   padding: 14px 16px 14px 48px !important;
-  color: #262626 !important;
+  color: var(--text-main) !important;
   font-size: 1rem !important;
   font-weight: 600 !important;
   transition: all 0.3s ease !important;
@@ -527,9 +522,9 @@
 }
 
 .pd-input:focus {
-  background: rgba(0, 0, 0, 0.1) !important;
-  border-color: #003580 !important;
-  box-shadow: 0 0 15px rgba(0, 53, 128, 0.1) !important;
+  background: var(--bg-card) !important;
+  border-color: var(--brand-accent) !important;
+  box-shadow: 0 0 15px rgba(0, 112, 243, 0.1) !important;
 }
 
 .pd-booking-actions {
@@ -541,31 +536,31 @@
 
 .pd-btn-pay-now {
   width: 100%;
-  background: #003580 !important;
+  background: var(--brand-accent) !important;
   border: none;
   padding: 18px;
   border-radius: 16px;
-  color: #ffffff !important;
+  color: white !important;
   font-size: 1.1rem;
   font-weight: 900;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 25px rgba(0, 53, 128, 0.15);
+  box-shadow: 0 10px 25px rgba(0, 112, 243, 0.15);
 }
 
 .pd-btn-pay-now:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 15px 35px rgba(0, 53, 128, 0.3);
-  background: #002b66 !important;
+  box-shadow: 0 15px 35px rgba(0, 112, 243, 0.3);
+  filter: brightness(1.1);
 }
 
 .pd-btn-pay-later {
   width: 100%;
-  background: white;
-  border: 2px solid #003580;
+  background: var(--bg-card);
+  border: 2px solid var(--brand-accent);
   padding: 16px;
   border-radius: 16px;
-  color: #003580;
+  color: var(--brand-accent);
   font-size: 1.1rem;
   font-weight: 900;
   cursor: pointer;
@@ -573,7 +568,7 @@
 }
 
 .pd-btn-pay-later:hover:not(:disabled) {
-  background: rgba(0, 53, 128, 0.05);
+  background: var(--bg-alt);
   transform: translateY(-2px);
 }
 
@@ -587,23 +582,23 @@
 /* Common Submit Button (Used for Reviews) */
 .pd-btn-submit {
   width: 100%;
-  background: #003580;
+  background: var(--brand-accent);
   border: none;
   padding: 18px;
   border-radius: 16px;
-  color: #ffffff;
+  color: white;
   font-size: 1.1rem;
   font-weight: 900;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 10px 25px rgba(0, 53, 128, 0.15);
+  box-shadow: 0 10px 25px rgba(0, 112, 243, 0.15);
   margin-top: 12px;
 }
 
 .pd-btn-submit:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 15px 35px rgba(0, 53, 128, 0.3);
-  background: #002b66;
+  box-shadow: 0 15px 35px rgba(0, 112, 243, 0.3);
+  filter: brightness(1.1);
 }
 
 .pd-btn-submit:disabled {
@@ -615,7 +610,7 @@
    REVIEWS (REFINED)
 ========================================================= */
 input[type="date"]::-webkit-calendar-picker-indicator {
-    filter: invert(0.8) sepia(50%) saturate(1000%) hue-rotate(160deg);
+    filter: var(--calendar-filter);
     cursor: pointer;
     opacity: 0.6;
     transition: opacity 0.3s;
@@ -626,30 +621,30 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 .pd-add-review-card {
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px dashed rgba(0, 0, 0, 0.155);
+  background: var(--bg-alt);
+  border: 1px dashed var(--border-light);
   border-radius: 32px;
   padding: 40px;
 }
 
 .pd-textarea {
-  background: rgba(0, 0, 0, 0.05);
-  border-color: rgba(0, 0, 0, 0.15);
-  color: #262626;
+  background: var(--bg-main);
+  border-color: var(--border-light);
+  color: var(--text-main);
 }
 
 .pd-textarea:focus {
-  border-color: #003580;
-  background: rgba(0, 0, 0, 0.1);
+  border-color: var(--brand-accent);
+  background: var(--bg-card);
 }
 
 .review-card-modern {
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-bottom: 1px solid var(--border-light) !important;
 }
 
 .review-avatar {
-  background: rgba(0, 0, 0, 0.1) !important;
-  border-color: rgba(0, 0, 0, 0.15) !important;
+  background: var(--bg-alt) !important;
+  border-color: var(--border-light) !important;
 }
 
 /* REUSING SHARED LUNA BLOBS */
@@ -665,7 +660,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .blob-1 {
   width: 700px;
   height: 700px;
-  background: #003580;
+  background: var(--brand-accent);
   top: -200px;
   right: -200px;
 }
@@ -673,7 +668,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .blob-2 {
   width: 600px;
   height: 600px;
-  background: #006CE4;
+  background: var(--brand-accent);
   bottom: 10%;
   left: -200px;
 }
@@ -681,7 +676,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .blob-3 {
   width: 500px;
   height: 500px;
-  background: #006CE4;
+  background: var(--brand-accent);
   top: 30%;
   right: 10%;
 }
@@ -787,11 +782,11 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 .react-datepicker {
-  font-family: 'Outfit', sans-serif !important;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  font-family: var(--font-main) !important;
+  border: 1px solid var(--border-light) !important;
   border-radius: 16px !important;
   box-shadow: 0 20px 40px rgba(0, 53, 128, 0.15) !important;
-  background-color: #ffffff !important;
+  background-color: var(--bg-card) !important;
   overflow: hidden;
 }
 
@@ -806,7 +801,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .react-datepicker__current-month,
 .react-datepicker-time__header,
 .react-datepicker-year-header {
-  color: #003580 !important;
+  color: var(--brand-accent) !important;
   font-weight: 800 !important;
   font-size: 1.1rem !important;
 }
@@ -814,7 +809,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .react-datepicker__day-name,
 .react-datepicker__day,
 .react-datepicker__time-name {
-  color: #262626 !important;
+  color: var(--text-main) !important;
   font-weight: 600 !important;
   width: 2.2rem !important;
   line-height: 2.2rem !important;
@@ -824,8 +819,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 .react-datepicker__day:hover:not(.react-datepicker__day--disabled) {
-  background-color: rgba(0, 108, 228, 0.1) !important;
-  color: #006CE4 !important;
+  background-color: var(--bg-alt) !important;
+  color: var(--brand-accent) !important;
   transform: scale(1.1);
 }
 
@@ -841,8 +836,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .react-datepicker__year-text--selected,
 .react-datepicker__year-text--in-selecting-range,
 .react-datepicker__year-text--in-range {
-  background-color: #003580 !important;
-  color: #fff !important;
+  background-color: var(--brand-accent) !important;
+  color: white !important;
   border-radius: 8px !important;
 }
 
@@ -854,12 +849,12 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 .react-datepicker__day--keyboard-selected {
-  background-color: rgba(0, 53, 128, 0.2) !important;
-  color: #003580 !important;
+  background-color: var(--bg-alt) !important;
+  color: var(--brand-accent) !important;
 }
 
 .react-datepicker__navigation-icon::before {
-  border-color: #003580 !important;
+  border-color: var(--brand-accent) !important;
   border-width: 2px 2px 0 0 !important;
 }
 
@@ -879,18 +874,18 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   display: flex;
   align-items: center;
   gap: 16px;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--bg-card);
   backdrop-filter: blur(10px);
   padding: 20px;
   border-radius: 24px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-light);
   transition: all 0.3s ease;
 }
 
 .pd-rule-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(0, 53, 128, 0.08);
-  border-color: rgba(0, 53, 128, 0.2);
+  box-shadow: 0 15px 30px rgba(0, 112, 243, 0.08);
+  border-color: var(--brand-accent);
 }
 
 .pd-rule-icon {
@@ -900,8 +895,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 53, 128, 0.08);
-  color: #003580;
+  background: var(--bg-alt);
+  color: var(--brand-accent);
 }
 
 .pd-rule-icon.allowed {
@@ -921,7 +916,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 
 .pd-rule-label {
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-muted);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -929,7 +924,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 
 .pd-rule-value {
   font-size: 1.05rem;
-  color: #262626;
+  color: var(--text-main);
   font-weight: 800;
 }
 
@@ -946,7 +941,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 ========================================================= */
 
 .dining-wrapper {
-  background-color: #f8fafc;
+  background-color: var(--bg-main);
 }
 
 /* --- GALLERY GRID INTEGRATED (CORRECTED HEIGHT) --- */
@@ -1020,14 +1015,14 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 /* WHITE INFO CARD INSIDE GRID */
 /* WHITE INFO CARD INSIDE GRID - PREMIUM RE-DESIGN */
 .res-info-card-cell {
-  background: #ffffff;
+  background: var(--bg-card);
   padding: 32px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   gap: 20px;
   position: relative;
-  border-left: 1px solid rgba(0, 0, 0, 0.05);
+  border-left: 1px solid var(--border-light);
 }
 
 .res-info-top-group {
@@ -1038,11 +1033,11 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 .pd-main-title {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-heading);
   font-size: 2.2rem;
   font-weight: 900;
   margin: 0;
-  color: #0f172a;
+  color: var(--text-main);
   line-height: 1.1;
   letter-spacing: -0.04em;
   max-width: 90%;
@@ -1059,17 +1054,17 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #fff8e1;
+  background: var(--bg-alt);
   padding: 6px 14px;
   border-radius: 100px;
-  border: 1px solid #ffecb3;
+  border: 1px solid var(--border-light);
   font-weight: 800;
   font-size: 0.95rem;
-  color: #b45309;
+  color: #f59e0b;
 }
 
 .res-review-count {
-  color: #92400e;
+  color: #f59e0b;
   font-weight: 600;
   font-size: 0.85rem;
   opacity: 0.8;
@@ -1078,7 +1073,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .pd-meta-divider {
   width: 1px;
   height: 20px;
-  background: #e2e8f0;
+  background: var(--border-light);
 }
 
 .pd-meta-item {
@@ -1086,18 +1081,18 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   align-items: center;
   gap: 8px;
   font-size: 0.9rem;
-  color: #64748b;
+  color: var(--text-muted);
   font-weight: 700;
 }
 
 .pd-meta-icon {
-  color: #003580;
+  color: var(--brand-accent);
   opacity: 0.7;
 }
 
 .pd-cuisine-badge {
-  color: #003580;
-  background: rgba(0, 53, 128, 0.05);
+  color: var(--brand-accent);
+  background: var(--bg-alt);
   padding: 4px 12px;
   border-radius: 8px;
   font-size: 0.8rem;
@@ -1116,7 +1111,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   gap: 6px;
   background: transparent;
   border: none;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
@@ -1126,8 +1121,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 .btn-write-review-minimal:hover {
-  background: #f1f5f9;
-  color: #003580;
+  background: var(--bg-alt);
+  color: var(--brand-accent);
 }
 
 .res-action-group {
@@ -1142,11 +1137,11 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   gap: 8px;
   padding: 8px 18px;
   border-radius: 100px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
   font-weight: 800;
   font-size: 0.85rem;
-  color: #1e293b;
+  color: var(--text-main);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 12px rgba(0,0,0,0.04);
@@ -1155,7 +1150,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .btn-save-premium:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-  border-color: #cbd5e1;
+  border-color: var(--brand-accent);
 }
 
 .btn-whatsapp-premium {
@@ -1186,9 +1181,9 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   gap: 8px;
   padding: 8px 18px;
   border-radius: 100px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  color: #1e293b;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  color: var(--text-main);
   font-weight: 800;
   font-size: 0.85rem;
   cursor: pointer;
@@ -1199,12 +1194,12 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .btn-share-premium:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-  background: #f8fafc;
-  color: #003580;
+  background: var(--bg-alt);
+  color: var(--brand-accent);
 }
 
 .btn-save-minimal:hover {
-  background: #f8fafc;
+  background: var(--bg-alt);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
@@ -1264,14 +1259,14 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   padding-right: 0;
 }
 .res-about-card-lite p {
-  color: #4b5563; /* Softer text for clean look */
+  color: var(--text-muted); /* Softer text for clean look */
   font-size: 1rem;
   line-height: 1.6;
   margin-bottom: 24px;
 }
 .res-about-tags { display: flex; gap: 8px; flex-wrap: wrap; }
 .res-about-tag-lite {
-  background: #f8fafc;
+  background: var(--bg-alt);
   padding: 8px 16px;
   border-radius: 10px;
   display: flex;
@@ -1279,8 +1274,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   gap: 10px;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #334155;
-  border: 1px solid #e2e8f0;
+  color: var(--text-main);
+  border: 1px solid var(--border-light);
 }
 .res-features-grid {
   flex: 1;
@@ -1290,8 +1285,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   gap: 12px;
 }
 .res-feature-box {
-  background: #f1f5f9;
-  color: #1e293b;
+  background: var(--bg-alt);
+  color: var(--text-main);
   border-radius: 16px;
   display: flex;
   flex-direction: column;
@@ -1302,7 +1297,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   font-weight: 700;
   position: relative;
   overflow: hidden;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
 }
 .res-feature-box img {
   position: absolute;
@@ -1334,16 +1329,16 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   align-items: center;
   gap: 12px;
   margin-bottom: 24px;
-  background: #ffffff;
+  background: var(--bg-card);
   padding: 12px 16px;
   border-radius: 20px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   flex-wrap: nowrap; /* Prevent wrapping unless absolutely necessary */
 }
 .res-menu-heading-row h2 {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-heading);
   font-size: 1.4rem; /* Reduced to fit better */
-  color: #0f172a;
+  color: var(--text-main);
   font-weight: 800;
   white-space: nowrap; /* Prevent "Restaurant Menu" from breaking into 2 lines */
   margin: 0;
@@ -1354,24 +1349,24 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   gap: 8px;
   padding: 8px 16px;
   border-radius: 12px;
-  background: #f8fafc;
-  color: #0f172a;
+  background: var(--bg-alt);
+  color: var(--text-main);
   font-size: 0.8rem;
   font-weight: 800;
   text-decoration: none;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
 .btn-pdf-menu:hover {
-  background: #f1f5f9;
+  background: var(--bg-alt);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  border-color: #cbd5e1;
+  border-color: var(--brand-accent);
 }
 .pd-menu-tab {
   padding: 8px 18px; /* Slightly more compact */
-  background: #e2e8f0;
+  background: var(--bg-alt);
   border-radius: 10px;
   font-weight: 700;
   font-size: 0.85rem;
@@ -1379,7 +1374,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   white-space: nowrap;
 }
 .pd-menu-tab.active {
-  background: #0f172a;
+  background: var(--brand-accent);
   color: white;
 }
 .res-menu-grid {
@@ -1389,36 +1384,36 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   margin-bottom: 32px;
 }
 .res-menu-card {
-  background: #f8fafc;
+  background: var(--bg-card);
   border-radius: 14px;
   padding: 10px;
   box-shadow: none;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
 }
 .res-menu-img {
   width: 100%; height: 140px; border-radius: 10px; object-fit: cover; margin-bottom: 10px;
 }
-.res-menu-info-row h4 { font-size: 0.9rem; font-weight: 800; color: #0f172a; margin: 0; }
-.res-menu-price { font-weight: 800; color: #1e293b; font-size: 0.9rem; }
+.res-menu-info-row h4 { font-size: 0.9rem; font-weight: 800; color: var(--text-main); margin: 0; }
+.res-menu-price { font-weight: 800; color: var(--text-main); font-size: 0.9rem; }
 .res-menu-pills { display: flex; gap: 8px; }
 .menu-pill { font-size: 0.8rem; font-weight: 700; padding: 4px 12px; border-radius: 6px; }
 .pill-vegan { background: #dcfce7; color: #166534; }
 .pill-special { background: #fee2e2; color: #991b1b; }
 
 .res-btn-see-more {
-  background: white;
-  border: 1px solid #003580;
+  background: var(--bg-card);
+  border: 1px solid var(--brand-accent);
   padding: 10px 24px;
   border-radius: 12px;
   font-weight: 800;
-  color: #003580;
+  color: var(--brand-accent);
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 10px rgba(0, 53, 128, 0.05);
 }
 
 .res-btn-see-more:hover {
-  background: #f8fafc;
+  background: var(--bg-alt);
   transform: translateY(-2px);
   box-shadow: 0 10px 15px rgba(0,0,0,0.05);
 }
@@ -1428,12 +1423,12 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   display: flex; gap: 24px; overflow-x: auto; padding-bottom: 20px;
 }
 .res-review-card {
-  min-width: 320px; background: white; border-radius: 24px; padding: 24px; border: 1px solid #f1f5f9;
+  min-width: 320px; background: var(--bg-card); border-radius: 24px; padding: 24px; border: 1px solid var(--border-light);
 }
 
 /* --- SIDEBAR & MAP --- */
 .res-booking-widget {
-  background: white; border-radius: 20px; padding: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.05); margin-bottom: 20px;
+  background: var(--bg-card); border-radius: 20px; padding: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.05); margin-bottom: 20px;
 }
 .res-booking-widget h2 { font-size: 1.3rem; margin-bottom: 2px; }
 .res-booking-widget p { font-size: 0.8rem; margin-bottom: 16px; }
@@ -1443,17 +1438,17 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .res-btn-submit:hover { background: #0d5436 !important; transform: scale(1.02); }
 
 .res-map-container {
-  border-radius: 24px; overflow: hidden; background: white; border: 1px solid #f1f5f9;
+  border-radius: 24px; overflow: hidden; background: var(--bg-card); border: 1px solid var(--border-light);
 }
 .res-btn-directions {
   width: 100%;
   padding: 18px;
   border: none;
-  background: white;
+  background: var(--bg-card);
   font-weight: 800;
-  color: #003580;
+  color: var(--brand-accent);
   cursor: pointer;
-  border-top: 1px solid rgba(0, 53, 128, 0.1);
+  border-top: 1px solid var(--border-light);
   transition: all 0.3s ease;
 }
 
@@ -1469,11 +1464,11 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .pd-luxury-room-card {
   display: flex;
   gap: 24px;
-  background: rgba(255, 255, 255, 0.4);
+  background: var(--bg-card);
   backdrop-filter: blur(10px);
   border-radius: 28px;
   padding: 24px;
-  border: 1px solid rgba(0, 53, 128, 0.08);
+  border: 1px solid var(--border-light);
   margin-bottom: 24px;
   position: relative;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1482,14 +1477,14 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 
 .pd-luxury-room-card:hover {
   transform: translateY(-8px);
-  background: white;
-  box-shadow: 0 20px 40px rgba(0, 53, 128, 0.08);
-  border-color: rgba(0, 53, 128, 0.2);
+  background: var(--bg-alt);
+  box-shadow: 0 20px 40px rgba(0, 112, 243, 0.08);
+  border-color: var(--brand-accent);
 }
 
 .pd-luxury-room-card.selected {
-  border: 2px solid #003580;
-  background: rgba(0, 53, 128, 0.02);
+  border: 2px solid var(--brand-accent);
+  background: var(--bg-alt);
 }
 
 .pd-lux-img-wrapper {
@@ -1516,7 +1511,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   position: absolute;
   top: 12px;
   left: 12px;
-  background: rgba(0, 53, 128, 0.85);
+  background: var(--brand-accent);
   backdrop-filter: blur(8px);
   color: white;
   padding: 6px 12px;
@@ -1546,25 +1541,25 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 .pd-lux-name {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-heading);
   font-size: 1.3rem;
   font-weight: 800;
-  color: #1a1a1a;
+  color: var(--text-main);
   margin: 0;
 }
 
 .pd-lux-price {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-heading);
   font-size: 1.1rem;
   font-weight: 900;
-  color: #003580;
+  color: var(--brand-accent);
   white-space: nowrap;
 }
 
 .pd-lux-desc {
   font-size: 0.9rem;
   line-height: 1.6;
-  color: #64748b;
+  color: var(--text-muted);
   margin-bottom: 16px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -1586,16 +1581,16 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   gap: 8px;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #003580;
+  color: var(--brand-accent);
 }
 
 .pd-lux-btn-360 {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: white;
-  border: 1px solid #003580;
-  color: #003580;
+  background: var(--bg-card);
+  border: 1px solid var(--brand-accent);
+  color: var(--brand-accent);
   padding: 8px 16px;
   border-radius: 12px;
   font-size: 0.85rem;
@@ -1605,9 +1600,9 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 .pd-lux-btn-360:hover {
-  background: #003580;
+  background: var(--brand-accent);
   color: white;
-  box-shadow: 0 5px 15px rgba(0, 53, 128, 0.2);
+  box-shadow: 0 5px 15px rgba(0, 112, 243, 0.2);
 }
 
 .pd-luxury-room-card.selected::after {
@@ -1615,7 +1610,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   position: absolute;
   top: -12px;
   right: 24px;
-  background: #003580;
+  background: var(--brand-accent);
   color: white;
   padding: 4px 12px;
   border-radius: 8px;
@@ -1639,6 +1634,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .pd-btn-whatsapp-form:hover {
   background: #128C7E;
   transform: scale(1.02);
+  filter: brightness(1.1);
 }
 
 /* =========================================================
@@ -1652,10 +1648,10 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 24px;
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--bg-alt);
   padding: 8px 16px;
   border-radius: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-light);
 }
 
 .pd-lux-menu-tabs {
@@ -1670,29 +1666,29 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   border-radius: 14px;
   font-size: 0.9rem;
   font-weight: 700;
-  color: #64748b;
+  color: var(--text-muted);
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .pd-lux-menu-tab:hover {
-  background: rgba(0, 0, 0, 0.05);
-  color: #1a1a1a;
+  background: var(--bg-card);
+  color: var(--text-main);
 }
 
 .pd-lux-menu-tab.active {
-  background: #003580;
+  background: var(--brand-accent);
   color: white;
-  box-shadow: 0 4px 12px rgba(0, 53, 128, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 112, 243, 0.2);
 }
 
 .pd-food-luxury-card {
   display: flex;
   gap: 20px;
-  background: white;
+  background: var(--bg-card);
   border-radius: 24px;
   padding: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--border-light);
   margin-bottom: 16px;
   transition: all 0.3s ease;
   position: relative;
@@ -1701,7 +1697,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .pd-food-luxury-card:hover {
   transform: scale(1.01);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-  border-color: rgba(0, 53, 128, 0.1);
+  border-color: var(--brand-accent);
 }
 
 .pd-food-lux-img-wrapper {
@@ -1733,19 +1729,19 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .pd-food-lux-name {
   font-size: 1.1rem;
   font-weight: 800;
-  color: #1a1a1a;
+  color: var(--text-main);
   margin: 0;
 }
 
 .pd-food-lux-price {
   font-size: 1rem;
   font-weight: 900;
-  color: #003580;
+  color: var(--brand-accent);
 }
 
 .pd-food-lux-desc {
   font-size: 0.85rem;
-  color: #64748b;
+  color: var(--text-muted);
   line-height: 1.5;
   margin: 0;
   display: -webkit-box;
@@ -1761,8 +1757,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
    ========================================================= */
 .res-preorder-section {
   margin-top: 24px;
-  background: rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: var(--bg-alt);
+  border: 1px solid var(--border-light);
   border-radius: 20px;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -1776,7 +1772,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 .preorder-header:hover {
-  background: rgba(0, 53, 128, 0.05);
+  background: var(--bg-alt);
 }
 
 .preorder-list {
@@ -1793,33 +1789,33 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   justify-content: space-between;
   align-items: center;
   padding: 12px;
-  background: white;
+  background: var(--bg-card);
   border-radius: 14px;
-  border: 1px solid #f1f5f9;
+  border: 1px solid var(--border-light);
   box-shadow: 0 2px 4px rgba(0,0,0,0.02);
   transition: all 0.3s ease;
 }
 
 .preorder-item-lite:hover {
   transform: translateX(4px);
-  border-color: rgba(0, 53, 128, 0.2);
+  border-color: var(--brand-accent);
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .preorder-item-lite span {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #334155;
+  color: var(--text-main);
 }
 
 .qty-controls {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #f8fafc;
+  background: var(--bg-alt);
   padding: 4px;
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
 }
 
 .qty-btn {
@@ -1827,8 +1823,8 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   height: 30px;
   border-radius: 8px;
   border: none;
-  background: white;
-  color: #003580;
+  background: var(--bg-card);
+  color: var(--brand-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1838,7 +1834,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 }
 
 .qty-btn:hover {
-  background: #003580;
+  background: var(--brand-accent);
   color: white;
   transform: scale(1.1);
 }
@@ -1846,7 +1842,7 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
 .qty-val {
   font-size: 0.95rem;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-main);
   min-width: 20px;
   text-align: center;
 }

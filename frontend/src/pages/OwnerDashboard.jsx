@@ -731,27 +731,26 @@ function OwnerDashboard() {
                 <input type="file" onChange={(e) => setImageFile(e.target.files[0])} />
                 <ImageIcon size={20} color="#003580" />
              </div>
-             {editingPlace && places.find(p => p.id === editingPlace)?.image && (
-               <div className="existing-image-management" style={{ marginTop: '12px', background: 'rgba(255,255,255,0.5)', padding: '12px', borderRadius: '16px', border: '1px solid rgba(0,0,0,0.05)' }}>
-                 <p className="helper-text" style={{ marginBottom: '8px', fontWeight: 'bold', fontSize: '0.75rem' }}>Current Cover Image:</p>
-                 <div style={{ position: 'relative', width: 'fit-content' }}>
+              {editingPlace && places.find(p => p.id === editingPlace)?.image && (
+               <div className="existing-image-management">
+                 <h4>Current Cover Image:</h4>
+                 <div className="cover-preview-wrapper">
                    <img 
                     src={`${API_BASE_URL}/uploads/places/${places.find(p => p.id === editingPlace).image}`} 
                     alt="Current cover" 
-                    style={{ width: '120px', height: '80px', objectFit: 'cover', borderRadius: '12px', border: '2px solid white', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} 
+                    className="cover-preview-img"
                    />
                    <button 
                     type="button" 
-                    className="btn-delete-mini" 
+                    className="btn-remove-cover" 
                     title="Remove Cover"
                     onClick={() => handleRemoveCoverImage(editingPlace)}
-                    style={{ position: 'absolute', top: '-8px', right: '-8px', background: '#ef4444', color: 'white', border: 'none', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
                    >
                      <Trash2 size={12} />
                    </button>
                  </div>
                </div>
-             )}
+              )}
           </div>
 
           <div className="form-group full-width">
@@ -763,21 +762,21 @@ function OwnerDashboard() {
              
              {/* ⭐ NEW: Existing Gallery Management */}
              {editingPlace && existingGallery.length > 0 && (
-               <div className="existing-gallery-management" style={{ marginTop: '15px' }}>
-                 <p className="helper-text" style={{ marginBottom: '8px', fontWeight: 'bold' }}>Current Gallery:</p>
-                 <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+               <div className="existing-gallery-management">
+                 <h4>Current Gallery:</h4>
+                 <div className="gallery-grid-mini">
                    {existingGallery.map(img => (
-                     <div key={img.id} style={{ position: 'relative' }}>
+                     <div key={img.id} className="gallery-item-wrapper">
                        <img 
                         src={`${API_BASE_URL}/uploads/places/${img.image_path}`} 
                         alt="Gallery item" 
-                        style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '10px', border: '1px solid #e2e8f0' }} 
+                        className="gallery-item-img"
                        />
                        <button 
                         type="button" 
+                        className="btn-delete-gallery-img"
                         title="Delete from Gallery"
                         onClick={() => handleDeleteGalleryImage(img.id)}
-                        style={{ position: 'absolute', top: '5px', right: '5px', background: 'rgba(255,255,255,0.9)', color: '#ef4444', border: 'none', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.2)' }}
                        >
                          <Trash2 size={14} />
                        </button>

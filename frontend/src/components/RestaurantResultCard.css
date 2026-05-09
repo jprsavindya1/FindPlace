@@ -1,9 +1,9 @@
 .restaurant-card-modern {
-  background: white;
+  background: var(--bg-card);
   border-radius: 20px;
   overflow: hidden;
   margin-bottom: 24px;
-  border: 1px solid #edf2f7;
+  border: 1px solid var(--border-light);
   transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
   cursor: pointer;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
@@ -11,8 +11,8 @@
 
 .restaurant-card-modern:hover {
   transform: translateY(-6px);
-  box-shadow: 0 20px 40px rgba(0, 53, 128, 0.08);
-  border-color: #00358040;
+  box-shadow: 0 20px 40px rgba(0, 112, 243, 0.08);
+  border-color: var(--brand-accent);
 }
 
 .res-card-container {
@@ -43,7 +43,7 @@
   position: absolute;
   top: 15px;
   left: 15px;
-  background: #003580;
+  background: var(--brand-accent);
   color: white;
   padding: 6px 14px;
   border-radius: 8px;
@@ -86,7 +86,7 @@
 .res-name-title {
   font-size: 1.5rem;
   font-weight: 900;
-  color: #1e293b;
+  color: var(--text-main);
   margin: 0 0 6px 0;
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -96,19 +96,19 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 0.85rem;
   font-weight: 600;
 }
 
 .icon-map {
-  color: #003580;
+  color: var(--brand-accent);
 }
 
 .map-link-btn {
   background: none;
   border: none;
-  color: #006CE4;
+  color: var(--brand-accent);
   text-decoration: underline;
   font-weight: 700;
   font-size: 0.85rem;
@@ -133,18 +133,18 @@
 
 .rating-word {
   font-weight: 800;
-  color: #1e293b;
+  color: var(--text-main);
   font-size: 1rem;
 }
 
 .rating-count {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-weight: 600;
 }
 
 .rating-score-box {
-  background: #003580;
+  background: var(--brand-accent);
   color: white;
   width: 44px;
   height: 44px;
@@ -154,7 +154,7 @@
   border-radius: 10px 10px 10px 0;
   font-weight: 900;
   font-size: 1.25rem;
-  box-shadow: 0 4px 10px rgba(0, 53, 128, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 112, 243, 0.2);
 }
 
 /* Tags & Badges */
@@ -166,22 +166,22 @@
 }
 
 .res-tag {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-main);
+  border: 1px solid var(--border-light);
   padding: 6px 12px;
   border-radius: 10px;
   font-size: 0.8rem;
   font-weight: 700;
-  color: #475569;
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
 .cuisine-tag {
-  border-color: #00358020;
-  background: #00358005;
-  color: #003580;
+  border-color: var(--border-light);
+  background: var(--bg-alt);
+  color: var(--brand-accent);
 }
 
 /* Highlights Section */
@@ -190,7 +190,7 @@
   flex-direction: column;
   gap: 8px;
   padding-top: 12px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border-light);
 }
 
 .highlight-item {
@@ -199,11 +199,11 @@
   gap: 10px;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--text-main);
 }
 
-.text-success-res { color: #059669; }
-.text-benefit-res { color: #003580; }
+.text-success-res { color: #10b981; }
+.text-benefit-res { color: var(--brand-accent); }
 
 /* Action Bar */
 .res-card-action-bar {
@@ -212,7 +212,7 @@
   align-items: center;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px dashed #e2e8f0;
+  border-top: 1px dashed var(--border-light);
 }
 
 .action-benefit-text {
@@ -225,7 +225,7 @@
 }
 
 .res-book-now-btn {
-  background: #003580;
+  background: var(--brand-accent);
   color: white;
   border: none;
   border-radius: 10px;
@@ -237,13 +237,14 @@
   gap: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 6px 12px rgba(0, 53, 128, 0.1);
+  box-shadow: 0 6px 12px rgba(0, 112, 243, 0.1);
 }
 
 .res-book-now-btn:hover {
-  background: #002355;
+  background: var(--brand-accent);
   transform: scale(1.02) translateX(3px);
-  box-shadow: 0 15px 30px rgba(0, 53, 128, 0.25);
+  box-shadow: 0 15px 30px rgba(0, 112, 243, 0.25);
+  filter: brightness(1.1);
 }
 
 /* Responsive Overrides */

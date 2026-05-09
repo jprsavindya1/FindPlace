@@ -11,8 +11,8 @@
 
 .accommodation-card-modern:hover {
   transform: translateY(-6px);
-  box-shadow: 0 20px 40px rgba(0, 53, 128, 0.08);
-  border-color: #00358040;
+  box-shadow: 0 20px 40px rgba(0, 112, 243, 0.08);
+  border-color: var(--brand-accent);
 }
 
 .acc-card-container {
@@ -43,7 +43,7 @@
   position: absolute;
   top: 15px;
   left: 15px;
-  background: #003580;
+  background: var(--brand-accent);
   color: white;
   padding: 6px 14px;
   border-radius: 8px;
@@ -96,19 +96,19 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 0.85rem;
   font-weight: 600;
 }
 
 .icon-map-acc {
-  color: #003580;
+  color: var(--brand-accent);
 }
 
 .map-link-btn-acc {
   background: none;
   border: none;
-  color: #006CE4;
+  color: var(--brand-accent);
   text-decoration: underline;
   font-weight: 700;
   font-size: 0.85rem;
@@ -139,12 +139,12 @@
 
 .rating-count-acc {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-weight: 600;
 }
 
 .rating-score-box-acc {
-  background: #003580;
+  background: var(--brand-accent);
   color: white;
   width: 44px;
   height: 44px;
@@ -154,7 +154,7 @@
   border-radius: 10px 10px 10px 0;
   font-weight: 900;
   font-size: 1.25rem;
-  box-shadow: 0 4px 10px rgba(0, 53, 128, 0.2);
+  box-shadow: 0 4px 10px rgba(0, 112, 243, 0.2);
 }
 
 /* Tags & Badges */
@@ -196,8 +196,8 @@
   color: var(--text-main);
 }
 
-.text-success-acc { color: #059669; }
-.text-benefit-acc { color: #003580; }
+.text-success-acc { color: #10b981; }
+.text-benefit-acc { color: var(--brand-accent); }
 
 /* Action Bar */
 .acc-card-action-bar {
@@ -218,7 +218,7 @@
 .price-starting-label {
   font-size: 0.75rem;
   font-weight: 800;
-  color: #64748b;
+  color: var(--text-muted);
   margin-bottom: 2px;
 }
 
@@ -242,12 +242,12 @@
 
 .price-tax-hint {
   font-size: 0.7rem;
-  color: #94a3b8;
+  color: var(--text-muted);
   font-weight: 600;
 }
 
 .acc-see-availability-btn {
-  background: #003580;
+  background: var(--brand-accent);
   color: white;
   border: none;
   border-radius: 10px;
@@ -259,13 +259,14 @@
   gap: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 6px 12px rgba(0, 53, 128, 0.1);
+  box-shadow: 0 6px 12px rgba(0, 112, 243, 0.1);
 }
 
 .acc-see-availability-btn:hover {
-  background: #002355;
+  background: var(--brand-accent);
   transform: scale(1.02) translateX(3px);
-  box-shadow: 0 10px 20px rgba(0, 53, 128, 0.2);
+  box-shadow: 0 10px 20px rgba(0, 112, 243, 0.2);
+  filter: brightness(1.1);
 }
 
 /* Responsive Overrides */

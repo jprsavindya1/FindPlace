@@ -57,10 +57,11 @@ html, body, #root {
 }
 
 .section-title {
+  font-family: var(--font-heading);
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 32px;
-  color: var(--brand-primary);
+  color: var(--text-main);
 }
 
 /* =====================================================
@@ -89,7 +90,7 @@ button, .btn {
 }
 
 .btn-primary:hover {
-  background: #222;
+  filter: brightness(1.2);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -109,7 +110,7 @@ button, .btn {
 }
 
 .btn-secondary:hover {
-  background: #f5f5f5;
+  background: var(--bg-alt);
   border-color: var(--border-hover);
 }
 
@@ -146,11 +147,11 @@ input:focus, select:focus, textarea:focus {
   background: var(--bg-main);
 }
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: var(--text-muted);
   border-radius: 4px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+::--webkit-scrollbar-thumb:hover {
+  background: var(--text-main);
 }
 
 /* =====================================================

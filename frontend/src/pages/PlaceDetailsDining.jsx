@@ -400,7 +400,7 @@ const PlaceDetailsDining = ({
                     {reviews.length > 1 && (
                       <button 
                         onClick={() => setShowAllReviews(!showAllReviews)}
-                        style={{ background: 'none', border: 'none', color: '#003580', fontWeight: 700, cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+                        style={{ background: 'none', border: 'none', color: 'var(--brand-accent)', fontWeight: 700, cursor: 'pointer', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '4px' }}
                       >
                         {showAllReviews ? "Show Less" : `See More (${reviews.length - 1} more)`}
                         <ChevronRight size={16} style={{ transform: showAllReviews ? 'rotate(-90deg)' : 'rotate(90deg)', transition: 'transform 0.3s' }} />
@@ -414,30 +414,30 @@ const PlaceDetailsDining = ({
                         <motion.div 
                           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                           key={i} 
-                          style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid #e2e8f0', marginBottom: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}
+                          style={{ background: 'var(--bg-card)', padding: '24px', borderRadius: '24px', border: '1px solid var(--border-light)', marginBottom: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}
                         >
                           <div style={{ display: 'flex', gap: '16px', marginBottom: '12px', alignItems: 'flex-start' }}>
-                            <div style={{ width: 44, height: 44, borderRadius: 14, background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                              <User size={20} color="#003580" />
+                            <div style={{ width: 44, height: 44, borderRadius: 14, background: 'var(--bg-alt)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <User size={20} color="var(--brand-accent)" />
                             </div>
                             <div style={{ flex: 1 }}>
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
-                                <h4 style={{ margin: 0, color: '#1e293b', fontWeight: 800, fontSize: '1rem' }}>{r.user_name || "Guest"}</h4>
-                                <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>{new Date(r.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                                <h4 style={{ margin: 0, color: 'var(--text-main)', fontWeight: 800, fontSize: '1rem' }}>{r.user_name || "Guest"}</h4>
+                                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{new Date(r.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}</span>
                               </div>
                               <div style={{ display: 'flex', gap: 2, marginBottom: '12px' }}>
                                 {[1, 2, 3, 4, 5].map(star => (
                                   <Star key={star} size={14} fill={star <= r.rating ? "#FFD700" : "none"} color="#FFD700" />
                                 ))}
                               </div>
-                              <p style={{ color: '#475569', lineHeight: 1.6, margin: 0, fontSize: '0.95rem' }}>{r.comment}</p>
+                              <p style={{ color: 'var(--text-muted)', lineHeight: 1.6, margin: 0, fontSize: '0.95rem' }}>{r.comment}</p>
                             </div>
                           </div>
                         </motion.div>
                       ))
                     ) : (
-                      <div style={{ textAlign: 'center', padding: '40px', background: '#f8fafc', borderRadius: '24px', border: '1px dashed #e2e8f0' }}>
-                         <p style={{ color: '#94a3b8', margin: 0 }}>No reviews yet. Be the first to share your thoughts!</p>
+                      <div style={{ textAlign: 'center', padding: '40px', background: 'var(--bg-alt)', borderRadius: '24px', border: '1px dashed var(--border-light)' }}>
+                         <p style={{ color: 'var(--text-muted)', margin: 0 }}>No reviews yet. Be the first to share your thoughts!</p>
                       </div>
                     )}
                   </div>

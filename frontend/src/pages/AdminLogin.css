@@ -15,9 +15,9 @@
   place-items: center;
   padding: 40px 16px;
   position: relative;
-  background: var(--luna-black);
+  background: var(--bg-main);
   overflow: hidden;
-  color: #262626;
+  color: var(--text-main);
 }
 
 /* Background handled by InteractiveNetwork */
@@ -31,10 +31,10 @@
   max-width: 330px; /* Reduced */
   padding: 24px 20px; /* Compact padding */
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--bg-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--border-light);
   box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
@@ -51,9 +51,9 @@
   font-weight: 800;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: var(--luna-teal);
-  background: rgba(0, 53, 128, 0.1);
-  border: 1px solid rgba(0, 53, 128, 0.2);
+  color: var(--brand-accent);
+  background: var(--bg-alt);
+  border: 1px solid var(--border-light);
   margin-bottom: 24px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
@@ -61,10 +61,10 @@
 /* ----- title & subtitle ----- */
 .admin-auth-title {
   margin: 0 0 8px;
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-heading);
   font-size: 1.6rem; /* Compact title */
   font-weight: 800;
-  color: #262626;
+  color: var(--text-main);
   letter-spacing: -0.03em;
 }
 
@@ -72,7 +72,7 @@
 .admin-auth-subtitle {
   margin: 0 0 24px;
   font-size: 13px;
-  color: #666666;
+  color: var(--text-muted);
   line-height: 1.4;
   font-weight: 500;
 }
@@ -111,7 +111,7 @@
 .admin-auth-label {
   font-size: 10px; /* Smaller label */
   font-weight: 800;
-  color: var(--luna-teal);
+  color: var(--brand-accent);
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-left: 2px;
@@ -128,7 +128,7 @@
 .admin-input-wrapper svg {
   position: absolute;
   left: 18px;
-  color: #666666;
+  color: var(--text-muted);
   opacity: 0.7;
   transition: color 0.3s ease;
 }
@@ -138,9 +138,9 @@
   height: 44px; /* Shorter input */
   padding: 0 16px 0 44px;
   border-radius: 10px;
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  color: #262626;
+  background: var(--bg-main);
+  border: 1px solid var(--border-light);
+  color: var(--text-main);
   font-size: 14px;
   outline: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -148,18 +148,18 @@
 
 
 .admin-auth-input::placeholder {
-  color: #555555;
+  color: var(--text-muted);
 }
 
 .admin-auth-input:focus {
-  border-color: var(--luna-teal);
-  background: rgba(0, 0, 0, 0.1);
-  box-shadow: 0 0 0 4px rgba(0, 53, 128, 0.1);
+  border-color: var(--brand-accent);
+  background: var(--bg-alt);
+  box-shadow: 0 0 0 4px rgba(0, 112, 243, 0.1);
 }
 
 .admin-auth-input:focus + svg,
 .admin-input-wrapper:focus-within svg {
-  color: var(--luna-teal);
+  color: var(--brand-accent);
   opacity: 1;
 }
 
@@ -173,8 +173,8 @@
   font-size: 15px;
   font-weight: 800;
   color: white;
-  background: linear-gradient(135deg, var(--luna-teal), var(--luna-steel));
-  box-shadow: 0 8px 20px rgba(0, 53, 128, 0.15);
+  background: linear-gradient(135deg, var(--brand-accent), var(--brand-accent));
+  box-shadow: 0 8px 20px rgba(0, 112, 243, 0.15);
   transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
   display: flex;
   align-items: center;
@@ -185,7 +185,7 @@
 
 .admin-auth-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 15px 35px rgba(0, 53, 128, 0.3);
+  box-shadow: 0 15px 35px rgba(0, 112, 243, 0.3);
   filter: brightness(1.1);
 }
 
@@ -205,15 +205,15 @@
 
 .admin-auth-footer p {
   font-size: 13px;
-  color: #555555;
+  color: var(--text-muted);
   font-weight: 500;
   margin: 0;
 }
 
 .back-home-btn {
-  background: none;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  color: #666666;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-light);
+  color: var(--text-muted);
   padding: 8px 20px;
   border-radius: 99px;
   font-size: 13px;
@@ -223,9 +223,9 @@
 }
 
 .back-home-btn:hover {
-  background: rgba(0, 0, 0, 0.1);
-  color: #262626;
-  border-color: rgba(0, 0, 0, 0.2);
+  background: var(--bg-card);
+  color: var(--text-main);
+  border-color: var(--brand-accent);
 }
 
 /* Responsive */

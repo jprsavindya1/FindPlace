@@ -1,7 +1,7 @@
 .category-page {
   width: 100%;
   min-height: 100vh;
-  background: white;
+  background: var(--bg-main);
   padding-bottom: 40px;
   overflow-x: hidden;
 }
@@ -77,10 +77,10 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 30px;
   margin-bottom: 20px; /* Minimal margin */
-  background: white;
+  background: var(--bg-card);
   padding: 40px;
   border-radius: 24px;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-light);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
 }
 
@@ -105,16 +105,16 @@
 }
 
 .trust-content h3 {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-heading);
   font-size: 1.1rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-main);
   margin-bottom: 6px;
 }
 
 .trust-content p {
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-muted);
   line-height: 1.4;
 }
 
@@ -122,10 +122,10 @@
 .features-section {
   position: relative;
   margin-bottom: 20px; /* Minimal margin */
-  background: #f8f9ff; /* Subtle blue contrast */
+  background: var(--bg-alt); /* Subtle contrast */
   padding: 15px 40px; /* Ultra-tight padding */
   border-radius: 32px;
-  border: 1px solid rgba(0, 53, 128, 0.05);
+  border: 1px solid var(--border-light);
 }
 
 .features-section::before {
@@ -148,17 +148,17 @@
 
 
 .section-title {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-heading);
   font-size: 2.2rem;
   font-weight: 800;
-  color: #1a1a1a;
+  color: var(--text-main);
   margin-bottom: 12px;
   letter-spacing: -0.02em;
 }
 
 .section-subtitle {
   font-size: 1.1rem;
-  color: #666;
+  color: var(--text-muted);
 }
 
 .features-grid {
@@ -168,12 +168,12 @@
 }
 
 .feature-card {
-  background: white;
+  background: var(--bg-card);
   padding: 32px 24px;
   border-radius: 20px;
   text-align: center;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--border-light);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
 }
 
@@ -204,16 +204,16 @@
 }
 
 .feature-card h3 {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-heading);
   font-size: 1.25rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-main);
   margin-bottom: 12px;
 }
 
 .feature-card p {
   font-size: 0.95rem;
-  color: #666;
+  color: var(--text-muted);
   line-height: 1.6;
 }
 
@@ -244,16 +244,16 @@
 
 
 .trending-title {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-heading);
   font-size: 2rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-main);
   margin-bottom: 8px;
 }
 
 .trending-subtitle {
   font-size: 1rem;
-  color: #666;
+  color: var(--text-muted);
   margin-bottom: 32px;
 }
 
@@ -291,7 +291,7 @@
   cursor: pointer;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  background: white;
+  background: var(--bg-card);
   aspect-ratio: 4/5;
 }
 
@@ -370,10 +370,10 @@
 }
 
 .faq-main-title {
-  font-family: 'Outfit', sans-serif;
+  font-family: var(--font-heading);
   font-size: 2rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-main);
   margin-bottom: 32px;
 }
 
@@ -384,8 +384,8 @@
 }
 
 .faq-item {
-  background: white;
-  border: 1px solid #e7e7e7;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
   border-radius: 8px;
   margin-bottom: 12px;
   cursor: pointer;
@@ -404,13 +404,13 @@
   justify-content: space-between;
   align-items: center;
   font-weight: 600;
-  color: #2c2c2c;
+  color: var(--text-main);
   font-size: 1rem;
 }
 
 .chevron-icon {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--text-muted);
   transition: transform 0.3s ease;
 }
 
@@ -422,7 +422,7 @@
 
 .faq-answer {
   padding: 0 24px 20px 24px;
-  color: #555;
+  color: var(--text-muted);
   line-height: 1.6;
   font-size: 0.95rem;
 }

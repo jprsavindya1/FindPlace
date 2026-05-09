@@ -20,9 +20,9 @@
 
 .place-card:hover {
   transform: translateY(-12px) scale(1.01);
-  border-color: rgba(0, 53, 128, 0.3);
+  border-color: var(--brand-accent);
   box-shadow: 
-    0 20px 40px rgba(0, 53, 128, 0.15),
+    0 20px 40px rgba(0, 112, 243, 0.15),
     0 15px 30px rgba(0, 0, 0, 0.08);
 }
 
@@ -177,12 +177,12 @@
 }
 
 .place-favorite-btn:hover {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--bg-alt);
   transform: scale(1.1);
 }
 
 .place-favorite-btn.active {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--bg-card);
   border-color: transparent;
   box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
 }
@@ -266,7 +266,7 @@
   position: absolute;
   top: 16px;
   left: 16px;
-  background: rgba(0, 53, 128, 0.75);
+  background: var(--brand-accent);
   color: white;
   padding: 6px 14px;
   border-radius: 30px;
@@ -277,7 +277,7 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   z-index: 10;
-  box-shadow: 0 8px 32px rgba(0, 53, 128, 0.25);
+  box-shadow: 0 8px 32px rgba(0, 112, 243, 0.25);
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 

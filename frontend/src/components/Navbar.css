@@ -9,11 +9,11 @@
   height: 80px;
   z-index: 10000; /* Ensure it stays above the search bar z-index of 9999 */
 
-  background: rgba(255, 255, 255, 0.85); /* Light translucent theme */
+  background: var(--bg-card);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
   
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--border-light);
   box-shadow: 0 4px 20px -10px rgba(0, 0, 0, 0.1); /* Elegant soft shadow */
   transition: all 0.3s ease;
 }
@@ -37,7 +37,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 1.8rem;
   font-weight: 900;
-  color: #003580;
+  color: var(--brand-accent);
   text-decoration: none;
   letter-spacing: -0.04em;
 }
@@ -52,8 +52,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: white;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
   padding: 6px 14px;
   border-radius: 99px;
   cursor: pointer;
@@ -62,8 +62,8 @@
 }
 
 .profile-trigger:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
+  background: var(--bg-alt);
+  border-color: var(--border-hover);
   box-shadow: 0 4px 12px rgba(0, 53, 128, 0.05);
 }
 
@@ -88,7 +88,7 @@
 .profile-name-mini {
   font-weight: 700;
   font-size: 0.85rem;
-  color: #0f172a;
+  color: var(--text-main);
 }
 
 .rotate-up {
@@ -101,11 +101,11 @@
   top: calc(100% + 12px);
   right: 0;
   width: 180px;
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
   padding: 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-light);
 }
 
 .dropdown-item {
@@ -127,14 +127,14 @@
 }
 
 .dropdown-item:hover {
-  background: #f8fafc;
-  color: #003580;
+  background: var(--bg-alt);
+  color: var(--brand-accent);
 }
 
 .logout-link {
   color: #ef4444 !important;
   margin-top: 4px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--border-light);
   padding-top: 12px !important;
   border-radius: 0 0 10px 10px;
 }
@@ -178,15 +178,15 @@
 }
 
 .nav-link:hover {
-  color: #003580;
-  background: rgba(0, 0, 0, 0.05); /* Soft overlay on light bg */
+  color: var(--brand-accent);
+  background: var(--bg-alt); /* Soft overlay on light bg */
 }
 
 .nav-link.active {
-  color: #006CE4;
+  color: var(--brand-accent);
   font-weight: 600;
-  background: rgba(0, 108, 228, 0.15); /* More vibrant active state */
-  box-shadow: 0 0 20px rgba(0, 108, 228, 0.1); /* Subtle glow */
+  background: var(--bg-alt); /* More vibrant active state */
+  box-shadow: 0 0 20px rgba(0, 112, 243, 0.1); /* Subtle glow */
 }
 
 /* =========================================================
@@ -195,9 +195,9 @@
 .nav-btn {
   padding: 10px 24px;
   border-radius: 99px; /* Pill shape */
-  border: 1px solid rgba(0, 53, 128, 0.15); /* Crisper outline for light theme */
-  background: rgba(0, 53, 128, 0.05);
-  color: #003580;
+  border: 1px solid var(--border-light); /* Crisper outline for light theme */
+  background: var(--bg-alt);
+  color: var(--text-main);
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
@@ -209,23 +209,24 @@
 }
 
 .nav-btn:hover {
-  background: rgba(0, 53, 128, 0.1); /* Slightly darker accent */
-  border-color: rgba(0, 53, 128, 0.3);
+  background: var(--bg-card); /* Slightly darker accent */
+  border-color: var(--brand-accent);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 53, 128, 0.15);
+  box-shadow: 0 5px 15px rgba(0, 112, 243, 0.15);
 }
 
 .nav-btn.active-btn {
-  background: #003580;
+  background: var(--brand-accent);
   color: #ffffff;
   border-color: transparent;
-  box-shadow: 0 4px 14px rgba(0, 53, 128, 0.2);
+  box-shadow: 0 4px 14px rgba(0, 112, 243, 0.2);
 }
 
 .nav-btn.active-btn:hover {
-  background: #006CE4;
+  background: var(--brand-accent);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 108, 228, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 112, 243, 0.3);
+  filter: brightness(1.1);
 }
 
 /* =========================================================
@@ -350,60 +351,8 @@
   transform: scale(0.8) rotate(45deg);
 }
 
-/* ================= Dark Mode Overrides ================= */
-[data-theme='dark'] .navbar {
-  background: rgba(10, 10, 10, 0.85);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 20px -10px rgba(0, 0, 0, 0.5);
-}
-
-[data-theme='dark'] .nav-link {
-  color: #A1A1A1;
-}
-
-[data-theme='dark'] .nav-link:hover {
-  color: #FFFFFF;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-[data-theme='dark'] .profile-trigger {
-  background: #1A1A1A;
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-[data-theme='dark'] .profile-name-mini {
-  color: #EDEDED;
-}
-
-[data-theme='dark'] .dropdown-menu {
-  background: #141414;
-  border-color: rgba(255, 255, 255, 0.1);
-}
-
-[data-theme='dark'] .dropdown-item {
-  color: #A1A1A1;
-}
-
-[data-theme='dark'] .dropdown-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #FFFFFF;
-}
-
-[data-theme='dark'] .nav-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #EDEDED;
-}
-
-[data-theme='dark'] .nav-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-[data-theme='dark'] .avatar-mini {
-  background: #FFFFFF;
-  color: #000000;
-}
+/* ================= CLEANUP OLD OVERRIDES ================= */
+/* Redundant as variables now handle themes globally */
 
 @media (max-width: 768px) {
   .theme-toggle-btn {

@@ -72,7 +72,7 @@
 
 .kpi-info .subtitle {
   font-size: 0.8rem;
-  color: #64748b;
+  color: var(--text-muted);
   font-weight: 500;
   margin-top: 4px;
 }
@@ -145,7 +145,7 @@
 .status-text p {
   margin: 0;
   font-size: 0.8rem;
-  color: #64748b;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
@@ -156,29 +156,29 @@
 
 /* Item Status Theme: Upcoming (Green) */
 .status-item.upcoming {
-  background: #f0fdf4;
-  border-color: #dcfce7;
+  background: var(--bg-alt);
+  border-color: rgba(16, 185, 129, 0.2);
 }
 
-.status-item.upcoming .status-text h4 { color: #166534; }
+.status-item.upcoming .status-text h4 { color: #10b981; }
 .status-item.upcoming .status-value { color: #10b981; }
 
 /* Item Status Theme: Ongoing (Blue) */
 .status-item.ongoing {
-  background: #eff6ff;
-  border-color: #dbeafe;
+  background: var(--bg-alt);
+  border-color: rgba(59, 130, 246, 0.2);
 }
 
-.status-item.ongoing .status-text h4 { color: #1e40af; }
+.status-item.ongoing .status-text h4 { color: #3b82f6; }
 .status-item.ongoing .status-value { color: #3b82f6; }
 
 /* Item Status Theme: Completed (Red) */
 .status-item.completed {
-  background: #fef2f2;
-  border-color: #fee2e2;
+  background: var(--bg-alt);
+  border-color: rgba(239, 68, 68, 0.2);
 }
 
-.status-item.completed .status-text h4 { color: #991b1b; }
+.status-item.completed .status-text h4 { color: #ef4444; }
 .status-item.completed .status-value { color: #ef4444; }
 
 /* TABLE SECTION */
