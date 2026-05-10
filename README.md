@@ -71,7 +71,7 @@ npm start
 ### 🏠 Home & Discovery
 | Login & Welcome | Search Experience |
 | :---: | :---: |
-| ![Login](./screenshots/login_page.png) | ![Search](./screenshots/search_page.png) |
+| ![Login](./screenshots/Login%20&%20Welcome.png) | ![Search](./screenshots/Search%20Experience.png) |
 
 ### 🤖 AI Smart Planner
 ![AI Planner](./screenshots/ai_planner.png)
@@ -79,7 +79,7 @@ npm start
 ### 📊 Dashboard & Analytics
 | Customer Dashboard | Owner Analytics |
 | :---: | :---: |
-| ![Customer](./screenshots/customer_dashboard.png) | ![Owner](./screenshots/owner_analytics.png) |
+| ![Customer](./screenshots/Customer%20Dashboard.png) | ![Owner](./screenshots/Owner%20Analytics.jpeg) |
 
 ### 🛠️ Advanced Tools
 | 2D Visual Designer | 360° Virtual Tour |
