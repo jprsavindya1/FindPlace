@@ -69,17 +69,35 @@ npm start
 ## 📸 Screenshots
 
 ### 🏠 Home & Discovery
-| Login & Welcome | Search Experience |
-| :---: | :---: |
-| ![Login](./screenshots/Login%20&%20Welcome.png) | ![Search](./screenshots/Search%20Experience.png) |
+<table width="100%">
+  <tr valign="top">
+    <td align="center" width="50%">
+      <b>Login & Welcome</b><br>
+      <img src="./screenshots/Login%20&%20Welcome.png" alt="Login">
+    </td>
+    <td align="center" width="50%">
+      <b>Search Experience</b><br>
+      <img src="./screenshots/Search%20Experience.png" alt="Search">
+    </td>
+  </tr>
+</table>
 
 ### 🤖 AI Smart Planner
 ![AI Planner](./screenshots/ai_planner.png)
 
 ### 📊 Dashboard & Analytics
-| Customer Dashboard | Owner Analytics |
-| :---: | :---: |
-| ![Customer](./screenshots/Customer%20Dashboard.png) | ![Owner](./screenshots/Owner%20Analytics.jpeg) |
+<table width="100%">
+  <tr valign="top">
+    <td align="center" width="50%">
+      <b>Customer Dashboard</b><br>
+      <img src="./screenshots/Customer%20Dashboard.png" alt="Customer">
+    </td>
+    <td align="center" width="50%">
+      <b>Owner Analytics</b><br>
+      <img src="./screenshots/Owner%20Analytics.jpeg" alt="Owner">
+    </td>
+  </tr>
+</table>
 
 ### 🛠️ Advanced Tools
 | 2D Visual Designer | 360° Virtual Tour |
