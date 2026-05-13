@@ -180,13 +180,37 @@ function PlaceDetails() {
 
   const handleAddReview = async (e) => {
     e.preventDefault();
+    if (!myRating) {
+      alert("Please select a rating.");
+      return;
+    }
+
     setIsPostingReview(true);
     try {
-      await axios.post(`${API_BASE_URL}/api/reviews`, { place_id: Number(id), rating: myRating, comment: myComment }, { headers: { Authorization: `Bearer ${token}` } });
-      const listRes = await fetch(`${API_BASE_URL}/api/reviews/place/${id}`);
-      setReviews(await listRes.json());
-      setMyComment(""); setMyRating(5);
-    } catch { setReviewMsg("❌ Failed to add review"); } finally { setIsPostingReview(false); }
+      await axios.post(`${API_BASE_URL}/api/reviews`, 
+        { place_id: Number(id), rating: myRating, comment: myComment }, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Refresh reviews list
+      const listRes = await axios.get(`${API_BASE_URL}/api/reviews/place/${id}`);
+      setReviews(Array.isArray(listRes.data) ? listRes.data : []);
+
+      // Refresh rating summary
+      const summaryRes = await axios.get(`${API_BASE_URL}/api/reviews/summary/${id}`);
+      setAvgRating(Number(summaryRes.data?.avgRating || 0));
+      setTotalReviews(Number(summaryRes.data?.totalReviews || 0));
+
+      setMyComment(""); 
+      setMyRating(5);
+      alert("Review posted successfully! Thank you for your feedback.");
+    } catch (err) { 
+      const errMsg = err.response?.data?.message || "Failed to add review. Please try again.";
+      alert(errMsg);
+      setReviewMsg("❌ " + errMsg); 
+    } finally { 
+      setIsPostingReview(false); 
+    }
   };
 
   // Dining Logic Wrapper

@@ -16,7 +16,7 @@ router.get("/place/:placeId", (req, res) => {
       r.rating,
       r.comment,
       r.created_at,
-      u.name AS customer_name
+      u.name AS user_name
     FROM reviews r
     JOIN users u ON r.customer_id = u.id
     WHERE r.place_id = ?
