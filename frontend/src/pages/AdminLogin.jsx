@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
-import { ShieldCheck, Mail, Lock, AlertCircle, ArrowRight } from "lucide-react";
+import { ShieldCheck, Mail, Lock, AlertCircle, ArrowRight, Eye, EyeOff } from "lucide-react";
+
 import { API_BASE_URL } from "../apiConfig";
 import InteractiveNetwork from "../components/InteractiveNetwork";
 import "./AdminLogin.css";
@@ -16,6 +17,8 @@ function AdminLogin() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -114,16 +117,26 @@ function AdminLogin() {
             <div className="admin-input-wrapper">
               <Lock size={18} />
               <input
-                className="admin-auth-input"
-                type="password"
+                className="admin-auth-input admin-auth-input--password"
+                type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="current-password"
               />
+              <button
+                type="button"
+                className="admin-eye-toggle"
+                onClick={() => setShowPassword((prev) => !prev)}
+                tabIndex={-1}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </div>
           </div>
+
 
           <button className="admin-auth-btn" type="submit" disabled={loading}>
             {loading ? "Verifying Authority..." : "Login to Portal"}

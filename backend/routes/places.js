@@ -6,32 +6,55 @@ const { verifyToken } = require("../middleware/authMiddleware");
 /* ================= DB CONNECTION ================= */
 const db = require("../db");
 
-/* ================= MULTER CONFIG (MOVE TO TOP) ================= */
-const multer = require("multer");
+/* ================= MULTER CONFIG ================= */
+const { uploadPlaceImage, handleMulterError } = require("../middleware/uploadMiddleware");
+const upload = uploadPlaceImage; // alias for existing route references
 const path = require("path");
 const fs = require("fs");
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = "uploads/places";
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      "place-" +
-        (req.params.id || "new") +
-        "-" +
-        Date.now() +
-        path.extname(file.originalname)
+/* =================================================
+   TRENDING PLACES — Most Booked (Real Data)
+   GET /api/places/trending
+ ================================================= */
+router.get("/trending", async (req, res) => {
+  const limit = parseInt(req.query.limit) || 6;
+
+  try {
+    const [rows] = await db.promise().query(
+      `SELECT
+         p.id,
+         p.name,
+         p.location,
+         p.district,
+         p.province,
+         p.category,
+         p.type,
+         p.image,
+         p.price,
+         p.stars,
+         COALESCE(p.stars, 0) AS rating,
+         COUNT(b.id)           AS booking_count,
+         COUNT(DISTINCT b.customer_id) AS unique_customers,
+         COALESCE(SUM(b.total_price), 0) AS total_revenue
+       FROM places p
+       LEFT JOIN bookings b
+         ON b.place_id = p.id
+         AND b.status NOT IN ('CANCELLED','REJECTED')
+       WHERE p.status = 'approved'
+       GROUP BY p.id, p.name, p.location, p.district, p.province,
+                p.category, p.type, p.image, p.price, p.stars
+       ORDER BY booking_count DESC, rating DESC
+       LIMIT ?`,
+      [limit]
     );
-  },
+
+    res.json({ trending: rows });
+  } catch (err) {
+    console.error("TRENDING PLACES ERROR:", err);
+    res.status(500).json({ message: "Failed to fetch trending places" });
+  }
 });
 
-const upload = multer({ storage });
 /* =================================================
    SEARCH PLACES (PUBLIC)
  ================================================= */

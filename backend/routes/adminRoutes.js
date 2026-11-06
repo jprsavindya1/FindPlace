@@ -3,9 +3,10 @@ const router = express.Router();
 const db = require("../db");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs"); // ✅ ADDED
-const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+
+const { uploadPlaceImage } = require("../middleware/uploadMiddleware");
 
 const { verifyToken, verifyAdmin } = require("../middleware/authMiddleware");
 
@@ -145,23 +146,8 @@ router.post("/login", (req, res) => {
    =============== IMAGE STORAGE CONFIG ===================
    ======================================================== */
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      "place-" +
-        req.params.id +
-        "-" +
-        Date.now() +
-        path.extname(file.originalname)
-    );
-  },
-});
+const upload = uploadPlaceImage; // ✅ FIX 10: validated, 5MB limit, images only
 
-const upload = multer({ storage });
 
 /* ========================================================
    ======================= USERS ==========================

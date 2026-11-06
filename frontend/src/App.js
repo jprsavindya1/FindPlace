@@ -32,7 +32,7 @@ import SmartPlanner from "./pages/SmartPlanner/SmartPlanner"; // ⭐ AI Smart It
 function App() {
   return (
     <ThemeProvider>
-      <GoogleOAuthProvider clientId="593149822202-o648jt4p23lcistoh3q9n0ishss7kthj.apps.googleusercontent.com">
+      <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID || ""}>
         <BrowserRouter>
 
           {/* Global Navigation */}

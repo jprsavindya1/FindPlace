@@ -3,30 +3,11 @@ const router = express.Router();
 const db = require("../db");
 const { verifyToken } = require("../middleware/authMiddleware");
 
-/* ================= NEW IMPORTS ================= */
-
-const multer = require("multer");
+/* ================= MULTER CONFIG ================= */
+const { uploadMenuImage, handleMulterError } = require("../middleware/uploadMiddleware");
 const path = require("path");
+const upload = uploadMenuImage; // alias for existing route references
 
-/* ================= MULTER STORAGE CONFIG ================= */
-
-const storage = multer.diskStorage({
-
-  destination: function (req, file, cb) {
-    cb(null, "uploads/menu");
-  },
-
-  filename: function (req, file, cb) {
-
-    const uniqueName =
-      Date.now() + "-" + Math.round(Math.random() * 1e9);
-
-    cb(null, uniqueName + path.extname(file.originalname));
-  },
-
-});
-
-const upload = multer({ storage });
 
 /* ================= ADD MENU ITEM ================= */
 

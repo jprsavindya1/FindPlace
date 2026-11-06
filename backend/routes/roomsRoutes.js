@@ -1,29 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../db");
-const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-/* ================= MULTER STORAGE CONFIG ================= */
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/rooms");
-  },
-  filename: (req, file, cb) => {
-    const prefix = file.fieldname === "image_360" ? "room360" : "room";
-    cb(
-      null,
-      prefix + "-" +
-        (req.params.id || "new") +
-        "-" +
-        Date.now() +
-        path.extname(file.originalname)
-    );
-  },
-});
-
-const upload = multer({ storage });
+/* ================= MULTER CONFIG ================= */
+const { uploadRoomImage, handleMulterError } = require("../middleware/uploadMiddleware");
+const upload = uploadRoomImage; // alias for existing route references
 
 /* ===============================
    ADD ROOM TYPE

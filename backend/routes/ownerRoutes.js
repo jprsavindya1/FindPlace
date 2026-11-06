@@ -7,40 +7,13 @@ const {
 } = require("../middleware/authMiddleware");
 
 /* ================= MULTER IMPORTS ================= */
-const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-/* ================= MULTER STORAGE CONFIG ================= */
-const placeImgStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/places");
-  },
-  filename: (req, file, cb) => {
-    cb(null, "place-" + req.params.id + "-" + Date.now() + path.extname(file.originalname));
-  },
-});
+/* ================= MULTER CONFIG ================= */
+const { uploadPlaceImage, uploadPdf, handleMulterError } = require("../middleware/uploadMiddleware");
+const upload = uploadPlaceImage;
 
-const pdfStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/pdfs");
-  },
-  filename: (req, file, cb) => {
-    cb(null, "menu-pdf-" + req.params.id + "-" + Date.now() + path.extname(file.originalname));
-  },
-});
-
-const upload = multer({ storage: placeImgStorage });
-const uploadPdf = multer({ 
-  storage: pdfStorage,
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype === "application/pdf") {
-      cb(null, true);
-    } else {
-      cb(new Error("Only PDF files are allowed!"), false);
-    }
-  }
-});
 
 // OWNER – ADD NEW PLACE logic handled in places.js
 

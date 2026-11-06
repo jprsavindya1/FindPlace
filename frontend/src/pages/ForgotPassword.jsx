@@ -112,8 +112,8 @@ function ForgotPassword() {
                 </div>
                 <h3>Check your inbox</h3>
                 <p>
-                  We've sent a simulated reset link to <strong>{email}</strong>. 
-                  Please check your inbox to continue.
+                  We've sent a password reset link to <strong>{email}</strong>. 
+                  Please check your inbox (and spam folder) to continue.
                 </p>
                 <div className="success-actions">
                   <p className="hint">Didn't receive the email? <button onClick={() => setSubmitted(false)} className="text-btn">Try again</button></p>

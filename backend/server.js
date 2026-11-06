@@ -3,20 +3,43 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
+const winston = require("winston");
+const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
 
-// 🔥 DEBUG LOGGING TO FILE
-const logFile = path.join(__dirname, "debug.log");
-const logStream = fs.createWriteStream(logFile, { flags: 'a' });
-console.log = function(...args) {
-  const msg = require('util').format(...args);
-  logStream.write(`[LOG] ${new Date().toISOString()}: ${msg}\n`);
-  process.stdout.write(msg + '\n');
-};
-console.error = function(...args) {
-  const msg = require('util').format(...args);
-  logStream.write(`[ERR] ${new Date().toISOString()}: ${msg}\n`);
-  process.stderr.write(msg + '\n');
-};
+/* ================= LOGGER (FIX 7 — Replace raw file override) ================= */
+// ✅ Production-grade logger: info/error to console + rotating file (max 5MB, no bloat)
+const logDir = path.join(__dirname, "logs");
+if (!fs.existsSync(logDir)) fs.mkdirSync(logDir);
+
+const logger = winston.createLogger({
+  level: process.env.NODE_ENV === "production" ? "warn" : "info",
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.printf(({ timestamp, level, message }) =>
+      `[${timestamp}] ${level.toUpperCase()}: ${message}`
+    )
+  ),
+  transports: [
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      ),
+    }),
+    new winston.transports.File({
+      filename: path.join(logDir, "app.log"),
+      maxsize: 5 * 1024 * 1024, // 5MB max
+      maxFiles: 3,              // Keep last 3 log files
+      tailable: true,
+    }),
+  ],
+});
+
+// ✅ Replace console.log / console.error with Winston
+console.log = (...args) => logger.info(args.map(String).join(" "));
+console.error = (...args) => logger.error(args.map(String).join(" "));
+console.warn = (...args) => logger.warn(args.map(String).join(" "));
 
 /* ================= ROUTES ================= */
 const authRoutes = require("./routes/auth");
@@ -42,13 +65,30 @@ const db = require("./db");
 const app = express();
 
 /* ================= BASIC MIDDLEWARE ================= */
-app.use(cors());
+// ✅ HTTP request logging via Morgan (dev-friendly, production-safe)
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+
+// ✅ Whitelist-based CORS
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || "http://localhost:3000")
+  .split(",")
+  .map((o) => o.trim());
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error(`CORS blocked: ${origin} not allowed`), false);
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser()); // ✅ FIX 9: Read httpOnly cookies for refresh token
+
 
 /* ================= TEST DB CONNECTION ================= */
-// The pool maintains connections automatically.
-// We can do a quick query ping to ensure connectivity.
 db.query("SELECT 1", (err) => {
   if (err) {
     console.error("❌ MySQL connection failed:", err);
@@ -94,7 +134,7 @@ app.use((req, res) => {
 });
 
 /* ================= SERVER ================= */
-const PORT = 5007;
+const PORT = process.env.PORT || 5007;
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
